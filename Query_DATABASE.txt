@@ -1,0 +1,511 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema ERPLMFRIDA_BD
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema ERPLMFRIDA_BD
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `ERPLMFRIDA_BD` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+USE `ERPLMFRIDA_BD` ;
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`personas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`personas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `correo` VARCHAR(45) NULL DEFAULT NULL,
+  `n_identificacion` VARCHAR(45) NOT NULL,
+  `fono` INT NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_At` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`roles`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`roles` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `rol` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`usuarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`usuarios` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `uid` VARCHAR(45) NOT NULL,
+  `isActive` TINYINT NOT NULL DEFAULT '1',
+  `roles_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`, `uid`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  INDEX `fk_usuarios_roles_idx` (`roles_id` ASC) VISIBLE,
+  CONSTRAINT `fk_usuarios_roles`
+    FOREIGN KEY (`roles_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`roles` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`empleados`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`empleados` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `personas_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `usuarios_id` INT NOT NULL,
+  `usuarios_uid` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_empleados_personas1_idx` (`personas_id` ASC) VISIBLE,
+  INDEX `fk_empleados_usuarios1_idx` (`usuarios_id` ASC, `usuarios_uid` ASC) VISIBLE,
+  CONSTRAINT `fk_empleados_personas1`
+    FOREIGN KEY (`personas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`personas` (`id`),
+  CONSTRAINT `fk_empleados_usuarios1`
+    FOREIGN KEY (`usuarios_id` , `usuarios_uid`)
+    REFERENCES `ERPLMFRIDA_BD`.`usuarios` (`id` , `uid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`metodos_pagos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`metodos_pagos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`clientes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`clientes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `personas_id` INT NOT NULL,
+  `cta_instagram` VARCHAR(145) NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_clientes_personas1_idx` (`personas_id` ASC) VISIBLE,
+  CONSTRAINT `fk_clientes_personas1`
+    FOREIGN KEY (`personas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`personas` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`estados`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`estados` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`comprobante_ventas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`comprobante_ventas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(45) NULL DEFAULT NULL,
+  `estados_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT NULL,
+  `updatedAt` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_comprobante_ventas_estados1_idx` (`estados_id` ASC) VISIBLE,
+  CONSTRAINT `fk_comprobante_ventas_estados1`
+    FOREIGN KEY (`estados_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`estados` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`deliverys`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`deliverys` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `empresa` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`guias_despachos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`guias_despachos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(45) NULL DEFAULT NULL,
+  `estados_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_documento_usa_estados1_idx` (`estados_id` ASC) VISIBLE,
+  CONSTRAINT `fk_documento_usa_estados1`
+    FOREIGN KEY (`estados_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`estados` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`estado_pedidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`estado_pedidos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `estado_pedido` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`pedidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`pedidos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `empleados_id` INT NOT NULL,
+  `clientes_id` INT NOT NULL,
+  `estado_pedidos_id` INT NOT NULL,
+  `deliverys_id` INT NOT NULL,
+  `monto_total` INT NOT NULL,
+  `documento_usa_id` INT NOT NULL,
+  `n_despacho_chile` VARCHAR(45) NULL DEFAULT NULL,
+  `comprobante_ventas_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_pedidos_empleados1_idx` (`empleados_id` ASC) VISIBLE,
+  INDEX `fk_pedidos_clientes1_idx` (`clientes_id` ASC) VISIBLE,
+  INDEX `fk_pedidos_estado_pedidos1_idx` (`estado_pedidos_id` ASC) VISIBLE,
+  INDEX `fk_pedidos_deliverys1_idx` (`deliverys_id` ASC) VISIBLE,
+  INDEX `fk_pedidos_documento_usa1_idx` (`documento_usa_id` ASC) VISIBLE,
+  INDEX `fk_pedidos_comprobante_ventas1_idx` (`comprobante_ventas_id` ASC) VISIBLE,
+  CONSTRAINT `fk_pedidos_clientes1`
+    FOREIGN KEY (`clientes_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`clientes` (`id`),
+  CONSTRAINT `fk_pedidos_comprobante_ventas1`
+    FOREIGN KEY (`comprobante_ventas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`comprobante_ventas` (`id`),
+  CONSTRAINT `fk_pedidos_deliverys1`
+    FOREIGN KEY (`deliverys_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`deliverys` (`id`),
+  CONSTRAINT `fk_pedidos_documento_usa1`
+    FOREIGN KEY (`documento_usa_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`guias_despachos` (`id`),
+  CONSTRAINT `fk_pedidos_empleados1`
+    FOREIGN KEY (`empleados_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`empleados` (`id`),
+  CONSTRAINT `fk_pedidos_estado_pedidos1`
+    FOREIGN KEY (`estado_pedidos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`estado_pedidos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`pagos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`pagos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `pedidos_id` INT NOT NULL,
+  `monto` INT NULL DEFAULT NULL,
+  `fecha_pago` DATE NULL DEFAULT NULL,
+  `pago_parcializado` TINYINT NULL DEFAULT NULL,
+  `metodos_pago_id` INT NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_pagos_pedidos1_idx` (`pedidos_id` ASC) VISIBLE,
+  INDEX `fk_pagos_metodos_pago1_idx` (`metodos_pago_id` ASC) VISIBLE,
+  CONSTRAINT `fk_pagos_metodos_pago1`
+    FOREIGN KEY (`metodos_pago_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`metodos_pagos` (`id`),
+  CONSTRAINT `fk_pagos_pedidos1`
+    FOREIGN KEY (`pedidos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`pedidos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`abonos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`abonos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `pagos_id` INT NOT NULL,
+  `monto` INT NULL DEFAULT NULL,
+  `fecha` DATE NULL DEFAULT NULL,
+  `metodos_pago_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `empleados_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_abonos_pagos1_idx` (`pagos_id` ASC) VISIBLE,
+  INDEX `fk_abonos_metodos_pago1_idx` (`metodos_pago_id` ASC) VISIBLE,
+  INDEX `fk_abonos_empleados1_idx` (`empleados_id` ASC) VISIBLE,
+  CONSTRAINT `fk_abonos_empleados1`
+    FOREIGN KEY (`empleados_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`empleados` (`id`),
+  CONSTRAINT `fk_abonos_metodos_pago1`
+    FOREIGN KEY (`metodos_pago_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`metodos_pagos` (`id`),
+  CONSTRAINT `fk_abonos_pagos1`
+    FOREIGN KEY (`pagos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`pagos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`bodegas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`bodegas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NULL DEFAULT NULL,
+  `ubicacion` VARCHAR(45) NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`categorias`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`categorias` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`marcas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`marcas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`productos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`productos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `Categoria_id` INT NOT NULL,
+  `marcas_id` INT NOT NULL,
+  `codigo` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `precio_venta` INT NULL DEFAULT NULL,
+  `Precio_compra_usd` INT NULL DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_productos_Categoria1_idx` (`Categoria_id` ASC) VISIBLE,
+  INDEX `fk_productos_marcas1_idx` (`marcas_id` ASC) VISIBLE,
+  CONSTRAINT `fk_productos_Categoria1`
+    FOREIGN KEY (`Categoria_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`categorias` (`id`),
+  CONSTRAINT `fk_productos_marcas1`
+    FOREIGN KEY (`marcas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`marcas` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`detalle_pedidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`detalle_pedidos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `pedidos_id` INT NOT NULL,
+  `productos_id` INT NOT NULL,
+  `cantidad` INT NOT NULL,
+  `precio_venta` INT NOT NULL,
+  `precio_compra_clp` INT NULL DEFAULT NULL,
+  `precio_compra_usd` INT NULL DEFAULT NULL,
+  `precio_compra_guia` INT NULL DEFAULT NULL,
+  `adicional` VARCHAR(45) NULL DEFAULT NULL,
+  `bodegas_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_detalle_pedidos_pedidos1_idx` (`pedidos_id` ASC) VISIBLE,
+  INDEX `fk_detalle_pedidos_productos1_idx` (`productos_id` ASC) VISIBLE,
+  INDEX `fk_detalle_pedidos_bodegas1_idx` (`bodegas_id` ASC) VISIBLE,
+  CONSTRAINT `fk_detalle_pedidos_bodegas1`
+    FOREIGN KEY (`bodegas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`bodegas` (`id`),
+  CONSTRAINT `fk_detalle_pedidos_pedidos1`
+    FOREIGN KEY (`pedidos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`pedidos` (`id`),
+  CONSTRAINT `fk_detalle_pedidos_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`productos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`direcciones`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`direcciones` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `clientes_id` INT NOT NULL,
+  `direccion` VARCHAR(45) NOT NULL,
+  `region` VARCHAR(45) NOT NULL,
+  `comuna` VARCHAR(45) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_direcciones_clientes1_idx` (`clientes_id` ASC) VISIBLE,
+  CONSTRAINT `fk_direcciones_clientes1`
+    FOREIGN KEY (`clientes_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`clientes` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`log_estado_pedidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`log_estado_pedidos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `pedidos_id` INT NOT NULL,
+  `estado_pedidos_id` INT NOT NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `empleados_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_log_estado_pedidos_pedidos1_idx` (`pedidos_id` ASC) VISIBLE,
+  INDEX `fk_log_estado_pedidos_estado_pedidos1_idx` (`estado_pedidos_id` ASC) VISIBLE,
+  INDEX `fk_log_estado_pedidos_empleados1_idx` (`empleados_id` ASC) VISIBLE,
+  CONSTRAINT `fk_log_estado_pedidos_empleados1`
+    FOREIGN KEY (`empleados_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`empleados` (`id`),
+  CONSTRAINT `fk_log_estado_pedidos_estado_pedidos1`
+    FOREIGN KEY (`estado_pedidos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`estado_pedidos` (`id`),
+  CONSTRAINT `fk_log_estado_pedidos_pedidos1`
+    FOREIGN KEY (`pedidos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`pedidos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`producto_bodegas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`producto_bodegas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `productos_id` INT NOT NULL,
+  `bodegas_id` INT NOT NULL,
+  `stock` INT NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_producto_bodegas_productos1_idx` (`productos_id` ASC) VISIBLE,
+  INDEX `fk_producto_bodegas_bodegas1_idx` (`bodegas_id` ASC) VISIBLE,
+  CONSTRAINT `fk_producto_bodegas_bodegas1`
+    FOREIGN KEY (`bodegas_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`bodegas` (`id`),
+  CONSTRAINT `fk_producto_bodegas_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`productos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `ERPLMFRIDA_BD`.`producto_imagenes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ERPLMFRIDA_BD`.`producto_imagenes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `productos_id` INT NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_producto_imagenes_productos1_idx` (`productos_id` ASC) VISIBLE,
+  CONSTRAINT `fk_producto_imagenes_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `ERPLMFRIDA_BD`.`productos` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
