@@ -41,12 +41,11 @@ const getPagoById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getPagoById = getPagoById;
 const createPago = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { pedidos_id, monto, fecha_pago, pago_parcializado, metodos_pago_id } = req.body;
+    const { pedidos_id, monto, pago_parcializado, metodos_pago_id } = req.body;
     try {
         const nuevoPago = yield Pago_1.default.create({
             pedidos_id,
             monto,
-            fecha_pago,
             pago_parcializado,
             metodos_pago_id,
         });

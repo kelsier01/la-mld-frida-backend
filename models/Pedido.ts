@@ -1,5 +1,11 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
+import Empleado from "./Empleado";
+import Cliente from "./Cliente";
+import EstadoPedido from "./EstadoPedido";
+import Delivery from "./Delivery";
+import DocumentoUsa from "./GuiaDespacho";
+import ComprobanteVenta from "./ComprobanteVenta";
 
 class Pedido extends Model {
   public id!: number;
@@ -62,5 +68,24 @@ Pedido.init(
     timestamps: true,
   }
 );
+
+// Relaciones con nombres
+Pedido.belongsTo(Empleado, { foreignKey: 'empleados_id', as: 'empleado' });
+Empleado.hasMany(Pedido, { foreignKey: 'empleados_id', as: 'pedidos' });
+
+Pedido.belongsTo(Cliente, { foreignKey: 'clientes_id', as: 'cliente' });
+Cliente.hasMany(Pedido, { foreignKey: 'clientes_id', as: 'pedidos' });
+
+Pedido.belongsTo(EstadoPedido, { foreignKey: 'estado_pedidos_id', as: 'estadoPedido' });
+EstadoPedido.hasMany(Pedido, { foreignKey: 'estado_pedidos_id', as: 'pedidos' });
+
+Pedido.belongsTo(Delivery, { foreignKey: 'deliverys_id', as: 'delivery' });
+Delivery.hasMany(Pedido, { foreignKey: 'deliverys_id', as: 'pedidos' });
+
+Pedido.belongsTo(DocumentoUsa, { foreignKey: 'documento_usa_id', as: 'documentoUsa' });
+DocumentoUsa.hasMany(Pedido, { foreignKey: 'documento_usa_id', as: 'pedidos' });
+
+Pedido.belongsTo(ComprobanteVenta, { foreignKey: 'comprobante_ventas_id', as: 'comprobanteVenta' });
+ComprobanteVenta.hasMany(Pedido, { foreignKey: 'comprobante_ventas_id', as: 'pedidos' });
 
 export default Pedido;

@@ -6,11 +6,13 @@ import {
   getAllLogEstadoPedidos,
   getLogEstadoPedidoById,
   updateLogEstadoPedido,
+  getLogEstadoPedidosByPedidoId,
 } from "../controllers/logEstadosPedidos";
 
 const route = Router();
 
 route.get("/", [validarjwt], getAllLogEstadoPedidos);
+route.get("/pedido/:pedidoId", [validarjwt], getLogEstadoPedidosByPedidoId);
 route.get("/:id", [validarjwt], getLogEstadoPedidoById);
 route.post("/", [validarjwt], createLogEstadoPedido);
 route.put("/:id", [validarjwt], updateLogEstadoPedido);

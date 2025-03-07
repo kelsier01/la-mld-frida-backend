@@ -25,13 +25,12 @@ export const getPagoById = async (req: Request, res: Response) => {
 };
 
 export const createPago = async (req: Request, res: Response) => {
-  const { pedidos_id, monto, fecha_pago, pago_parcializado, metodos_pago_id } =
+  const { pedidos_id, monto, pago_parcializado, metodos_pago_id } =
     req.body;
   try {
     const nuevoPago = await Pago.create({
       pedidos_id,
       monto,
-      fecha_pago,
       pago_parcializado,
       metodos_pago_id,
     });

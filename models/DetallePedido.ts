@@ -1,6 +1,10 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
 
+import Pedido from "./Pedido";
+import Producto from "./Producto";
+import Bodega from "./Bodega";
+
 class DetallePedido extends Model {
   public id!: number;
   public pedidos_id!: number;
@@ -67,5 +71,12 @@ DetallePedido.init(
     timestamps: true,
   }
 );
+
+// Definir las relaciones
+DetallePedido.belongsTo(Pedido, { foreignKey: 'pedidos_id' });
+DetallePedido.belongsTo(Producto, { foreignKey: 'productos_id' });
+DetallePedido.belongsTo(Bodega, { foreignKey: 'bodegas_id' });
+
+
 
 export default DetallePedido;

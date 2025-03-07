@@ -14,9 +14,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
 const Pedido_1 = __importDefault(require("../models/Pedido"));
+const Cliente_1 = __importDefault(require("../models/Cliente"));
+const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
+const Delivery_1 = __importDefault(require("../models/Delivery"));
+const Empleado_1 = __importDefault(require("../models/Empleado"));
+const EstadoPedido_1 = __importDefault(require("../models/EstadoPedido"));
+const GuiaDespacho_1 = __importDefault(require("../models/GuiaDespacho"));
+const Persona_1 = __importDefault(require("../models/Persona"));
 const getAllPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pedidos = yield Pedido_1.default.findAll();
+        const pedidos = yield Pedido_1.default.findAll({
+            include: [
+                { model: Empleado_1.default, as: 'empleado' },
+                {
+                    model: Cliente_1.default,
+                    as: 'cliente',
+                    include: [{ model: Persona_1.default, as: 'persona' }]
+                },
+                { model: EstadoPedido_1.default, as: 'estadoPedido' },
+                { model: Delivery_1.default, as: 'delivery' },
+                { model: GuiaDespacho_1.default, as: 'documentoUsa' },
+                { model: ComprobanteVenta_1.default, as: 'comprobanteVenta' },
+            ],
+        });
         res.status(200).json(pedidos);
     }
     catch (error) {

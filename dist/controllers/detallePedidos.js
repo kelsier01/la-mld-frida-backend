@@ -12,12 +12,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDetallePedido = exports.updateDetallePedido = exports.createDetallePedido = exports.getDetallePedidoById = exports.getAllDetallePedidos = void 0;
+exports.deleteDetallePedido = exports.updateDetallePedido = exports.createDetallePedido = exports.getDetallePedidoById = exports.getDetallePedidoByPedidoId = exports.getAllDetallePedidos = void 0;
 const DetallePedido_1 = __importDefault(require("../models/DetallePedido"));
+const Pedido_1 = __importDefault(require("../models/Pedido"));
+const Producto_1 = __importDefault(require("../models/Producto"));
+const Bodega_1 = __importDefault(require("../models/Bodega"));
+const ProductoImagen_1 = __importDefault(require("../models/ProductoImagen"));
 const getAllDetallePedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const detallePedidos = yield DetallePedido_1.default.findAll();
-        res.status(200).json(detallePedidos);
+        const detallePedidos = yield DetallePedido_1.default.findAll({
+            include: [
+                { model: Pedido_1.default },
+                {
+                    model: Producto_1.default,
+                    include: [{ model: ProductoImagen_1.default }]
+                },
+                { model: Bodega_1.default }
+            ]
+        });
+        // Agrupar los detalles de pedido por pedidos_id
+        const pedidosAgrupados = {};
+        detallePedidos.forEach(detalle => {
+            const pedidoId = detalle.pedidos_id;
+            if (!pedidosAgrupados[pedidoId]) {
+                pedidosAgrupados[pedidoId] = [];
+            }
+            pedidosAgrupados[pedidoId].push(detalle);
+        });
+        res.status(200).json(pedidosAgrupados);
     }
     catch (error) {
         res
@@ -26,6 +48,29 @@ const getAllDetallePedidos = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getAllDetallePedidos = getAllDetallePedidos;
+const getDetallePedidoByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pedidoId } = req.params;
+    try {
+        const detallePedidos = yield DetallePedido_1.default.findAll({
+            where: { pedidos_id: pedidoId },
+            include: [
+                { model: Pedido_1.default },
+                {
+                    model: Producto_1.default,
+                    include: [{ model: ProductoImagen_1.default, as: "imagenes" }]
+                },
+                { model: Bodega_1.default }
+            ]
+        });
+        res.status(200).json(detallePedidos);
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error al obtener los detalles de pedido", error });
+    }
+});
+exports.getDetallePedidoByPedidoId = getDetallePedidoByPedidoId;
 const getDetallePedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

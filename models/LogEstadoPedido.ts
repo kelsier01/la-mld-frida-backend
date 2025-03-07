@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
+import Estados from "./EstadoPedido";
 
 class LogEstadoPedido extends Model {
   public id!: number;
@@ -37,5 +38,9 @@ LogEstadoPedido.init(
     timestamps: true,
   }
 );
+
+LogEstadoPedido.belongsTo(Estados, { foreignKey: 'estado_pedidos_id', as: 'estado' });
+
+
 
 export default LogEstadoPedido;

@@ -1,12 +1,12 @@
 import { Sequelize } from "sequelize";
-//const db = new Sequelize(
-//  "agendafr_lmd_frida",
-//   "agendafr_lmd_frida",
-//  "8vrUEcUfhu2Gbn96YtGj",
-//  {
-//   host: "agendafree.cl",
-const db = new Sequelize("bd_lmtdfrida", "root", "", {
-  host: "localhost",
+const db = new Sequelize(
+ "agendafr_lmd_frida",
+  "agendafr_lmd_frida",
+ "8vrUEcUfhu2Gbn96YtGj",
+ {
+  host: "agendafree.cl",
+// const db = new Sequelize("bd_lmtdfrida", "root", "", {
+//   host: "localhost",
   dialect: "mysql",
 });
 

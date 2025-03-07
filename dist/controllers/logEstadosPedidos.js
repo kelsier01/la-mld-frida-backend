@@ -12,11 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteLogEstadoPedido = exports.updateLogEstadoPedido = exports.createLogEstadoPedido = exports.getLogEstadoPedidoById = exports.getAllLogEstadoPedidos = void 0;
+exports.deleteLogEstadoPedido = exports.updateLogEstadoPedido = exports.createLogEstadoPedido = exports.getLogEstadoPedidoById = exports.getLogEstadoPedidosByPedidoId = exports.getAllLogEstadoPedidos = void 0;
 const LogEstadoPedido_1 = __importDefault(require("../models/LogEstadoPedido"));
+const EstadoPedido_1 = __importDefault(require("../models/EstadoPedido"));
 const getAllLogEstadoPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const logEstadoPedidos = yield LogEstadoPedido_1.default.findAll();
+        const logEstadoPedidos = yield LogEstadoPedido_1.default.findAll({
+            include: [
+                {
+                    model: EstadoPedido_1.default,
+                    as: "estado",
+                },
+            ],
+        });
         res.status(200).json(logEstadoPedidos);
     }
     catch (error) {
@@ -29,6 +37,22 @@ const getAllLogEstadoPedidos = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getAllLogEstadoPedidos = getAllLogEstadoPedidos;
+const getLogEstadoPedidosByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pedidoId } = req.params;
+    try {
+        const logEstadoPedidos = yield LogEstadoPedido_1.default.findAll({
+            where: { pedidos_id: pedidoId },
+            include: [{ model: EstadoPedido_1.default, as: "estado" }],
+        });
+        res.status(200).json(logEstadoPedidos);
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error al obtener los logs de estado de pedido", error });
+    }
+});
+exports.getLogEstadoPedidosByPedidoId = getLogEstadoPedidosByPedidoId;
 const getLogEstadoPedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

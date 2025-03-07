@@ -1,9 +1,29 @@
 import { Request, Response } from "express";
 import Pedido from "../models/Pedido";
+import Cliente from "../models/Cliente";
+import ComprobanteVenta from "../models/ComprobanteVenta";
+import Delivery from "../models/Delivery";
+import Empleado from "../models/Empleado";
+import EstadoPedido from "../models/EstadoPedido";
+import GuiaDespacho from "../models/GuiaDespacho";
+import Persona from "../models/Persona";
 
 export const getAllPedidos = async (req: Request, res: Response) => {
   try {
-    const pedidos = await Pedido.findAll();
+    const pedidos = await Pedido.findAll({
+      include: [
+      { model: Empleado, as: 'empleado' },
+      { 
+        model: Cliente, 
+        as: 'cliente',
+        include: [{ model: Persona, as: 'persona' }]
+      },
+      { model: EstadoPedido, as: 'estadoPedido' },
+      { model: Delivery, as: 'delivery' },
+      { model: GuiaDespacho, as: 'documentoUsa' },
+      { model: ComprobanteVenta, as: 'comprobanteVenta' },
+      ],
+    });
     res.status(200).json(pedidos);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los pedidos", error });

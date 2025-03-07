@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Abono from "../models/Abono";
+import Pago from "../models/Pago";
 
 export const getAllAbonos = async (req: Request, res: Response) => {
   try {
@@ -9,6 +10,23 @@ export const getAllAbonos = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error al obtener los abonos", error });
   }
 };
+
+export const getAllAbonosByPedidoId = async (req: Request, res: Response) => {
+  const { pedidoId } = req.params;
+  try {
+    const abonos = await Abono.findAll({
+      include: [
+        {
+          model: Pago,
+          where: { pedidos_id: pedidoId },
+        },
+      ],
+    });
+    res.status(200).json(abonos);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los abonos", error });
+  }
+}
 
 export const getAbonoById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -25,12 +43,11 @@ export const getAbonoById = async (req: Request, res: Response) => {
 };
 
 export const createAbono = async (req: Request, res: Response) => {
-  const { pagos_id, monto, fecha, metodos_pago_id, empleados_id } = req.body;
+  const { pagos_id, monto, metodos_pago_id, empleados_id } = req.body;
   try {
     const nuevoAbono = await Abono.create({
       pagos_id,
       monto,
-      fecha,
       metodos_pago_id,
       empleados_id,
     });

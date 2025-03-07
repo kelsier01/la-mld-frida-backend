@@ -1,14 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-//const db = new Sequelize(
-//  "agendafr_lmd_frida",
-//   "agendafr_lmd_frida",
-//  "8vrUEcUfhu2Gbn96YtGj",
-//  {
-//   host: "agendafree.cl",
-const db = new sequelize_1.Sequelize("bd_lmtdfrida", "root", "", {
-    host: "localhost",
+const db = new sequelize_1.Sequelize("agendafr_lmd_frida", "agendafr_lmd_frida", "8vrUEcUfhu2Gbn96YtGj", {
+    host: "agendafree.cl",
+    // const db = new Sequelize("bd_lmtdfrida", "root", "", {
+    //   host: "localhost",
     dialect: "mysql",
 });
 console.log("CONECTADO A: Localhost");

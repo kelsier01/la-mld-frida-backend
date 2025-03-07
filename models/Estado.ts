@@ -3,7 +3,7 @@ import db from "../BD/connection";
 
 class Estado extends Model {
   public id!: number;
-  public nombre!: string;
+  public estado_pedido!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -16,16 +16,17 @@ Estado.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    nombre: {
+    estado_pedido: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
   },
   {
     sequelize: db,
-    tableName: "estados",
+    tableName: "estado_pedidos",
     timestamps: true,
   }
 );
+
 
 export default Estado;

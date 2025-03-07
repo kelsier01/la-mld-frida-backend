@@ -1,9 +1,17 @@
 import { Request, Response } from "express";
 import LogEstadoPedido from "../models/LogEstadoPedido";
+import Estados from "../models/EstadoPedido";
 
 export const getAllLogEstadoPedidos = async (req: Request, res: Response) => {
   try {
-    const logEstadoPedidos = await LogEstadoPedido.findAll();
+    const logEstadoPedidos = await LogEstadoPedido.findAll({
+      include: [
+        {
+          model: Estados,
+          as: "estado",
+        },
+      ],
+    });
     res.status(200).json(logEstadoPedidos);
   } catch (error) {
     res
@@ -12,6 +20,21 @@ export const getAllLogEstadoPedidos = async (req: Request, res: Response) => {
         message: "Error al obtener los logs de estado de pedido",
         error,
       });
+  }
+};
+
+export const getLogEstadoPedidosByPedidoId = async (req: Request, res: Response) => {
+  const { pedidoId } = req.params;
+  try {
+    const logEstadoPedidos = await LogEstadoPedido.findAll({
+      where: { pedidos_id: pedidoId },
+      include: [{ model: Estados, as: "estado" }],
+    });
+    res.status(200).json(logEstadoPedidos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los logs de estado de pedido", error });
   }
 };
 

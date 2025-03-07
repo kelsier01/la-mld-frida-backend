@@ -5,6 +5,7 @@ const validarToken_1 = require("../middlewares/validarToken");
 const logEstadosPedidos_1 = require("../controllers/logEstadosPedidos");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], logEstadosPedidos_1.getAllLogEstadoPedidos);
+route.get("/pedido/:pedidoId", [validarToken_1.validarjwt], logEstadosPedidos_1.getLogEstadoPedidosByPedidoId);
 route.get("/:id", [validarToken_1.validarjwt], logEstadosPedidos_1.getLogEstadoPedidoById);
 route.post("/", [validarToken_1.validarjwt], logEstadosPedidos_1.createLogEstadoPedido);
 route.put("/:id", [validarToken_1.validarjwt], logEstadosPedidos_1.updateLogEstadoPedido);

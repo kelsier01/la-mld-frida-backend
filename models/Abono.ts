@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
+import Pago from "./Pago";
 
 class Abono extends Model {
   public id!: number;
@@ -47,5 +48,7 @@ Abono.init(
     timestamps: true,
   }
 );
+
+Abono.belongsTo(Pago, { foreignKey: "pagos_id", as: "pago"});
 
 export default Abono;

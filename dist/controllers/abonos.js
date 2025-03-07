@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAbono = exports.updateAbono = exports.createAbono = exports.getAbonoById = exports.getAllAbonos = void 0;
+exports.deleteAbono = exports.updateAbono = exports.createAbono = exports.getAbonoById = exports.getAllAbonosByPedidoId = exports.getAllAbonos = void 0;
 const Abono_1 = __importDefault(require("../models/Abono"));
+const Pago_1 = __importDefault(require("../models/Pago"));
 const getAllAbonos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const abonos = yield Abono_1.default.findAll();
@@ -24,6 +25,24 @@ const getAllAbonos = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getAllAbonos = getAllAbonos;
+const getAllAbonosByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pedidoId } = req.params;
+    try {
+        const abonos = yield Abono_1.default.findAll({
+            include: [
+                {
+                    model: Pago_1.default,
+                    where: { pedidos_id: pedidoId },
+                },
+            ],
+        });
+        res.status(200).json(abonos);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener los abonos", error });
+    }
+});
+exports.getAllAbonosByPedidoId = getAllAbonosByPedidoId;
 const getAbonoById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
@@ -41,12 +60,11 @@ const getAbonoById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.getAbonoById = getAbonoById;
 const createAbono = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { pagos_id, monto, fecha, metodos_pago_id, empleados_id } = req.body;
+    const { pagos_id, monto, metodos_pago_id, empleados_id } = req.body;
     try {
         const nuevoAbono = yield Abono_1.default.create({
             pagos_id,
             monto,
-            fecha,
             metodos_pago_id,
             empleados_id,
         });

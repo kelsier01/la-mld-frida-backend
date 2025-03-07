@@ -1,16 +1,65 @@
 import { Request, Response } from "express";
 import DetallePedido from "../models/DetallePedido";
+import Pedido from "../models/Pedido";
+import Producto from "../models/Producto";
+import Bodega from "../models/Bodega";
+import ProductoImagen from "../models/ProductoImagen";
 
 export const getAllDetallePedidos = async (req: Request, res: Response) => {
   try {
-    const detallePedidos = await DetallePedido.findAll();
-    res.status(200).json(detallePedidos);
+    const detallePedidos = await DetallePedido.findAll({
+      include: [
+      { model: Pedido },
+      { 
+        model: Producto,
+        include: [{ model: ProductoImagen }]
+      },
+      { model: Bodega }
+      ]
+    });
+
+    // Agrupar los detalles de pedido por pedidos_id
+    const pedidosAgrupados: { [key: number]: any[] } = {};
+    detallePedidos.forEach(detalle => {
+      const pedidoId = detalle.pedidos_id;
+      if (!pedidosAgrupados[pedidoId]) {
+        pedidosAgrupados[pedidoId] = [];
+      }
+      pedidosAgrupados[pedidoId].push(detalle);
+    });
+
+    res.status(200).json(pedidosAgrupados);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error al obtener los detalles de pedido", error });
   }
 };
+
+export const getDetallePedidoByPedidoId = async (req: Request, res: Response) => {
+  const { pedidoId } = req.params;
+  try {
+    const detallePedidos = await DetallePedido.findAll({
+      where: { pedidos_id: pedidoId },
+      include: [
+      { model: Pedido },
+      {
+        model: Producto,
+        include: [{ model: ProductoImagen, as: "imagenes" }]
+      },
+      { model: Bodega }
+      ]
+    });
+
+    res.status(200).json(detallePedidos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los detalles de pedido", error });
+  }
+}
+
+
 
 export const getDetallePedidoById = async (req: Request, res: Response) => {
   const { id } = req.params;
