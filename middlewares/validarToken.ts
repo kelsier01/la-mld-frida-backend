@@ -21,7 +21,7 @@ export const validarjwt = async (
     const user: any = await Users.findByPk(id);
     if (!user) {
       return res.status(401).json({
-        msg: "Usuario no existe en la base de datos",
+        msg: "Error TOKEN - Usuario no existe en la base de datos",
       });
     }
 

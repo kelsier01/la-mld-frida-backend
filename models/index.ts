@@ -22,6 +22,8 @@ import Direccion from "./Direccion";
 import ProductoBodega from "./ProductoBodega";
 import LogEstadoPedido from "./LogEstadoPedido";
 import ProductoImagen from "./ProductoImagen";
+import Region from "./Region";
+import Comuna from "./Comuna";
 
 // Establecer las asociaciones
 // Usuario - Rol
@@ -144,7 +146,15 @@ GuiaDespacho.belongsTo(Estado, { foreignKey: "estados_id" });
 Estado.hasMany(ComprobanteVenta, { foreignKey: "estados_id" });
 ComprobanteVenta.belongsTo(Estado, { foreignKey: "estados_id" });
 
-// ==================================================
+// Region - Direccion
+Region.hasMany(Direccion, { foreignKey: "region_id" });
+Direccion.belongsTo(Region, { foreignKey: "region_id" });
+
+// Comuna - Direccion
+Comuna.hasMany(Direccion, { foreignKey: "comuna_id" });
+Direccion.belongsTo(Comuna, { foreignKey: "comuna_id" });
+
+// =================================================
 
 export const syncModels = async () => {
   try {

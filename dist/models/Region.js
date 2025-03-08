@@ -5,34 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../BD/connection"));
-class Direccion extends sequelize_1.Model {
+class Region extends sequelize_1.Model {
 }
-Direccion.init({
+Region.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    clientes_id: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+    nombre: {
+        type: sequelize_1.DataTypes.STRING(45),
     },
-    direccion: {
-        type: sequelize_1.DataTypes.STRING(145),
+    createdAt: {
+        type: sequelize_1.DataTypes.DATE,
         allowNull: false,
+        defaultValue: sequelize_1.Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    region_id: {
-        type: sequelize_1.DataTypes.INTEGER,
+    updatedAt: {
+        type: sequelize_1.DataTypes.DATE,
         allowNull: false,
-    },
-    comuna_id: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        defaultValue: sequelize_1.Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
     },
 }, {
     sequelize: connection_1.default,
-    tableName: "Direccions",
+    tableName: "regiones",
     timestamps: true,
 });
-exports.default = Direccion;
-//# sourceMappingURL=Direccion.js.map
+exports.default = Region;
+//# sourceMappingURL=Region.js.map

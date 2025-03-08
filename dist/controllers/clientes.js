@@ -17,50 +17,72 @@ const Cliente_1 = __importDefault(require("../models/Cliente"));
 const Persona_1 = __importDefault(require("../models/Persona"));
 const Direccion_1 = __importDefault(require("../models/Direccion"));
 const sequelize_1 = require("sequelize");
-// export const getAllClientes = async (req: Request, res: Response) => {
-//   try {
-//     const clientes = await Cliente.findAll({
-//       include: [Persona, Direccion],
-//     });
-//     res.status(200).json(clientes);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error al obtener los clientes", error });
-//   }
-// };
-const getAllClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { search, page = "1", region } = req.query;
-    console.log("search", search);
-    // Convertir 'page' a número y establecer un valor predeterminado de 1 si no es válido
-    const pageNumber = isNaN(Number(page)) ? 1 : Number(page);
-    // Configuración de la paginación
-    const limit = 10; // Número de clientes por página
-    const offset = (pageNumber - 1) * limit;
-    // Construir la condición de búsqueda
-    const whereCondition = Object.assign({}, (search && {
-        [sequelize_1.Op.or]: [
-            { "Persona.nombre": { [sequelize_1.Op.like]: `%${search}%` } }, // Filtrado por nombre
-            { "Persona.n_identificacion": { [sequelize_1.Op.like]: `%${search}%` } }, // Filtrado por n_identificacion
-        ],
-    }));
-    console.log("where", whereCondition);
+const Region_1 = __importDefault(require("../models/Region"));
+const Comuna_1 = __importDefault(require("../models/Comuna"));
+const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { rows, count } = yield Cliente_1.default.findAndCountAll({
-            where: whereCondition,
-            include: [{ model: Persona_1.default }, { model: Direccion_1.default }],
-            limit,
+        const { search = "", page = "1", region, limit = 10, } = req.query;
+        // Validación de la paginación
+        const pageNumber = Number(page);
+        let regionNumber = region;
+        let validTrue = true;
+        if (region == 0) {
+            regionNumber = undefined;
+            validTrue = false;
+        }
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        const offset = (pageNumber - 1) * Number(limit);
+        const limite = Number(limit);
+        // Construcción de la condición de búsqueda en Persona
+        const personaWhere = search
+            ? {
+                [sequelize_1.Op.or]: [
+                    { nombre: { [sequelize_1.Op.like]: `%${search}%` } },
+                    { n_identificacion: { [sequelize_1.Op.like]: `%${search}%` } },
+                ],
+            }
+            : {};
+        // Construcción de la condición de búsqueda en Direccion
+        const direccionWhere = Object.assign({}, (regionNumber && { region_id: regionNumber }));
+        // Ejecución de la consulta con Sequelize
+        const { rows: clientes, count: total } = yield Cliente_1.default.findAndCountAll({
+            include: [
+                {
+                    model: Persona_1.default,
+                    as: "persona", // Asegurar que coincida con la relación definida en Sequelize
+                    where: personaWhere,
+                    required: true, // INNER JOIN para que solo traiga clientes con Persona asociada
+                },
+                {
+                    model: Direccion_1.default,
+                    as: "Direccions",
+                    where: direccionWhere,
+                    required: validTrue, // INNER JOIN para que solo traiga clientes con Persona asociada
+                    include: [
+                        { model: Region_1.default, required: validTrue },
+                        { model: Comuna_1.default, required: validTrue },
+                    ],
+                },
+            ],
+            limit: limite,
             offset,
         });
-        console.log("rows", rows);
-        res.json({
-            clientes: rows,
-            total: count,
+        console.log("limit = ", limit);
+        console.log("offset = ", offset);
+        return res.json({
+            clientes,
+            total,
             page: pageNumber,
-            totalPages: Math.ceil(count / limit),
+            totalPages: Math.ceil(total / Number(limit)),
         });
     }
     catch (error) {
         console.error("Error al obtener clientes:", error);
-        res.status(500).send("Error al obtener clientes");
+        next(error); // Delegar el error al middleware de manejo de errores
     }
 });
 exports.getAllClientes = getAllClientes;

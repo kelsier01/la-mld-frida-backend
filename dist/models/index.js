@@ -37,6 +37,8 @@ const Direccion_1 = __importDefault(require("./Direccion"));
 const ProductoBodega_1 = __importDefault(require("./ProductoBodega"));
 const LogEstadoPedido_1 = __importDefault(require("./LogEstadoPedido"));
 const ProductoImagen_1 = __importDefault(require("./ProductoImagen"));
+const Region_1 = __importDefault(require("./Region"));
+const Comuna_1 = __importDefault(require("./Comuna"));
 // Establecer las asociaciones
 // Usuario - Rol
 Usuario_1.default.belongsTo(Rol_1.default, { foreignKey: "roles_id" });
@@ -128,7 +130,13 @@ GuiaDespacho_1.default.belongsTo(Estado_1.default, { foreignKey: "estados_id" })
 // Estado - ComprobanteVenta
 Estado_1.default.hasMany(ComprobanteVenta_1.default, { foreignKey: "estados_id" });
 ComprobanteVenta_1.default.belongsTo(Estado_1.default, { foreignKey: "estados_id" });
-// ==================================================
+// Region - Direccion
+Region_1.default.hasMany(Direccion_1.default, { foreignKey: "region_id" });
+Direccion_1.default.belongsTo(Region_1.default, { foreignKey: "region_id" });
+// Comuna - Direccion
+Comuna_1.default.hasMany(Direccion_1.default, { foreignKey: "comuna_id" });
+Direccion_1.default.belongsTo(Comuna_1.default, { foreignKey: "comuna_id" });
+// =================================================
 const syncModels = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield connection_1.default.sync({ alter: true });

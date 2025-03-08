@@ -1,16 +1,20 @@
 import { Sequelize } from "sequelize";
-//const db = new Sequelize(
-//  "agendafr_lmd_frida",
-//   "agendafr_lmd_frida",
-//  "8vrUEcUfhu2Gbn96YtGj",
-//  {
-//   host: "agendafree.cl",
-const db = new Sequelize("bd_lmtdfrida", "root", "", {
-  host: "localhost",
-  dialect: "mysql",
-});
+const db = new Sequelize(
+  "agendafr_lmd_frida",
+  "agendafr_lmd_frida",
+  "8vrUEcUfhu2Gbn96YtGj",
+  {
+    host: "agendafree.cl",
+    // const db = new Sequelize("bd_lmtdfrida", "root", "", {
+    //   host: "localhost",
+    dialect: "mysql",
+    // define: {
+    //   freezeTableName: true, // Evita la pluralización automática
+    // },
+  }
+);
 
-console.log("CONECTADO A: Localhost");
+console.log("HOST CONECTADO A: agendafree.cl");
 
 // const db = new Sequelize(process.env.DB_NAME, process.env.USERNAME_DB, process.env.PASSWORD_DB, {
 // host: process.env.HOST_DB,

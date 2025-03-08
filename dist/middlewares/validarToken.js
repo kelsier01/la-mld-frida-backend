@@ -28,7 +28,7 @@ const validarjwt = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const user = yield Usuario_1.default.findByPk(id);
         if (!user) {
             return res.status(401).json({
-                msg: "Usuario no existe en la base de datos",
+                msg: "Error TOKEN - Usuario no existe en la base de datos",
             });
         }
         if (user.isActive == 0) {

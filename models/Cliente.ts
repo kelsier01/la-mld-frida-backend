@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../BD/connection";
 
-const Clientes = db.define("cliente", {
+const Clientes = db.define("clientes", {
   personas_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

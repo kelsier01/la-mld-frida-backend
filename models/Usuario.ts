@@ -30,7 +30,7 @@ Users.prototype.toJSON = function () {
 
   // Excluir el campo password
   delete values.password;
-  
+
   return values;
 };
 

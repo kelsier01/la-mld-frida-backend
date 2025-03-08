@@ -21,7 +21,7 @@ const Persona = connection_1.default.define("persona", {
     fono: {
         type: sequelize_1.DataTypes.STRING(45),
         allowNull: true,
-    }
+    },
 });
 exports.default = Persona;
 //# sourceMappingURL=Persona.js.map
