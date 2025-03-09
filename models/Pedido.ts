@@ -49,11 +49,11 @@ Pedido.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    documento_usa_id: {
+    guia_despacho_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    n_despacho_chile: {
+    tracking_number: {
       type: DataTypes.STRING(45),
       allowNull: true,
     },
@@ -61,6 +61,10 @@ Pedido.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    direccion_id:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
   },
   {
     sequelize: db,
@@ -69,23 +73,5 @@ Pedido.init(
   }
 );
 
-// Relaciones con nombres
-Pedido.belongsTo(Empleado, { foreignKey: 'empleados_id', as: 'empleado' });
-Empleado.hasMany(Pedido, { foreignKey: 'empleados_id', as: 'pedidos' });
-
-Pedido.belongsTo(Cliente, { foreignKey: 'clientes_id', as: 'cliente' });
-Cliente.hasMany(Pedido, { foreignKey: 'clientes_id', as: 'pedidos' });
-
-Pedido.belongsTo(EstadoPedido, { foreignKey: 'estado_pedidos_id', as: 'estadoPedido' });
-EstadoPedido.hasMany(Pedido, { foreignKey: 'estado_pedidos_id', as: 'pedidos' });
-
-Pedido.belongsTo(Delivery, { foreignKey: 'deliverys_id', as: 'delivery' });
-Delivery.hasMany(Pedido, { foreignKey: 'deliverys_id', as: 'pedidos' });
-
-Pedido.belongsTo(DocumentoUsa, { foreignKey: 'documento_usa_id', as: 'documentoUsa' });
-DocumentoUsa.hasMany(Pedido, { foreignKey: 'documento_usa_id', as: 'pedidos' });
-
-Pedido.belongsTo(ComprobanteVenta, { foreignKey: 'comprobante_ventas_id', as: 'comprobanteVenta' });
-ComprobanteVenta.hasMany(Pedido, { foreignKey: 'comprobante_ventas_id', as: 'pedidos' });
 
 export default Pedido;

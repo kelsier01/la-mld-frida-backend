@@ -39,6 +39,4 @@ ProductoBodega.init(
   }
 );
 
-ProductoBodega.belongsTo(Bodega, { foreignKey: "bodegas_id", as: "bodega" });
-
 export default ProductoBodega;

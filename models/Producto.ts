@@ -57,11 +57,4 @@ Producto.init(
   }
 );
 
-// Definir asociaciones
-Producto.belongsTo(Categoria, { foreignKey: "Categoria_id", as: "categoria" });
-Producto.belongsTo(Marca, { foreignKey: "marcas_id", as: "marca" });
-
-Producto.hasMany(ProductoImagen, { foreignKey: "productos_id", as: "imagenes" });
-Producto.hasMany(ProductoBodega, { foreignKey: "productos_id", as: "bodegas" });
-
 export default Producto;

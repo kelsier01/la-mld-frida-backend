@@ -17,6 +17,6 @@ const Persona = db.define("persona", {
   fono: {
     type: DataTypes.STRING(45),
     allowNull: true,
-  }
+  },
 });
 export default Persona;

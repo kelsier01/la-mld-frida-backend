@@ -3,11 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const db = new sequelize_1.Sequelize("agendafr_lmd_frida", "agendafr_lmd_frida", "8vrUEcUfhu2Gbn96YtGj", {
     host: "agendafree.cl",
+<<<<<<< HEAD
     // const db = new Sequelize("bd_lmtdfrida", "root", "", {
+=======
+    // const db = new Sequelize("ERPLMFRIDA_BD", "root", "root2025", {
+>>>>>>> origin/michael
     //   host: "localhost",
     dialect: "mysql",
+    // define: {
+    //   freezeTableName: true, // Evita la pluralización automática
+    // },
 });
-console.log("CONECTADO A: Localhost");
+console.log("HOST CONECTADO A: agendafree.cl");
 // const db = new Sequelize(process.env.DB_NAME, process.env.USERNAME_DB, process.env.PASSWORD_DB, {
 // host: process.env.HOST_DB,
 // dialect: "mysql",

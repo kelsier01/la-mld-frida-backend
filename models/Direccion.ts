@@ -5,8 +5,8 @@ class Direccion extends Model {
   public id!: number;
   public clientes_id!: number;
   public direccion!: string;
-  public region!: string;
-  public comuna!: string;
+  public region_id!: number;
+  public comuna_id!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -24,15 +24,15 @@ Direccion.init(
       allowNull: false,
     },
     direccion: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(145),
       allowNull: false,
     },
-    region: {
-      type: DataTypes.STRING(45),
+    region_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    comuna: {
-      type: DataTypes.STRING(45),
+    comuna_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

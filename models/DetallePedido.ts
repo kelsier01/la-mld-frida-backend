@@ -72,11 +72,4 @@ DetallePedido.init(
   }
 );
 
-// Definir las relaciones
-DetallePedido.belongsTo(Pedido, { foreignKey: 'pedidos_id' });
-DetallePedido.belongsTo(Producto, { foreignKey: 'productos_id' });
-DetallePedido.belongsTo(Bodega, { foreignKey: 'bodegas_id' });
-
-
-
 export default DetallePedido;

@@ -1,8 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../BD/connection";
-import Persona from "./Persona";
 
-const Clientes = db.define("cliente", {
+const Clientes = db.define("clientes", {
   personas_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -16,7 +15,5 @@ const Clientes = db.define("cliente", {
     allowNull: false,
   },
 });
-
-Clientes.belongsTo(Persona, { foreignKey: "personas_id", as: "persona" });
 
 export default Clientes;

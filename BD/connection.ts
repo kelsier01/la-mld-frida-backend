@@ -10,7 +10,7 @@ const db = new Sequelize(
   dialect: "mysql",
 });
 
-console.log("CONECTADO A: Localhost");
+console.log("HOST CONECTADO A: agendafree.cl");
 
 // const db = new Sequelize(process.env.DB_NAME, process.env.USERNAME_DB, process.env.PASSWORD_DB, {
 // host: process.env.HOST_DB,
