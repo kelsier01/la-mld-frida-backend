@@ -31,7 +31,7 @@ Direccion.init({
     },
 }, {
     sequelize: connection_1.default,
-    tableName: "Direccions",
+    tableName: "direcciones",
     timestamps: true,
 });
 exports.default = Direccion;

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const db = new sequelize_1.Sequelize("agendafr_lmd_frida", "agendafr_lmd_frida", "8vrUEcUfhu2Gbn96YtGj", {
     host: "agendafree.cl",
-    // const db = new Sequelize("bd_lmtdfrida", "root", "", {
+    // const db = new Sequelize("ERPLMFRIDA_BD", "root", "root2025", {
     //   host: "localhost",
     dialect: "mysql",
     // define: {

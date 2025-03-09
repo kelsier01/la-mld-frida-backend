@@ -5,7 +5,7 @@ const db = new Sequelize(
   "8vrUEcUfhu2Gbn96YtGj",
   {
     host: "agendafree.cl",
-    // const db = new Sequelize("bd_lmtdfrida", "root", "", {
+    // const db = new Sequelize("ERPLMFRIDA_BD", "root", "root2025", {
     //   host: "localhost",
     dialect: "mysql",
     // define: {

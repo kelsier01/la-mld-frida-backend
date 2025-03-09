@@ -38,7 +38,7 @@ Direccion.init(
   },
   {
     sequelize: db,
-    tableName: "Direccions",
+    tableName: "direcciones",
     timestamps: true,
   }
 );

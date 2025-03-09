@@ -61,10 +61,10 @@ const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                     model: Direccion_1.default,
                     as: "Direccions",
                     where: direccionWhere,
-                    required: validTrue, // INNER JOIN para que solo traiga clientes con Persona asociada
+                    required: false, // INNER JOIN para que solo traiga clientes con Persona asociada
                     include: [
-                        { model: Region_1.default, required: validTrue },
-                        { model: Comuna_1.default, required: validTrue },
+                        { model: Region_1.default, required: false },
+                        { model: Comuna_1.default, required: false },
                     ],
                 },
             ],

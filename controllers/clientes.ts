@@ -68,10 +68,10 @@ export const getAllClientes = async (
           model: Direccion,
           as: "Direccions",
           where: direccionWhere,
-          required: validTrue, // INNER JOIN para que solo traiga clientes con Persona asociada
+          required: false, // INNER JOIN para que solo traiga clientes con Persona asociada
           include: [
-            { model: Region, required: validTrue },
-            { model: Comuna, required: validTrue },
+            { model: Region, required: false },
+            { model: Comuna, required: false },
           ],
         },
       ],
