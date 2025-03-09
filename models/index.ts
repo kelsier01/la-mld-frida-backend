@@ -126,7 +126,7 @@ LogEstadoPedido.belongsTo(Pedido, { foreignKey: "pedidos_id" });
 Pedido.hasMany(LogEstadoPedido, { foreignKey: "pedidos_id" });
 
 // LogEstadoPedido - EstadoPedido
-LogEstadoPedido.belongsTo(EstadoPedido, { foreignKey: "estado_pedidos_id", as: "estado" });
+LogEstadoPedido.belongsTo(EstadoPedido, { foreignKey: "estado_pedidos_id" });
 EstadoPedido.hasMany(LogEstadoPedido, { foreignKey: "estado_pedidos_id" });
 
 // LogEstadoPedido - Empleado

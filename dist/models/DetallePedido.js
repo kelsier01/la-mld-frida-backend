@@ -5,9 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../BD/connection"));
-const Pedido_1 = __importDefault(require("./Pedido"));
-const Producto_1 = __importDefault(require("./Producto"));
-const Bodega_1 = __importDefault(require("./Bodega"));
 class DetallePedido extends sequelize_1.Model {
 }
 DetallePedido.init({
@@ -57,9 +54,5 @@ DetallePedido.init({
     tableName: "detalle_pedidos",
     timestamps: true,
 });
-// Definir las relaciones
-DetallePedido.belongsTo(Pedido_1.default, { foreignKey: 'pedidos_id' });
-DetallePedido.belongsTo(Producto_1.default, { foreignKey: 'productos_id' });
-DetallePedido.belongsTo(Bodega_1.default, { foreignKey: 'bodegas_id' });
 exports.default = DetallePedido;
 //# sourceMappingURL=DetallePedido.js.map

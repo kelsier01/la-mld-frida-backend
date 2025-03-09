@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../BD/connection"));
-const Bodega_1 = __importDefault(require("./Bodega"));
 class ProductoBodega extends sequelize_1.Model {
 }
 ProductoBodega.init({
@@ -31,6 +30,5 @@ ProductoBodega.init({
     tableName: "producto_bodegas",
     timestamps: true,
 });
-ProductoBodega.belongsTo(Bodega_1.default, { foreignKey: "bodegas_id", as: "bodega" });
 exports.default = ProductoBodega;
 //# sourceMappingURL=ProductoBodega.js.map
