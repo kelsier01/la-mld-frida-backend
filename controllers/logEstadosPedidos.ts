@@ -8,7 +8,6 @@ export const getAllLogEstadoPedidos = async (req: Request, res: Response) => {
       include: [
         {
           model: Estados,
-          as: "estado",
         },
       ],
     });

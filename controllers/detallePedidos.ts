@@ -45,7 +45,7 @@ export const getDetallePedidoByPedidoId = async (req: Request, res: Response) =>
       { model: Pedido },
       {
         model: Producto,
-        include: [{ model: ProductoImagen, as: "imagenes" }]
+        include: [{ model: ProductoImagen }]
       },
       { model: Bodega }
       ]

@@ -21,7 +21,6 @@ const getAllLogEstadoPedidos = (req, res) => __awaiter(void 0, void 0, void 0, f
             include: [
                 {
                     model: EstadoPedido_1.default,
-                    as: "estado",
                 },
             ],
         });
