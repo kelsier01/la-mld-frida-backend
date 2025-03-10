@@ -43,12 +43,12 @@ Pedido.init({
     },
     comprobante_ventas_id: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     direccion_id: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
-    }
+    },
 }, {
     sequelize: connection_1.default,
     tableName: "pedidos",

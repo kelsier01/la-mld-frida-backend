@@ -12,27 +12,28 @@ export const getAllPedidos = async (req: Request, res: Response) => {
   try {
     const pedidos = await Pedido.findAll({
       include: [
-      { 
-        model:Empleado, 
-      },
-      { 
-        model: Cliente, 
+        {
+          model: Empleado,
+        },
+        {
+          model: Cliente,
 
-        include: [{ 
-          model: Persona, 
-        }]
-      },
-      { model: EstadoPedido, 
-      },
-      { 
-        model: Delivery, 
-      },
-      { 
-        model: GuiaDespacho, 
-      },
-      { 
-        model: ComprobanteVenta, 
-      },
+          include: [
+            {
+              model: Persona,
+            },
+          ],
+        },
+        { model: EstadoPedido },
+        {
+          model: Delivery,
+        },
+        {
+          model: GuiaDespacho,
+        },
+        {
+          model: ComprobanteVenta,
+        },
       ],
     });
     res.status(200).json(pedidos);

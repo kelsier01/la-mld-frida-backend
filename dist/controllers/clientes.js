@@ -70,9 +70,8 @@ const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             ],
             limit: limite,
             offset,
+            distinct: true,
         });
-        console.log("limit = ", limit);
-        console.log("offset = ", offset);
         return res.json({
             clientes,
             total,

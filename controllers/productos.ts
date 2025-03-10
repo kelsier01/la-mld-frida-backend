@@ -30,6 +30,13 @@ export const getAllProductos = async (
     };
 
     const pageNumber = Number(page);
+    const categoria = categoriaId != 0 ? categoriaId : "";
+    const marca = marcasId != 0 ? marcasId : "";
+    const bodega = bodegaId != 0 ? bodegaId : "";
+
+    console.log(
+      `categoria = ${categoria} - marca = ${marca} - bodega = ${bodega}`
+    );
 
     if (isNaN(pageNumber) || pageNumber < 1) {
       return res
@@ -43,16 +50,16 @@ export const getAllProductos = async (
     const productoWhere: any = {
       ...(search &&
         search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
-      ...(categoriaId && { categoria_id: categoriaId }),
-      ...(marcasId && { marcas_id: marcasId }),
+      ...(categoria && { categoria_id: categoria }),
+      ...(marca && { marcas_id: marca }),
     };
 
     // Construcción de la condición de búsqueda en Direccion
     const bodegaWhere: any = {
-      ...(bodegaId && { bodegas_id: bodegaId }),
+      ...(bodega && { bodegas_id: bodega }),
     };
 
-    const productos = await Producto.findAll({
+    const { rows: productos, count: total } = await Producto.findAndCountAll({
       where: productoWhere,
       include: [
         {
@@ -74,8 +81,14 @@ export const getAllProductos = async (
       ],
       limit: limite,
       offset,
+      distinct: true,
     });
-    res.status(200).json(productos);
+    res.status(200).json({
+      productos,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los productos", error });
   }
@@ -91,14 +104,15 @@ export const getProductoById = async (req: Request, res: Response) => {
         },
         {
           model: Marca,
+          as: "marca_producto",
         },
-        { model: ProductoImagen,
-        },
-        { model: ProductoBodega, 
+        { model: ProductoImagen },
+        {
+          model: ProductoBodega,
           include: [
-            { 
+            {
               model: Bodega,
-            }
+            },
           ],
         },
       ],

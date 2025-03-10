@@ -24,6 +24,13 @@ const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const { search = "", page = "1", categoriaId, marcasId, bodegaId, limit = 10, } = req.query;
         const pageNumber = Number(page);
+<<<<<<< HEAD
+=======
+        const categoria = categoriaId != 0 ? categoriaId : "";
+        const marca = marcasId != 0 ? marcasId : "";
+        const bodega = bodegaId != 0 ? bodegaId : "";
+        console.log(`categoria = ${categoria} - marca = ${marca} - bodega = ${bodega}`);
+>>>>>>> origin/michael
         if (isNaN(pageNumber) || pageNumber < 1) {
             return res
                 .status(400)
@@ -33,10 +40,17 @@ const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         const limite = Number(limit);
         // Construcción de la condición de búsqueda en Persona
         const productoWhere = Object.assign(Object.assign(Object.assign({}, (search &&
+<<<<<<< HEAD
             search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoriaId && { categoria_id: categoriaId })), (marcasId && { marcas_id: marcasId }));
         // Construcción de la condición de búsqueda en Direccion
         const bodegaWhere = Object.assign({}, (bodegaId && { bodegas_id: bodegaId }));
         const productos = yield Producto_1.default.findAll({
+=======
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoria && { categoria_id: categoria })), (marca && { marcas_id: marca }));
+        // Construcción de la condición de búsqueda en Direccion
+        const bodegaWhere = Object.assign({}, (bodega && { bodegas_id: bodega }));
+        const { rows: productos, count: total } = yield Producto_1.default.findAndCountAll({
+>>>>>>> origin/michael
             where: productoWhere,
             include: [
                 {
@@ -58,8 +72,17 @@ const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             ],
             limit: limite,
             offset,
+<<<<<<< HEAD
+=======
+            distinct: true,
         });
-        res.status(200).json(productos);
+        res.status(200).json({
+            productos,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / Number(limit)),
+>>>>>>> origin/michael
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error al obtener los productos", error });
@@ -76,6 +99,7 @@ const getProductoById = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
                 {
                     model: Marca_1.default,
+<<<<<<< HEAD
                 },
                 { model: ProductoImagen_1.default,
                 },
@@ -84,6 +108,17 @@ const getProductoById = (req, res) => __awaiter(void 0, void 0, void 0, function
                         {
                             model: Bodega_1.default,
                         }
+=======
+                    as: "marca_producto",
+                },
+                { model: ProductoImagen_1.default },
+                {
+                    model: ProductoBodega_1.default,
+                    include: [
+                        {
+                            model: Bodega_1.default,
+                        },
+>>>>>>> origin/michael
                     ],
                 },
             ],

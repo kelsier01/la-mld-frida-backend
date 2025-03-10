@@ -30,12 +30,22 @@ const getAllPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 },
                 {
                     model: Cliente_1.default,
+<<<<<<< HEAD
                     include: [{
                             model: Persona_1.default,
                         }]
                 },
                 { model: EstadoPedido_1.default,
                 },
+=======
+                    include: [
+                        {
+                            model: Persona_1.default,
+                        },
+                    ],
+                },
+                { model: EstadoPedido_1.default },
+>>>>>>> origin/michael
                 {
                     model: Delivery_1.default,
                 },

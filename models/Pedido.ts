@@ -59,12 +59,12 @@ Pedido.init(
     },
     comprobante_ventas_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
-    direccion_id:{
+    direccion_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    }
+    },
   },
   {
     sequelize: db,
@@ -72,6 +72,5 @@ Pedido.init(
     timestamps: true,
   }
 );
-
 
 export default Pedido;
