@@ -25,16 +25,27 @@ const getAllPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const pedidos = yield Pedido_1.default.findAll({
             include: [
-                { model: Empleado_1.default, as: 'empleado' },
+                {
+                    model: Empleado_1.default,
+                },
                 {
                     model: Cliente_1.default,
-                    as: 'cliente',
-                    include: [{ model: Persona_1.default, as: 'persona' }]
+                    include: [
+                        {
+                            model: Persona_1.default,
+                        },
+                    ],
                 },
-                { model: EstadoPedido_1.default, as: 'estadoPedido' },
-                { model: Delivery_1.default, as: 'delivery' },
-                { model: GuiaDespacho_1.default, as: 'documentoUsa' },
-                { model: ComprobanteVenta_1.default, as: 'comprobanteVenta' },
+                { model: EstadoPedido_1.default },
+                {
+                    model: Delivery_1.default,
+                },
+                {
+                    model: GuiaDespacho_1.default,
+                },
+                {
+                    model: ComprobanteVenta_1.default,
+                },
             ],
         });
         res.status(200).json(pedidos);

@@ -1,34 +1,94 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Producto from "../models/Producto";
 import Categoria from "../models/Categoria";
 import Marca from "../models/Marca";
 import ProductoBodega from "../models/ProductoBodega";
 import ProductoImagen from "../models/ProductoImagen";
 import Bodega from "../models/Bodega";
+import { Op } from "sequelize";
 
-
-export const getAllProductos = async (req: Request, res: Response) => {
+export const getAllProductos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const productos = await Producto.findAll({
-      include:[
+    const {
+      search = "",
+      page = "1",
+      categoriaId,
+      marcasId,
+      bodegaId,
+      limit = 10,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      categoriaId?: Number;
+      marcasId?: Number;
+      bodegaId?: Number;
+      limit?: Number;
+    };
+
+    const pageNumber = Number(page);
+    const categoria = categoriaId != 0 ? categoriaId : "";
+    const marca = marcasId != 0 ? marcasId : "";
+    const bodega = bodegaId != 0 ? bodegaId : "";
+
+    console.log(
+      `categoria = ${categoria} - marca = ${marca} - bodega = ${bodega}`
+    );
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+    const offset = (pageNumber - 1) * Number(limit);
+    const limite = Number(limit);
+
+    // Construcción de la condición de búsqueda en Persona
+    const productoWhere: any = {
+      ...(search &&
+        search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
+      ...(categoria && { categoria_id: categoria }),
+      ...(marca && { marcas_id: marca }),
+    };
+
+    // Construcción de la condición de búsqueda en Direccion
+    const bodegaWhere: any = {
+      ...(bodega && { bodegas_id: bodega }),
+    };
+
+    const { rows: productos, count: total } = await Producto.findAndCountAll({
+      where: productoWhere,
+      include: [
         {
           model: Categoria,
-          as: "categoria",
         },
         {
           model: Marca,
-          as: "marca",
         },
-        { model: ProductoImagen,
-          as: "imagenes" 
+        { model: ProductoImagen },
+        {
+          model: ProductoBodega,
+          where: bodegaWhere,
+          include: [
+            {
+              model: Bodega,
+            },
+          ],
         },
-        { model: ProductoBodega, 
-          as: "bodegas",
-          include: [{ model: Bodega, as: "bodega" }],
-        },
-      ]
+      ],
+      limit: limite,
+      offset,
+      distinct: true,
     });
-    res.status(200).json(productos);
+    res.status(200).json({
+      productos,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los productos", error });
   }
@@ -41,20 +101,19 @@ export const getProductoById = async (req: Request, res: Response) => {
       include: [
         {
           model: Categoria,
-          as: "categoria",
         },
         {
           model: Marca,
-          as: "marca",
+          as: "marca_producto",
         },
-        {
-          model: ProductoImagen,
-          as: "imagenes",
-        },
+        { model: ProductoImagen },
         {
           model: ProductoBodega,
-          as: "bodegas",
-          include: [{ model: Bodega, as: "bodega" }],
+          include: [
+            {
+              model: Bodega,
+            },
+          ],
         },
       ],
     });

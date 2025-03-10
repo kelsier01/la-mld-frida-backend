@@ -9,18 +9,18 @@ export const getAllDetallePedidos = async (req: Request, res: Response) => {
   try {
     const detallePedidos = await DetallePedido.findAll({
       include: [
-      { model: Pedido },
-      { 
-        model: Producto,
-        include: [{ model: ProductoImagen }]
-      },
-      { model: Bodega }
-      ]
+        { model: Pedido },
+        {
+          model: Producto,
+          include: [{ model: ProductoImagen }],
+        },
+        { model: Bodega },
+      ],
     });
 
     // Agrupar los detalles de pedido por pedidos_id
     const pedidosAgrupados: { [key: number]: any[] } = {};
-    detallePedidos.forEach(detalle => {
+    detallePedidos.forEach((detalle) => {
       const pedidoId = detalle.pedidos_id;
       if (!pedidosAgrupados[pedidoId]) {
         pedidosAgrupados[pedidoId] = [];
@@ -36,19 +36,22 @@ export const getAllDetallePedidos = async (req: Request, res: Response) => {
   }
 };
 
-export const getDetallePedidoByPedidoId = async (req: Request, res: Response) => {
+export const getDetallePedidoByPedidoId = async (
+  req: Request,
+  res: Response
+) => {
   const { pedidoId } = req.params;
   try {
     const detallePedidos = await DetallePedido.findAll({
       where: { pedidos_id: pedidoId },
       include: [
-      { model: Pedido },
-      {
-        model: Producto,
-        include: [{ model: ProductoImagen, as: "imagenes" }]
-      },
-      { model: Bodega }
-      ]
+        { model: Pedido },
+        {
+          model: Producto,
+          include: [{ model: ProductoImagen }],
+        },
+        { model: Bodega },
+      ],
     });
 
     res.status(200).json(detallePedidos);
@@ -57,9 +60,7 @@ export const getDetallePedidoByPedidoId = async (req: Request, res: Response) =>
       .status(500)
       .json({ message: "Error al obtener los detalles de pedido", error });
   }
-}
-
-
+};
 
 export const getDetallePedidoById = async (req: Request, res: Response) => {
   const { id } = req.params;

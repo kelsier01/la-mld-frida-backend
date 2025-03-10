@@ -25,14 +25,14 @@ const getAllDetallePedidos = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 { model: Pedido_1.default },
                 {
                     model: Producto_1.default,
-                    include: [{ model: ProductoImagen_1.default }]
+                    include: [{ model: ProductoImagen_1.default }],
                 },
-                { model: Bodega_1.default }
-            ]
+                { model: Bodega_1.default },
+            ],
         });
         // Agrupar los detalles de pedido por pedidos_id
         const pedidosAgrupados = {};
-        detallePedidos.forEach(detalle => {
+        detallePedidos.forEach((detalle) => {
             const pedidoId = detalle.pedidos_id;
             if (!pedidosAgrupados[pedidoId]) {
                 pedidosAgrupados[pedidoId] = [];
@@ -57,10 +57,10 @@ const getDetallePedidoByPedidoId = (req, res) => __awaiter(void 0, void 0, void 
                 { model: Pedido_1.default },
                 {
                     model: Producto_1.default,
-                    include: [{ model: ProductoImagen_1.default, as: "imagenes" }]
+                    include: [{ model: ProductoImagen_1.default }],
                 },
-                { model: Bodega_1.default }
-            ]
+                { model: Bodega_1.default },
+            ],
         });
         res.status(200).json(detallePedidos);
     }

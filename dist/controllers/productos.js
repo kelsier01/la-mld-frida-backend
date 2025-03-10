@@ -19,28 +19,57 @@ const Marca_1 = __importDefault(require("../models/Marca"));
 const ProductoBodega_1 = __importDefault(require("../models/ProductoBodega"));
 const ProductoImagen_1 = __importDefault(require("../models/ProductoImagen"));
 const Bodega_1 = __importDefault(require("../models/Bodega"));
-const getAllProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sequelize_1 = require("sequelize");
+const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const productos = yield Producto_1.default.findAll({
+        const { search = "", page = "1", categoriaId, marcasId, bodegaId, limit = 10, } = req.query;
+        const pageNumber = Number(page);
+        const categoria = categoriaId != 0 ? categoriaId : "";
+        const marca = marcasId != 0 ? marcasId : "";
+        const bodega = bodegaId != 0 ? bodegaId : "";
+        console.log(`categoria = ${categoria} - marca = ${marca} - bodega = ${bodega}`);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        const offset = (pageNumber - 1) * Number(limit);
+        const limite = Number(limit);
+        // Construcción de la condición de búsqueda en Persona
+        const productoWhere = Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoria && { categoria_id: categoria })), (marca && { marcas_id: marca }));
+        // Construcción de la condición de búsqueda en Direccion
+        const bodegaWhere = Object.assign({}, (bodega && { bodegas_id: bodega }));
+        const { rows: productos, count: total } = yield Producto_1.default.findAndCountAll({
+            where: productoWhere,
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca",
                 },
-                { model: ProductoImagen_1.default,
-                    as: "imagenes"
+                { model: ProductoImagen_1.default },
+                {
+                    model: ProductoBodega_1.default,
+                    where: bodegaWhere,
+                    include: [
+                        {
+                            model: Bodega_1.default,
+                        },
+                    ],
                 },
-                { model: ProductoBodega_1.default,
-                    as: "bodegas",
-                    include: [{ model: Bodega_1.default, as: "bodega" }],
-                },
-            ]
+            ],
+            limit: limite,
+            offset,
+            distinct: true,
         });
-        res.status(200).json(productos);
+        res.status(200).json({
+            productos,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / Number(limit)),
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error al obtener los productos", error });
@@ -54,20 +83,19 @@ const getProductoById = (req, res) => __awaiter(void 0, void 0, void 0, function
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca",
+                    as: "marca_producto",
                 },
-                {
-                    model: ProductoImagen_1.default,
-                    as: "imagenes",
-                },
+                { model: ProductoImagen_1.default },
                 {
                     model: ProductoBodega_1.default,
-                    as: "bodegas",
-                    include: [{ model: Bodega_1.default, as: "bodega" }],
+                    include: [
+                        {
+                            model: Bodega_1.default,
+                        },
+                    ],
                 },
             ],
         });
