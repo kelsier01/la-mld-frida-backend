@@ -57,11 +57,7 @@ const getDetallePedidoByPedidoId = (req, res) => __awaiter(void 0, void 0, void 
                 { model: Pedido_1.default },
                 {
                     model: Producto_1.default,
-<<<<<<< HEAD
-                    include: [{ model: ProductoImagen_1.default }]
-=======
                     include: [{ model: ProductoImagen_1.default }],
->>>>>>> origin/michael
                 },
                 { model: Bodega_1.default },
             ],

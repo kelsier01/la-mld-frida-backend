@@ -104,7 +104,6 @@ export const getProductoById = async (req: Request, res: Response) => {
         },
         {
           model: Marca,
-          as: "marca_producto",
         },
         { model: ProductoImagen },
         {
