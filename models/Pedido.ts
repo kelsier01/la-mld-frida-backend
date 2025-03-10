@@ -43,7 +43,7 @@ Pedido.init(
     },
     deliverys_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     monto_total: {
       type: DataTypes.INTEGER,
@@ -51,7 +51,7 @@ Pedido.init(
     },
     guia_despacho_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     tracking_number: {
       type: DataTypes.STRING(45),

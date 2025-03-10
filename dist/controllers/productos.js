@@ -19,31 +19,45 @@ const Marca_1 = __importDefault(require("../models/Marca"));
 const ProductoBodega_1 = __importDefault(require("../models/ProductoBodega"));
 const ProductoImagen_1 = __importDefault(require("../models/ProductoImagen"));
 const Bodega_1 = __importDefault(require("../models/Bodega"));
-const getAllProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sequelize_1 = require("sequelize");
+const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { search = "", page = "1", categoriaId, marcasId, bodegaId, limit = 10, } = req.query;
+        const pageNumber = Number(page);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        const offset = (pageNumber - 1) * Number(limit);
+        const limite = Number(limit);
+        // Construcción de la condición de búsqueda en Persona
+        const productoWhere = Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoriaId && { categoria_id: categoriaId })), (marcasId && { marcas_id: marcasId }));
+        // Construcción de la condición de búsqueda en Direccion
+        const bodegaWhere = Object.assign({}, (bodegaId && { bodegas_id: bodegaId }));
         const productos = yield Producto_1.default.findAll({
+            where: productoWhere,
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria_producto",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca_producto",
                 },
-                { model: ProductoImagen_1.default,
-                    as: "imagenes_producto",
-                },
-                { model: ProductoBodega_1.default,
-                    as: "bodegas_producto",
+                { model: ProductoImagen_1.default },
+                {
+                    model: ProductoBodega_1.default,
+                    where: bodegaWhere,
                     include: [
                         {
                             model: Bodega_1.default,
-                            as: "bodega_producto"
-                        }
+                        },
                     ],
                 },
-            ]
+            ],
+            limit: limite,
+            offset,
         });
         res.status(200).json(productos);
     }
@@ -59,21 +73,16 @@ const getProductoById = (req, res) => __awaiter(void 0, void 0, void 0, function
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria_producto",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca_producto",
                 },
                 { model: ProductoImagen_1.default,
-                    as: "imagenes_producto",
                 },
                 { model: ProductoBodega_1.default,
-                    as: "bodegas_producto",
                     include: [
                         {
                             model: Bodega_1.default,
-                            as: "bodega_producto"
                         }
                     ],
                 },

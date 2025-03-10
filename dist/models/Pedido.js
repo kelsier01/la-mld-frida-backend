@@ -27,7 +27,7 @@ Pedido.init({
     },
     deliverys_id: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     monto_total: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -35,7 +35,7 @@ Pedido.init({
     },
     guia_despacho_id: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     tracking_number: {
         type: sequelize_1.DataTypes.STRING(45),

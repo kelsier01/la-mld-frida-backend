@@ -1,37 +1,79 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Producto from "../models/Producto";
 import Categoria from "../models/Categoria";
 import Marca from "../models/Marca";
 import ProductoBodega from "../models/ProductoBodega";
 import ProductoImagen from "../models/ProductoImagen";
 import Bodega from "../models/Bodega";
+import { Op } from "sequelize";
 
-
-export const getAllProductos = async (req: Request, res: Response) => {
+export const getAllProductos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const {
+      search = "",
+      page = "1",
+      categoriaId,
+      marcasId,
+      bodegaId,
+      limit = 10,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      categoriaId?: Number;
+      marcasId?: Number;
+      bodegaId?: Number;
+      limit?: Number;
+    };
+
+    const pageNumber = Number(page);
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+    const offset = (pageNumber - 1) * Number(limit);
+    const limite = Number(limit);
+
+    // Construcción de la condición de búsqueda en Persona
+    const productoWhere: any = {
+      ...(search &&
+        search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
+      ...(categoriaId && { categoria_id: categoriaId }),
+      ...(marcasId && { marcas_id: marcasId }),
+    };
+
+    // Construcción de la condición de búsqueda en Direccion
+    const bodegaWhere: any = {
+      ...(bodegaId && { bodegas_id: bodegaId }),
+    };
+
     const productos = await Producto.findAll({
-      include:[
+      where: productoWhere,
+      include: [
         {
           model: Categoria,
-          as: "categoria_producto",
         },
         {
           model: Marca,
-          as: "marca_producto",
         },
-        { model: ProductoImagen,
-          as: "imagenes_producto",
-        },
-        { model: ProductoBodega, 
-          as: "bodegas_producto",
+        { model: ProductoImagen },
+        {
+          model: ProductoBodega,
+          where: bodegaWhere,
           include: [
-            { 
+            {
               model: Bodega,
-              as: "bodega_producto"
-            }
+            },
           ],
         },
-      ]
+      ],
+      limit: limite,
+      offset,
     });
     res.status(200).json(productos);
   } catch (error) {
@@ -46,21 +88,16 @@ export const getProductoById = async (req: Request, res: Response) => {
       include:[
         {
           model: Categoria,
-          as: "categoria_producto",
         },
         {
           model: Marca,
-          as: "marca_producto",
         },
         { model: ProductoImagen,
-          as: "imagenes_producto",
         },
         { model: ProductoBodega, 
-          as: "bodegas_producto",
           include: [
             { 
               model: Bodega,
-              as: "bodega_producto"
             }
           ],
         },
