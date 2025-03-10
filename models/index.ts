@@ -89,12 +89,15 @@ MetodoPago.hasMany(Abono, { foreignKey: "metodos_pago_id" });
 Abono.belongsTo(Empleado, { foreignKey: "empleados_id" });
 Empleado.hasMany(Abono, { foreignKey: "empleados_id" });
 
+
+// PRODUCTOS
+
 // Producto - Categoria
-Producto.belongsTo(Categoria, { foreignKey: "Categoria_id", as: "categoria" });
+Producto.belongsTo(Categoria, { foreignKey: "Categoria_id", as: "categoria_producto" });
 Categoria.hasMany(Producto, { foreignKey: "Categoria_id", as: "productos" });
 
 // Producto - Marca
-Producto.belongsTo(Marca, { foreignKey: "marcas_id", as: "marca" });
+Producto.belongsTo(Marca, { foreignKey: "marcas_id", as: "marca_producto" });
 Marca.hasMany(Producto, { foreignKey: "marcas_id", as: "productos" });
 
 // DetallePedido - Pedido
@@ -115,10 +118,12 @@ Cliente.hasMany(Direccion, { foreignKey: "clientes_id" });
 
 // ProductoBodega - Producto
 ProductoBodega.belongsTo(Producto, { foreignKey: "productos_id" });
-Producto.hasMany(ProductoBodega, { foreignKey: "productos_id" });
+Producto.hasMany(ProductoBodega, { foreignKey: "productos_id", as: "bodegas_producto" });
+
+//---------------------------------------------------
 
 // ProductoBodega - Bodega
-ProductoBodega.belongsTo(Bodega, { foreignKey: "bodegas_id", as: "bodega" });
+ProductoBodega.belongsTo(Bodega, { foreignKey: "bodegas_id", as: "bodega_producto" });
 Bodega.hasMany(ProductoBodega, { foreignKey: "bodegas_id" });
 
 // LogEstadoPedido - Pedido
@@ -135,7 +140,7 @@ Empleado.hasMany(LogEstadoPedido, { foreignKey: "empleados_id" });
 
 // ProductoImagen - Producto
 ProductoImagen.belongsTo(Producto, { foreignKey: "productos_id", as: "producto" });
-Producto.hasMany(ProductoImagen, { foreignKey: "productos_id", as: "imagenes" });
+Producto.hasMany(ProductoImagen, { foreignKey: "productos_id", as: "imagenes_producto" });
 
 // ==================================================
 // Relaciones del modelo Estado

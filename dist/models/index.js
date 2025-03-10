@@ -87,11 +87,12 @@ MetodoPago_1.default.hasMany(Abono_1.default, { foreignKey: "metodos_pago_id" })
 // Abono - Empleado
 Abono_1.default.belongsTo(Empleado_1.default, { foreignKey: "empleados_id" });
 Empleado_1.default.hasMany(Abono_1.default, { foreignKey: "empleados_id" });
+// PRODUCTOS
 // Producto - Categoria
-Producto_1.default.belongsTo(Categoria_1.default, { foreignKey: "Categoria_id", as: "categoria" });
+Producto_1.default.belongsTo(Categoria_1.default, { foreignKey: "Categoria_id", as: "categoria_producto" });
 Categoria_1.default.hasMany(Producto_1.default, { foreignKey: "Categoria_id", as: "productos" });
 // Producto - Marca
-Producto_1.default.belongsTo(Marca_1.default, { foreignKey: "marcas_id", as: "marca" });
+Producto_1.default.belongsTo(Marca_1.default, { foreignKey: "marcas_id", as: "marca_producto" });
 Marca_1.default.hasMany(Producto_1.default, { foreignKey: "marcas_id", as: "productos" });
 // DetallePedido - Pedido
 DetallePedido_1.default.belongsTo(Pedido_1.default, { foreignKey: "pedidos_id" });
@@ -107,9 +108,10 @@ Direccion_1.default.belongsTo(Cliente_1.default, { foreignKey: "clientes_id" });
 Cliente_1.default.hasMany(Direccion_1.default, { foreignKey: "clientes_id" });
 // ProductoBodega - Producto
 ProductoBodega_1.default.belongsTo(Producto_1.default, { foreignKey: "productos_id" });
-Producto_1.default.hasMany(ProductoBodega_1.default, { foreignKey: "productos_id" });
+Producto_1.default.hasMany(ProductoBodega_1.default, { foreignKey: "productos_id", as: "bodegas_producto" });
+//---------------------------------------------------
 // ProductoBodega - Bodega
-ProductoBodega_1.default.belongsTo(Bodega_1.default, { foreignKey: "bodegas_id", as: "bodega" });
+ProductoBodega_1.default.belongsTo(Bodega_1.default, { foreignKey: "bodegas_id", as: "bodega_producto" });
 Bodega_1.default.hasMany(ProductoBodega_1.default, { foreignKey: "bodegas_id" });
 // LogEstadoPedido - Pedido
 LogEstadoPedido_1.default.belongsTo(Pedido_1.default, { foreignKey: "pedidos_id" });
@@ -122,7 +124,7 @@ LogEstadoPedido_1.default.belongsTo(Empleado_1.default, { foreignKey: "empleados
 Empleado_1.default.hasMany(LogEstadoPedido_1.default, { foreignKey: "empleados_id" });
 // ProductoImagen - Producto
 ProductoImagen_1.default.belongsTo(Producto_1.default, { foreignKey: "productos_id", as: "producto" });
-Producto_1.default.hasMany(ProductoImagen_1.default, { foreignKey: "productos_id", as: "imagenes" });
+Producto_1.default.hasMany(ProductoImagen_1.default, { foreignKey: "productos_id", as: "imagenes_producto" });
 // ==================================================
 // Relaciones del modelo Estado
 // ==================================================

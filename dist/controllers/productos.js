@@ -25,18 +25,23 @@ const getAllProductos = (req, res) => __awaiter(void 0, void 0, void 0, function
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria",
+                    as: "categoria_producto",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca",
+                    as: "marca_producto",
                 },
                 { model: ProductoImagen_1.default,
-                    as: "imagenes"
+                    as: "imagenes_producto",
                 },
                 { model: ProductoBodega_1.default,
-                    as: "bodegas",
-                    include: [{ model: Bodega_1.default, as: "bodega" }],
+                    as: "bodegas_producto",
+                    include: [
+                        {
+                            model: Bodega_1.default,
+                            as: "bodega_producto"
+                        }
+                    ],
                 },
             ]
         });
@@ -54,20 +59,23 @@ const getProductoById = (req, res) => __awaiter(void 0, void 0, void 0, function
             include: [
                 {
                     model: Categoria_1.default,
-                    as: "categoria",
+                    as: "categoria_producto",
                 },
                 {
                     model: Marca_1.default,
-                    as: "marca",
+                    as: "marca_producto",
                 },
-                {
-                    model: ProductoImagen_1.default,
-                    as: "imagenes",
+                { model: ProductoImagen_1.default,
+                    as: "imagenes_producto",
                 },
-                {
-                    model: ProductoBodega_1.default,
-                    as: "bodegas",
-                    include: [{ model: Bodega_1.default, as: "bodega" }],
+                { model: ProductoBodega_1.default,
+                    as: "bodegas_producto",
+                    include: [
+                        {
+                            model: Bodega_1.default,
+                            as: "bodega_producto"
+                        }
+                    ],
                 },
             ],
         });

@@ -13,18 +13,23 @@ export const getAllProductos = async (req: Request, res: Response) => {
       include:[
         {
           model: Categoria,
-          as: "categoria",
+          as: "categoria_producto",
         },
         {
           model: Marca,
-          as: "marca",
+          as: "marca_producto",
         },
         { model: ProductoImagen,
-          as: "imagenes" 
+          as: "imagenes_producto",
         },
         { model: ProductoBodega, 
-          as: "bodegas",
-          include: [{ model: Bodega, as: "bodega" }],
+          as: "bodegas_producto",
+          include: [
+            { 
+              model: Bodega,
+              as: "bodega_producto"
+            }
+          ],
         },
       ]
     });
@@ -38,23 +43,26 @@ export const getProductoById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const producto = await Producto.findByPk(id, {
-      include: [
+      include:[
         {
           model: Categoria,
-          as: "categoria",
+          as: "categoria_producto",
         },
         {
           model: Marca,
-          as: "marca",
+          as: "marca_producto",
         },
-        {
-          model: ProductoImagen,
-          as: "imagenes",
+        { model: ProductoImagen,
+          as: "imagenes_producto",
         },
-        {
-          model: ProductoBodega,
-          as: "bodegas",
-          include: [{ model: Bodega, as: "bodega" }],
+        { model: ProductoBodega, 
+          as: "bodegas_producto",
+          include: [
+            { 
+              model: Bodega,
+              as: "bodega_producto"
+            }
+          ],
         },
       ],
     });
