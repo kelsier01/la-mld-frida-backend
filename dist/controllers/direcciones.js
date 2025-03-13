@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteDireccion = exports.updateDireccion = exports.createDireccion = exports.getDireccionById = exports.getAllDirecciones = void 0;
 const Direccion_1 = __importDefault(require("../models/Direccion"));
+const Region_1 = __importDefault(require("../models/Region"));
+const Comuna_1 = __importDefault(require("../models/Comuna"));
 const getAllDirecciones = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const direcciones = yield Direccion_1.default.findAll();
@@ -43,15 +45,17 @@ const getDireccionById = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.getDireccionById = getDireccionById;
 const createDireccion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { clientes_id, direccion, region, comuna } = req.body;
+    const { clientes_id, direccion, region_id, comuna_id } = req.body;
     try {
         const nuevaDireccion = yield Direccion_1.default.create({
             clientes_id,
             direccion,
-            region,
-            comuna,
+            region_id,
+            comuna_id,
         });
-        res.status(201).json(nuevaDireccion);
+        const region = yield Region_1.default.findByPk(region_id);
+        const comuna = yield Comuna_1.default.findByPk(comuna_id);
+        res.status(201).json({ nuevaDireccion, region, comuna });
     }
     catch (error) {
         res.status(500).json({ message: "Error al crear la dirección", error });

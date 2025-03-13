@@ -31,6 +31,7 @@ export const createPago = async (req: Request, res: Response) => {
     const nuevoPago = await Pago.create({
       pedidos_id,
       monto,
+      fecha_pago: new Date(),
       pago_parcializado,
       metodos_pago_id,
     });

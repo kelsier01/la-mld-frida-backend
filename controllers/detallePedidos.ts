@@ -4,6 +4,7 @@ import Pedido from "../models/Pedido";
 import Producto from "../models/Producto";
 import Bodega from "../models/Bodega";
 import ProductoImagen from "../models/ProductoImagen";
+import Direccion from "../models/Direccion";
 
 export const getAllDetallePedidos = async (req: Request, res: Response) => {
   try {
@@ -45,7 +46,9 @@ export const getDetallePedidoByPedidoId = async (
     const detallePedidos = await DetallePedido.findAll({
       where: { pedidos_id: pedidoId },
       include: [
-        { model: Pedido },
+        { model: Pedido,
+          include: [{ model: Direccion }]
+        },
         {
           model: Producto,
           include: [{ model: ProductoImagen }],

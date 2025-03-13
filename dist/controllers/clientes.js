@@ -104,10 +104,12 @@ const getClienteById = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getClienteById = getClienteById;
 const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { n_identificacion, nombre, correo, fono, direccion, cta_instagram } = req.body;
+    const { n_identificacion, nombre, correo, fono, direccion, cta_instagram, region_id, comuna_id } = req.body;
     try {
         // Buscar si la persona ya existe por n_identificacion
         let persona = yield Persona_1.default.findOne({ where: { n_identificacion } });
+        let region = yield Region_1.default.findByPk(region_id);
+        let comuna = yield Comuna_1.default.findByPk(comuna_id);
         if (persona) {
             // Verificar si la persona ya está asociada a un cliente
             const clienteExistente = yield Cliente_1.default.findOne({
@@ -122,22 +124,41 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const nuevoCliente = yield Cliente_1.default.create({
                 personas_id: persona.id,
                 cta_instagram,
+                eliminado: 0
             });
-            return res.status(201).json(nuevoCliente);
+            // Crear la dirección del cliente
+            // Crear la dirección del cliente
+            const nuevaDireccion = yield Direccion_1.default.create({
+                clientes_id: nuevoCliente.id,
+                direccion,
+                region_id,
+                comuna_id,
+            });
+            return res.status(201).json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
         }
-        // Si la persona no existe, la creamos
-        persona = yield Persona_1.default.create({
-            n_identificacion,
-            nombre,
-            correo,
-            fono,
-        });
-        // Crear el cliente con la persona recién creada
-        const nuevoCliente = yield Cliente_1.default.create({
-            personas_id: persona.id,
-            cta_instagram,
-        });
-        res.status(201).json(nuevoCliente);
+        else {
+            // Si la persona no existe, la creamos
+            persona = yield Persona_1.default.create({
+                nombre,
+                correo,
+                n_identificacion,
+                fono,
+            });
+            // Crear el cliente con la persona recién creada
+            const nuevoCliente = yield Cliente_1.default.create({
+                personas_id: persona.id,
+                cta_instagram,
+                eliminado: 0
+            });
+            // Crear la dirección del cliente
+            const nuevaDireccion = yield Direccion_1.default.create({
+                clientes_id: nuevoCliente.id,
+                direccion,
+                region_id,
+                comuna_id,
+            });
+            res.status(201).json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+        }
     }
     catch (error) {
         res.status(500).json({ message: "Error al crear el cliente", error });

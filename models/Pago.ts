@@ -31,6 +31,7 @@ Pago.init(
     fecha_pago: {
       type: DataTypes.DATE,
       allowNull: true,
+    
     },
     pago_parcializado: {
       type: DataTypes.BOOLEAN,

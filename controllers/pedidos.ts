@@ -66,6 +66,7 @@ export const createPedido = async (req: Request, res: Response) => {
     documento_usa_id,
     n_despacho_chile,
     comprobante_ventas_id,
+    direccion_id,
   } = req.body;
   try {
     const nuevoPedido = await Pedido.create({
@@ -77,6 +78,7 @@ export const createPedido = async (req: Request, res: Response) => {
       documento_usa_id,
       n_despacho_chile,
       comprobante_ventas_id,
+      direccion_id,
     });
     res.status(201).json(nuevoPedido);
   } catch (error) {

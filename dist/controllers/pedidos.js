@@ -72,7 +72,7 @@ const getPedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getPedidoById = getPedidoById;
 const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, } = req.body;
     try {
         const nuevoPedido = yield Pedido_1.default.create({
             empleados_id,
@@ -83,6 +83,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             documento_usa_id,
             n_despacho_chile,
             comprobante_ventas_id,
+            direccion_id,
         });
         res.status(201).json(nuevoPedido);
     }

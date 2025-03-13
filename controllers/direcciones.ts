@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Direccion from "../models/Direccion";
+import Region from "../models/Region";
+import Comuna from "../models/Comuna";
 
 export const getAllDirecciones = async (req: Request, res: Response) => {
   try {
@@ -27,15 +29,20 @@ export const getDireccionById = async (req: Request, res: Response) => {
 };
 
 export const createDireccion = async (req: Request, res: Response) => {
-  const { clientes_id, direccion, region, comuna } = req.body;
+  const { clientes_id, direccion, region_id, comuna_id } = req.body;
   try {
     const nuevaDireccion = await Direccion.create({
       clientes_id,
       direccion,
-      region,
-      comuna,
+      region_id,
+      comuna_id,
     });
-    res.status(201).json(nuevaDireccion);
+
+    const region = await Region.findByPk(region_id);
+    const comuna = await Comuna.findByPk(comuna_id);
+
+
+    res.status(201).json({nuevaDireccion, region, comuna});
   } catch (error) {
     res.status(500).json({ message: "Error al crear la dirección", error });
   }

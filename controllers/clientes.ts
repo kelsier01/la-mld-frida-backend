@@ -109,12 +109,14 @@ export const getClienteById = async (req: Request, res: Response) => {
 };
 
 export const createCliente = async (req: Request, res: Response) => {
-  const { n_identificacion, nombre, correo, fono, direccion, cta_instagram } =
+  const { n_identificacion, nombre, correo, fono, direccion, cta_instagram, region_id, comuna_id } =
     req.body;
 
   try {
     // Buscar si la persona ya existe por n_identificacion
     let persona: any = await Persona.findOne({ where: { n_identificacion } });
+    let region: any = await Region.findByPk(region_id);
+    let comuna: any = await Comuna.findByPk(comuna_id);
 
     if (persona) {
       // Verificar si la persona ya está asociada a un cliente
@@ -129,29 +131,52 @@ export const createCliente = async (req: Request, res: Response) => {
       }
 
       // Si la persona existe pero no es cliente, crear el cliente con la ID de la persona existente
-      const nuevoCliente = await Cliente.create({
+      const nuevoCliente:any = await Cliente.create({
         personas_id: persona.id,
         cta_instagram,
+        eliminado: 0
       });
 
-      return res.status(201).json(nuevoCliente);
+      // Crear la dirección del cliente
+
+      // Crear la dirección del cliente
+      const nuevaDireccion = await Direccion.create({
+        clientes_id: nuevoCliente.id,
+        direccion,
+        region_id,
+        comuna_id,
+      });
+
+      
+      
+
+      return res.status(201).json({nuevoCliente, nuevaDireccion, persona, region, comuna});
+    }else{
+        // Si la persona no existe, la creamos
+      persona = await Persona.create({
+        nombre,
+        correo,
+        n_identificacion,
+        fono,
+      });
+
+      // Crear el cliente con la persona recién creada
+      const nuevoCliente: any = await Cliente.create({
+        personas_id: persona.id,
+        cta_instagram,
+        eliminado: 0
+      });
+
+      // Crear la dirección del cliente
+      const nuevaDireccion = await Direccion.create({
+        clientes_id: nuevoCliente.id,
+        direccion,
+        region_id,
+        comuna_id,
+      });
+      
+      res.status(201).json({nuevoCliente, nuevaDireccion, persona, region, comuna});
     }
-
-    // Si la persona no existe, la creamos
-    persona = await Persona.create({
-      n_identificacion,
-      nombre,
-      correo,
-      fono,
-    });
-
-    // Crear el cliente con la persona recién creada
-    const nuevoCliente = await Cliente.create({
-      personas_id: persona.id,
-      cta_instagram,
-    });
-
-    res.status(201).json(nuevoCliente);
   } catch (error) {
     res.status(500).json({ message: "Error al crear el cliente", error });
   }

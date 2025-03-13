@@ -46,6 +46,7 @@ const createPago = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const nuevoPago = yield Pago_1.default.create({
             pedidos_id,
             monto,
+            fecha_pago: new Date(),
             pago_parcializado,
             metodos_pago_id,
         });

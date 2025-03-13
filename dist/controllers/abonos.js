@@ -65,6 +65,7 @@ const createAbono = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const nuevoAbono = yield Abono_1.default.create({
             pagos_id,
             monto,
+            fecha: new Date(),
             metodos_pago_id,
             empleados_id,
         });

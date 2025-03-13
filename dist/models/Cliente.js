@@ -15,7 +15,7 @@ const Clientes = connection_1.default.define("clientes", {
         allowNull: true,
     },
     eliminado: {
-        type: sequelize_1.DataTypes.BOOLEAN,
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
 });

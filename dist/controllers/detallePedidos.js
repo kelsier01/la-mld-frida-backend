@@ -18,6 +18,7 @@ const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Producto_1 = __importDefault(require("../models/Producto"));
 const Bodega_1 = __importDefault(require("../models/Bodega"));
 const ProductoImagen_1 = __importDefault(require("../models/ProductoImagen"));
+const Direccion_1 = __importDefault(require("../models/Direccion"));
 const getAllDetallePedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const detallePedidos = yield DetallePedido_1.default.findAll({
@@ -54,7 +55,9 @@ const getDetallePedidoByPedidoId = (req, res) => __awaiter(void 0, void 0, void 
         const detallePedidos = yield DetallePedido_1.default.findAll({
             where: { pedidos_id: pedidoId },
             include: [
-                { model: Pedido_1.default },
+                { model: Pedido_1.default,
+                    include: [{ model: Direccion_1.default }]
+                },
                 {
                     model: Producto_1.default,
                     include: [{ model: ProductoImagen_1.default }],

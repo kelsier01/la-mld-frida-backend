@@ -42,6 +42,8 @@ const direccion_1 = __importDefault(require("../rutas/direccion"));
 const productoBodega_1 = __importDefault(require("../rutas/productoBodega"));
 const logEstadoPedido_1 = __importDefault(require("../rutas/logEstadoPedido"));
 const productoImagen_1 = __importDefault(require("../rutas/productoImagen"));
+const region_1 = __importDefault(require("../rutas/region"));
+const comuna_1 = __importDefault(require("../rutas/comuna"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const index_1 = require("./index");
 const cors_1 = __importDefault(require("cors"));
@@ -75,6 +77,8 @@ class Server {
             productoBodega: "/api/productoBodega",
             logEstadoPedido: "/api/logEstadoPedido",
             productoImagen: "/api/productoImagen",
+            region: "/api/region",
+            comuna: "/api/comuna",
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || "8000";
@@ -126,6 +130,8 @@ class Server {
         this.app.use(this.apiPath.productoBodega, productoBodega_1.default);
         this.app.use(this.apiPath.logEstadoPedido, logEstadoPedido_1.default);
         this.app.use(this.apiPath.productoImagen, productoImagen_1.default);
+        this.app.use(this.apiPath.region, region_1.default);
+        this.app.use(this.apiPath.comuna, comuna_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

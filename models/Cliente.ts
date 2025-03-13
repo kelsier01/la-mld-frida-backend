@@ -11,7 +11,7 @@ const Clientes = db.define("clientes", {
     allowNull: true,
   },
   eliminado: {
-    type: DataTypes.BOOLEAN,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
 });

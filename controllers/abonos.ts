@@ -48,6 +48,7 @@ export const createAbono = async (req: Request, res: Response) => {
     const nuevoAbono = await Abono.create({
       pagos_id,
       monto,
+      fecha: new Date(),
       metodos_pago_id,
       empleados_id,
     });

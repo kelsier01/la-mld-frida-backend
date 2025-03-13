@@ -29,6 +29,8 @@ import direccionRoutes from "../rutas/direccion";
 import productoBodegaRoutes from "../rutas/productoBodega";
 import logEstadoPedidoRoutes from "../rutas/logEstadoPedido";
 import productoImagenRoutes from "../rutas/productoImagen";
+import regionRoutes from "../rutas/region";
+import comunaRoutes from "../rutas/comuna";
 
 import dotenv from "dotenv";
 import { syncModels } from "./index";
@@ -67,6 +69,8 @@ class Server {
     productoBodega: "/api/productoBodega",
     logEstadoPedido: "/api/logEstadoPedido",
     productoImagen: "/api/productoImagen",
+    region: "/api/region",
+    comuna: "/api/comuna",
   };
 
   constructor() {
@@ -121,6 +125,8 @@ class Server {
     this.app.use(this.apiPath.productoBodega, productoBodegaRoutes);
     this.app.use(this.apiPath.logEstadoPedido, logEstadoPedidoRoutes);
     this.app.use(this.apiPath.productoImagen, productoImagenRoutes);
+    this.app.use(this.apiPath.region, regionRoutes);
+    this.app.use(this.apiPath.comuna, comunaRoutes);
   }
 
   listen() {
