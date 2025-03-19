@@ -25,6 +25,22 @@ GuiaDespacho.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    subtotal:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    insurage:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    other:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    total:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     sequelize: db,

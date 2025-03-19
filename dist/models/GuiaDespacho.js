@@ -21,6 +21,22 @@ GuiaDespacho.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    subtotal: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    insurage: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    other: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    total: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
 }, {
     sequelize: connection_1.default,
     tableName: "guias_despachos",

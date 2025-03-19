@@ -45,9 +45,9 @@ const getGuiaDespachoById = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getGuiaDespachoById = getGuiaDespachoById;
 const createGuiaDespacho = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { codigo, estados_id } = req.body;
+    const { codigo, estados_id, subtotal, insurage, other, total } = req.body;
     try {
-        const nuevaGuiaDespacho = yield GuiaDespacho_1.default.create({ codigo, estados_id });
+        const nuevaGuiaDespacho = yield GuiaDespacho_1.default.create({ codigo, estados_id, subtotal, insurage, other, total });
         res.status(201).json(nuevaGuiaDespacho);
     }
     catch (error) {

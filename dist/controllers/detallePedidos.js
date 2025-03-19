@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDetallePedido = exports.updateDetallePedido = exports.createDetallePedido = exports.getDetallePedidoById = exports.getDetallePedidoByPedidoId = exports.getAllDetallePedidos = void 0;
+exports.deleteDetallePedido = exports.updateDetallePedido = exports.createDetallePedido = exports.getDetallePedidoById = exports.getProductoImagenByPedidoId = exports.getDetallePedidoByPedidoId = exports.getAllDetallePedidos = void 0;
 const DetallePedido_1 = __importDefault(require("../models/DetallePedido"));
 const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Producto_1 = __importDefault(require("../models/Producto"));
@@ -74,6 +74,23 @@ const getDetallePedidoByPedidoId = (req, res) => __awaiter(void 0, void 0, void 
     }
 });
 exports.getDetallePedidoByPedidoId = getDetallePedidoByPedidoId;
+const getProductoImagenByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pedidoId } = req.params;
+    try {
+        const detallePedidos = yield DetallePedido_1.default.findAll({
+            where: { pedidos_id: pedidoId },
+            include: [{ model: Producto_1.default, include: [{ model: ProductoImagen_1.default }] }],
+        });
+        const productoImagenes = detallePedidos.map((detalle) => detalle.Producto.ProductoImagens);
+        res.status(200).json(productoImagenes[0]);
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error al obtener las imágenes de los productos", error });
+    }
+});
+exports.getProductoImagenByPedidoId = getProductoImagenByPedidoId;
 const getDetallePedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

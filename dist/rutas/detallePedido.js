@@ -6,6 +6,7 @@ const detallePedidos_1 = require("../controllers/detallePedidos");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], detallePedidos_1.getAllDetallePedidos);
 route.get("/pedido/:pedidoId", [validarToken_1.validarjwt], detallePedidos_1.getDetallePedidoByPedidoId);
+route.get("/productoImagen/:pedidoId", [validarToken_1.validarjwt], detallePedidos_1.getProductoImagenByPedidoId);
 route.get("/:id", [validarToken_1.validarjwt], detallePedidos_1.getDetallePedidoById);
 route.post("/", [validarToken_1.validarjwt], detallePedidos_1.createDetallePedido);
 route.put("/:id", [validarToken_1.validarjwt], detallePedidos_1.updateDetallePedido);

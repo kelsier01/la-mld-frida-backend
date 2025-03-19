@@ -21,34 +21,91 @@ const Empleado_1 = __importDefault(require("../models/Empleado"));
 const EstadoPedido_1 = __importDefault(require("../models/EstadoPedido"));
 const GuiaDespacho_1 = __importDefault(require("../models/GuiaDespacho"));
 const Persona_1 = __importDefault(require("../models/Persona"));
-const getAllPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sequelize_1 = require("sequelize");
+const Direccion_1 = __importDefault(require("../models/Direccion"));
+const Region_1 = __importDefault(require("../models/Region"));
+// export const getAllPedidos = async (req: Request, res: Response) => {
+//   try {
+//     const pedidos = await Pedido.findAll({
+//       include: [
+//         {
+//           model: Empleado,
+//         },
+//         {
+//           model: Cliente,
+//           include: [
+//             {
+//               model: Persona,
+//             },
+//           ],
+//         },
+//         { model: EstadoPedido },
+//         {
+//           model: Delivery,
+//         },
+//         {
+//           model: GuiaDespacho,
+//         },
+//         {
+//           model: ComprobanteVenta,
+//         },
+//       ],
+//     });
+//     res.status(200).json(pedidos);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error al obtener los pedidos", error });
+//   }
+// };
+const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pedidos = yield Pedido_1.default.findAll({
+        const { search = "", page = "1", limit = 10, fecha_desde, fecha_hasta, estadoId, clienteId, regionId, } = req.query;
+        const pageNumber = Number(page);
+        const limite = Number(limit);
+        const desde = fecha_desde || "";
+        const hasta = fecha_hasta || "";
+        const estado = estadoId != 0 ? estadoId : "";
+        const cliente = clienteId != 0 ? clienteId : "";
+        const region = regionId != 0 ? regionId : "";
+        console.log(`search = ${search}
+       - desde = ${desde} - 
+       hasta = ${hasta} - 
+       estado = ${estado} - 
+       cliente = ${cliente} - 
+       region = ${region}`);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        const offset = (pageNumber - 1) * limite;
+        // Construcción de la condición de búsqueda en Pedido
+        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (search && search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estado_pedidos_id: estado })), (cliente && { cliente_id: cliente })), (desde && { createdAt: { [sequelize_1.Op.gte]: desde } })), (hasta && { createdAt: { [sequelize_1.Op.lte]: hasta } }));
+        const regionWhere = Object.assign({}, (region && { region_id: region }));
+        const { rows: pedidos, count: total } = yield Pedido_1.default.findAndCountAll({
+            where: pedidoWhere,
             include: [
-                {
-                    model: Empleado_1.default,
-                },
-                {
-                    model: Cliente_1.default,
-                    include: [
-                        {
-                            model: Persona_1.default,
-                        },
-                    ],
-                },
+                { model: Empleado_1.default },
+                { model: Cliente_1.default, include: [{ model: Persona_1.default }] },
                 { model: EstadoPedido_1.default },
+                { model: Delivery_1.default },
+                { model: GuiaDespacho_1.default },
+                { model: ComprobanteVenta_1.default },
                 {
-                    model: Delivery_1.default,
-                },
-                {
-                    model: GuiaDespacho_1.default,
-                },
-                {
-                    model: ComprobanteVenta_1.default,
-                },
+                    model: Direccion_1.default,
+                    where: regionWhere,
+                    include: [{ model: Region_1.default }]
+                }
             ],
+            limit: limite,
+            offset,
+            distinct: true,
         });
-        res.status(200).json(pedidos);
+        res.status(200).json({
+            pedidos,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / limite),
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error al obtener los pedidos", error });
@@ -94,7 +151,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.createPedido = createPedido;
 const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id } = req.body;
     try {
         const pedido = yield Pedido_1.default.findByPk(id);
         if (pedido) {
@@ -104,9 +161,10 @@ const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 estado_pedidos_id,
                 deliverys_id,
                 monto_total,
-                documento_usa_id,
-                n_despacho_chile,
+                guia_despacho_id,
+                tracking_number,
                 comprobante_ventas_id,
+                direccion_id
             });
             res.status(200).json(pedido);
         }

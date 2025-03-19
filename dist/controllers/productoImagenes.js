@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductoImagen = exports.updateProductoImagen = exports.createProductoImagen = exports.getProductoImagenById = exports.getAllProductoImagenes = void 0;
+exports.deleteProductoImagen = exports.updateProductoImagen = exports.createProductoImagen = exports.getProductoImagenByPedidoId = exports.getProductoImagenById = exports.getAllProductoImagenes = void 0;
 const ProductoImagen_1 = __importDefault(require("../models/ProductoImagen"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -49,6 +49,28 @@ const getProductoImagenById = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getProductoImagenById = getProductoImagenById;
+const getProductoImagenByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const productoImagen = yield ProductoImagen_1.default.findAll({
+            where: {
+                productos_id: id,
+            },
+        });
+        if (productoImagen) {
+            res.status(200).json(productoImagen);
+        }
+        else {
+            res.status(404).json({ message: "Imagen de producto no encontrada" });
+        }
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error al obtener la imagen de producto", error });
+    }
+});
+exports.getProductoImagenByPedidoId = getProductoImagenByPedidoId;
 // Crear una nueva imagen de producto
 const createProductoImagen = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Usa Multer para manejar la subida de la imagen

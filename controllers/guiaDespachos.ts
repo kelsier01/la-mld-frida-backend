@@ -29,9 +29,9 @@ export const getGuiaDespachoById = async (req: Request, res: Response) => {
 };
 
 export const createGuiaDespacho = async (req: Request, res: Response) => {
-  const { codigo, estados_id } = req.body;
+  const { codigo, estados_id, subtotal, insurage, other, total } = req.body;
   try {
-    const nuevaGuiaDespacho = await GuiaDespacho.create({ codigo, estados_id });
+    const nuevaGuiaDespacho = await GuiaDespacho.create({ codigo, estados_id, subtotal, insurage, other, total });
     res.status(201).json(nuevaGuiaDespacho);
   } catch (error) {
     res

@@ -65,6 +65,27 @@ export const getDetallePedidoByPedidoId = async (
   }
 };
 
+export const getProductoImagenByPedidoId = async (
+  req: Request,
+  res: Response
+) => {
+  const { pedidoId } = req.params;
+  try {
+    const detallePedidos:any = await DetallePedido.findAll({
+      where: { pedidos_id: pedidoId },
+      include: [{ model: Producto, include: [{ model: ProductoImagen }] }],
+    });
+
+    const productoImagenes = detallePedidos.map((detalle:any) => detalle.Producto.ProductoImagens);
+
+    res.status(200).json(productoImagenes[0]);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener las imágenes de los productos", error });
+  }
+};
+
 export const getDetallePedidoById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

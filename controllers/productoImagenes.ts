@@ -33,6 +33,27 @@ export const getProductoImagenById = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductoImagenByPedidoId = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const productoImagen = await ProductoImagen.findAll({
+      where: {
+        productos_id: id,
+      },
+    });
+    if (productoImagen) {
+      res.status(200).json(productoImagen);
+    } else {
+      res.status(404).json({ message: "Imagen de producto no encontrada" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener la imagen de producto", error });
+  }
+};
+
+
 // Crear una nueva imagen de producto
 export const createProductoImagen = async (req: Request, res: Response) => {
   // Usa Multer para manejar la subida de la imagen
