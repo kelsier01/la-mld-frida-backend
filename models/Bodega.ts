@@ -29,7 +29,7 @@ Bodega.init(
   {
     sequelize: db,
     tableName: "bodegas",
-    timestamps: true,
+    timestamps: true, // Asegura que se usen createdAt y updatedAt
   }
 );
 

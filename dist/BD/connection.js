@@ -11,6 +11,10 @@ const db = new sequelize_1.Sequelize(BD_NAME, BD_USERNAME, BD_PASSWORD, {
     host: BD_HOST,
     dialect: "mysql",
     port: BD_PORT,
+    define: {
+        // Solo habilitar timestamps globalmente
+        timestamps: true, // Activar los campos createdAt y updatedAt por defecto
+    },
 });
 // BASE DE DATOS EN SERVIDOR
 // const db = new Sequelize(

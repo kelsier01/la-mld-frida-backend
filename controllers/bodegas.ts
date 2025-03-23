@@ -4,7 +4,7 @@ import Bodega from "../models/Bodega";
 export const getAllBodegas = async (req: Request, res: Response) => {
   try {
     const bodegas = await Bodega.findAll();
-    res.status(200).json(bodegas);
+    return res.status(200).json(bodegas);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las bodegas", error });
   }

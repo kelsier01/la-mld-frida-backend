@@ -1,12 +1,55 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Marca from "../models/Marca";
+import { Op } from "sequelize";
 
-export const getAllMarcas = async (req: Request, res: Response) => {
+export const getAllMarcas = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const marcas = await Marca.findAll();
-    res.status(200).json(marcas);
+    const {
+      search = "",
+      page = "1",
+      limit = 20,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      limit?: Number;
+    };
+    // Validación de la paginación
+    const pageNumber = Number(page);
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+
+    const offset = (pageNumber - 1) * Number(limit);
+    const limite = Number(limit);
+    // Construcción de la condición de búsqueda en Persona
+    const marcaWhere: any = search
+      ? { nombre: { [Op.like]: `%${search}%` } }
+      : {};
+
+    // Ejecución de la consulta con Sequelize
+    const { rows: marcas, count: total } = await Marca.findAndCountAll({
+      where: marcaWhere,
+      limit: limite,
+      offset,
+      distinct: true,
+      order: [["nombre", "ASC"]],
+    });
+    // const marcas = await Marca.findAll();
+    return res.json({
+      marcas,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las marcas", error });
+    next(error); // Delegar el error al middleware de manejo de errores
   }
 };
 

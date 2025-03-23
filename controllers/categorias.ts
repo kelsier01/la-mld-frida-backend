@@ -1,12 +1,53 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Categoria from "../models/Categoria";
+import { Op } from "sequelize";
 
-export const getAllCategorias = async (req: Request, res: Response) => {
+export const getAllCategorias = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const categorias = await Categoria.findAll();
-    res.status(200).json(categorias);
+    const {
+      search = "",
+      page = "1",
+      limit = 20,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      limit?: Number;
+    };
+    // Validación de la paginación
+    const pageNumber = Number(page);
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+
+    const offset = (pageNumber - 1) * Number(limit);
+    const limite = Number(limit);
+    // Construcción de la condición de búsqueda en Persona
+    const categoriaWhere: any = search
+      ? { nombre: { [Op.like]: `%${search}%` } }
+      : {};
+    // Ejecución de la consulta con Sequelize
+    const { rows: categorias, count: total } = await Categoria.findAndCountAll({
+      where: categoriaWhere,
+      limit: limite,
+      offset,
+      distinct: true,
+      order: [["nombre", "ASC"]],
+    });
+    return res.json({
+      categorias,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las categorías", error });
+    next(error); // Delegar el error al middleware de manejo de errores
   }
 };
 
@@ -26,6 +67,7 @@ export const getCategoriaById = async (req: Request, res: Response) => {
 
 export const createCategoria = async (req: Request, res: Response) => {
   const { nombre } = req.body;
+  console.log("Entró al metodo createCategoria = ", nombre);
   try {
     const nuevaCategoria = await Categoria.create({ nombre });
     res.status(201).json(nuevaCategoria);

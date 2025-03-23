@@ -14,13 +14,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMarca = exports.updateMarca = exports.createMarca = exports.getMarcaById = exports.getAllMarcas = void 0;
 const Marca_1 = __importDefault(require("../models/Marca"));
-const getAllMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sequelize_1 = require("sequelize");
+const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const marcas = yield Marca_1.default.findAll();
-        res.status(200).json(marcas);
+        const { search = "", page = "1", limit = 20, } = req.query;
+        // Validación de la paginación
+        const pageNumber = Number(page);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        const offset = (pageNumber - 1) * Number(limit);
+        const limite = Number(limit);
+        // Construcción de la condición de búsqueda en Persona
+        const marcaWhere = search
+            ? { nombre: { [sequelize_1.Op.like]: `%${search}%` } }
+            : {};
+        // Ejecución de la consulta con Sequelize
+        const { rows: marcas, count: total } = yield Marca_1.default.findAndCountAll({
+            where: marcaWhere,
+            limit: limite,
+            offset,
+            distinct: true,
+            order: [["nombre", "ASC"]],
+        });
+        // const marcas = await Marca.findAll();
+        return res.json({
+            marcas,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / Number(limit)),
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error al obtener las marcas", error });
+        next(error); // Delegar el error al middleware de manejo de errores
     }
 });
 exports.getAllMarcas = getAllMarcas;
