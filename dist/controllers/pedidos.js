@@ -79,7 +79,8 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         }
         const offset = (pageNumber - 1) * limite;
         // Construcción de la condición de búsqueda en Pedido
-        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (search && search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estado_pedidos_id: estado })), (cliente && { cliente_id: cliente })), (desde && { createdAt: { [sequelize_1.Op.gte]: desde } })), (hasta && { createdAt: { [sequelize_1.Op.lte]: hasta } }));
+        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estado_pedidos_id: estado })), (cliente && { cliente_id: cliente })), (desde && { createdAt: { [sequelize_1.Op.gte]: desde } })), (hasta && { createdAt: { [sequelize_1.Op.lte]: hasta } }));
         const regionWhere = Object.assign({}, (region && { region_id: region }));
         const { rows: pedidos, count: total } = yield Pedido_1.default.findAndCountAll({
             where: pedidoWhere,
@@ -93,12 +94,13 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
                 {
                     model: Direccion_1.default,
                     where: regionWhere,
-                    include: [{ model: Region_1.default }]
-                }
+                    include: [{ model: Region_1.default }],
+                },
             ],
             limit: limite,
             offset,
             distinct: true,
+            order: [["id", "DESC"]],
         });
         res.status(200).json({
             pedidos,
@@ -151,7 +153,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.createPedido = createPedido;
 const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, } = req.body;
     try {
         const pedido = yield Pedido_1.default.findByPk(id);
         if (pedido) {
@@ -164,7 +166,7 @@ const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 guia_despacho_id,
                 tracking_number,
                 comprobante_ventas_id,
-                direccion_id
+                direccion_id,
             });
             res.status(200).json(pedido);
         }

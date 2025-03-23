@@ -24,7 +24,7 @@ Bodega.init({
 }, {
     sequelize: connection_1.default,
     tableName: "bodegas",
-    timestamps: true,
+    timestamps: true, // Asegura que se usen createdAt y updatedAt
 });
 exports.default = Bodega;
 //# sourceMappingURL=Bodega.js.map

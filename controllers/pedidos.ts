@@ -10,8 +10,6 @@ import Persona from "../models/Persona";
 import { Op } from "sequelize";
 import Direccion from "../models/Direccion";
 import Region from "../models/Region";
-import { endOfDay, startOfDay, parseISO } from "date-fns";
-import { parse } from "dotenv";
 
 // export const getAllPedidos = async (req: Request, res: Response) => {
 //   try {
@@ -98,11 +96,10 @@ export const getAllPedidos = async (
 
     const offset = (pageNumber - 1) * limite;
 
-    
-
     // Construcción de la condición de búsqueda en Pedido
     const pedidoWhere: any = {
-      ...(search && search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
+      ...(search &&
+        search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
       ...(estado && { estado_pedidos_id: estado }),
       ...(cliente && { cliente_id: cliente }),
       ...(desde && { createdAt: { [Op.gte]: desde } }),
@@ -116,21 +113,22 @@ export const getAllPedidos = async (
     const { rows: pedidos, count: total } = await Pedido.findAndCountAll({
       where: pedidoWhere,
       include: [
-        {model: Empleado},
-        {model: Cliente, include: [{model: Persona}]},
-        {model: EstadoPedido},
-        {model: Delivery},
-        {model: GuiaDespacho},
-        {model: ComprobanteVenta},
+        { model: Empleado },
+        { model: Cliente, include: [{ model: Persona }] },
+        { model: EstadoPedido },
+        { model: Delivery },
+        { model: GuiaDespacho },
+        { model: ComprobanteVenta },
         {
           model: Direccion,
           where: regionWhere,
-          include: [{model: Region}]
-        }
+          include: [{ model: Region }],
+        },
       ],
       limit: limite,
       offset,
       distinct: true,
+      order: [["id", "DESC"]],
     });
 
     res.status(200).json({
@@ -199,7 +197,7 @@ export const updatePedido = async (req: Request, res: Response) => {
     guia_despacho_id,
     tracking_number,
     comprobante_ventas_id,
-    direccion_id
+    direccion_id,
   } = req.body;
   try {
     const pedido = await Pedido.findByPk(id);
@@ -213,7 +211,7 @@ export const updatePedido = async (req: Request, res: Response) => {
         guia_despacho_id,
         tracking_number,
         comprobante_ventas_id,
-        direccion_id
+        direccion_id,
       });
       res.status(200).json(pedido);
     } else {

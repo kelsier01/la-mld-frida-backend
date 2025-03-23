@@ -17,7 +17,7 @@ const Bodega_1 = __importDefault(require("../models/Bodega"));
 const getAllBodegas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const bodegas = yield Bodega_1.default.findAll();
-        res.status(200).json(bodegas);
+        return res.status(200).json(bodegas);
     }
     catch (error) {
         res.status(500).json({ message: "Error al obtener las bodegas", error });
