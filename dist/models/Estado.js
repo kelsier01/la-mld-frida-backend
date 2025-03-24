@@ -13,13 +13,13 @@ Estado.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    estado_pedido: {
+    estado: {
         type: sequelize_1.DataTypes.STRING(45),
         allowNull: false,
     },
 }, {
     sequelize: connection_1.default,
-    tableName: "estado_pedidos",
+    tableName: "estados",
     timestamps: true,
 });
 exports.default = Estado;

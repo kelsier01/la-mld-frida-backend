@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
+exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
 const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Cliente_1 = __importDefault(require("../models/Cliente"));
 const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
@@ -196,4 +196,24 @@ const deletePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deletePedido = deletePedido;
+const getPedidosByGuiaDespachoId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const pedido = yield Pedido_1.default.findAll({
+            where: {
+                guia_despacho_id: id,
+            },
+        });
+        if (pedido) {
+            res.status(200).json(pedido);
+        }
+        else {
+            res.status(404).json({ message: "Pedido no encontrado" });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener el pedido", error });
+    }
+});
+exports.getPedidosByGuiaDespachoId = getPedidosByGuiaDespachoId;
 //# sourceMappingURL=pedidos.js.map

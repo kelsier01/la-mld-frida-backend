@@ -5,8 +5,8 @@ import Persona from "./Persona";
 import Cliente from "./Cliente";
 import Empleado from "./Empleado";
 import EstadoPedido from "./EstadoPedido";
+import Estado from "./Estado";
 import Delivery from "./Delivery";
-import Estado from "./Estado"; // Importar el modelo Estado
 import GuiaDespacho from "./GuiaDespacho";
 import ComprobanteVenta from "./ComprobanteVenta";
 import Pedido from "./Pedido";

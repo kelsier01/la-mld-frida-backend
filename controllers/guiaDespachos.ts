@@ -105,7 +105,6 @@ export const getGuiaDespachoById = async (req: Request, res: Response) => {
         },
         {
           model: Pedido,
-          as: 'Pedidos',
           include: [
             {
               model: Direccion,

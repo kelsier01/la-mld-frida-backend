@@ -236,3 +236,21 @@ export const deletePedido = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error al eliminar el pedido", error });
   }
 };
+
+export const getPedidosByGuiaDespachoId = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const pedido = await Pedido.findAll({
+      where: {
+        guia_despacho_id: id,
+      },
+    });
+    if (pedido) {
+      res.status(200).json(pedido);
+    } else {
+      res.status(404).json({ message: "Pedido no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el pedido", error });
+  }
+};

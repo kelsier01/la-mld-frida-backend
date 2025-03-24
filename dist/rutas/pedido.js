@@ -9,5 +9,6 @@ route.get("/:id", [validarToken_1.validarjwt], pedidos_1.getPedidoById);
 route.post("/", [validarToken_1.validarjwt], pedidos_1.createPedido);
 route.put("/:id", [validarToken_1.validarjwt], pedidos_1.updatePedido);
 route.delete("/:id", [validarToken_1.validarjwt], pedidos_1.deletePedido);
+route.get("/guia/:id", [validarToken_1.validarjwt], pedidos_1.getPedidosByGuiaDespachoId);
 exports.default = route;
 //# sourceMappingURL=pedido.js.map

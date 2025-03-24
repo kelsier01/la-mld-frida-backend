@@ -89,7 +89,6 @@ const getGuiaDespachoById = (req, res) => __awaiter(void 0, void 0, void 0, func
                 },
                 {
                     model: Pedido_1.default,
-                    as: 'Pedidos',
                     include: [
                         {
                             model: Direccion_1.default,
