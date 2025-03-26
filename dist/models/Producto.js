@@ -37,6 +37,11 @@ Producto.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: true,
     },
+    eliminado: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
 }, {
     sequelize: connection_1.default,
     tableName: "productos",

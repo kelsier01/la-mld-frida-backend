@@ -39,8 +39,4 @@ LogEstadoPedido.init(
   }
 );
 
-LogEstadoPedido.belongsTo(Estados, { foreignKey: 'estado_pedidos_id', as: 'estado' });
-
-
-
 export default LogEstadoPedido;

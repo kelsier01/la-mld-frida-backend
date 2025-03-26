@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCategoria = exports.updateCategoria = exports.createCategoria = exports.getCategoriaById = exports.getAllCategorias = void 0;
+exports.deleteCategoria = exports.updateCategoria = exports.createCategoria = exports.getCategoriaById = exports.getCategorias = exports.getAllCategorias = void 0;
 const Categoria_1 = __importDefault(require("../models/Categoria"));
 const sequelize_1 = require("sequelize");
 const getAllCategorias = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,6 +52,16 @@ const getAllCategorias = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getAllCategorias = getAllCategorias;
+const getCategorias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const categorias = yield Categoria_1.default.findAll();
+        res.status(200).json(categorias);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener las categorías", error });
+    }
+});
+exports.getCategorias = getCategorias;
 const getCategoriaById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

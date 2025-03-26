@@ -34,8 +34,9 @@ const getAllGuiasDespacho = (req, res, next) => __awaiter(void 0, void 0, void 0
         const offset = (pageNumber - 1) * Number(limit);
         const limite = Number(limit);
         // Construcción de la condición de búsqueda en GuiaDespacho
-        const guiaDespachoWhere = Object.assign(Object.assign({}, (search &&
-            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estados_id: estado }));
+        const guiaDespachoWhere = Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estados_id: estado })), { estados_id: { [sequelize_1.Op.ne]: 2 } // Excluir registros donde estados_id es igual a 0
+         });
         // Construcción de la condición de búsqueda en Direccion por región
         const direccionWhere = Object.assign({}, (region && { region_id: region }));
         const { rows: guiasDespacho, count: total } = yield GuiaDespacho_1.default.findAndCountAll({

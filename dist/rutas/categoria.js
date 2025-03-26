@@ -5,6 +5,7 @@ const validarToken_1 = require("../middlewares/validarToken");
 const categorias_1 = require("../controllers/categorias");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], categorias_1.getAllCategorias);
+route.get("/all", [validarToken_1.validarjwt], categorias_1.getCategorias);
 route.get("/:id", [validarToken_1.validarjwt], categorias_1.getCategoriaById);
 route.post("/", [validarToken_1.validarjwt], categorias_1.createCategoria);
 route.put("/:id", [validarToken_1.validarjwt], categorias_1.updateCategoria);

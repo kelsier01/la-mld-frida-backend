@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProductoBodega = exports.updateProductoBodega = exports.createProductoBodega = exports.getProductoBodegaById = exports.getAllProductoBodegas = void 0;
 const ProductoBodega_1 = __importDefault(require("../models/ProductoBodega"));
+const Bodega_1 = __importDefault(require("../models/Bodega"));
 const getAllProductoBodegas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productoBodegas = yield ProductoBodega_1.default.findAll();
@@ -52,7 +53,10 @@ const createProductoBodega = (req, res) => __awaiter(void 0, void 0, void 0, fun
             bodegas_id,
             stock,
         });
-        res.status(201).json(nuevoProductoBodega);
+        const productoBodegaConBodega = yield ProductoBodega_1.default.findByPk(nuevoProductoBodega.id, {
+            include: [{ model: Bodega_1.default }],
+        });
+        res.status(201).json(productoBodegaConBodega);
     }
     catch (error) {
         res

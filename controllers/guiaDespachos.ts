@@ -47,6 +47,7 @@ export const getAllGuiasDespacho = async (
       ...(search &&
         search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
       ...(estado && { estados_id: estado }),
+      estados_id: { [Op.ne]: 2 }  // Excluir registros donde estados_id es igual a 0
     };
 
     // Construcción de la condición de búsqueda en Direccion por región

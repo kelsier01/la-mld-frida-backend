@@ -36,8 +36,8 @@ const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         const offset = (pageNumber - 1) * Number(limit);
         const limite = Number(limit);
         // Construcción de la condición de búsqueda en Persona
-        const productoWhere = Object.assign(Object.assign(Object.assign({}, (search &&
-            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoria && { categoria_id: categoria })), (marca && { marcas_id: marca }));
+        const productoWhere = Object.assign(Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (categoria && { categoria_id: categoria })), (marca && { marcas_id: marca })), { eliminado: 0 });
         // Construcción de la condición de búsqueda en Direccion
         const bodegaWhere = Object.assign({}, (bodega && { bodegas_id: bodega }));
         const { rows: productos, count: total } = yield Producto_1.default.findAndCountAll({
@@ -130,7 +130,7 @@ const createProducto = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.createProducto = createProducto;
 const updateProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { Categoria_id, marcas_id, codigo, nombre, precio_venta, Precio_compra_usd, } = req.body;
+    const { Categoria_id, marcas_id, codigo, nombre, precio_venta, Precio_compra_usd, eliminado } = req.body;
     try {
         const producto = yield Producto_1.default.findByPk(id);
         if (producto) {
@@ -141,6 +141,7 @@ const updateProducto = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 nombre,
                 precio_venta,
                 Precio_compra_usd,
+                eliminado
             });
             res.status(200).json(producto);
         }

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMarca = exports.updateMarca = exports.createMarca = exports.getMarcaById = exports.getAllMarcas = void 0;
+exports.deleteMarca = exports.updateMarca = exports.createMarca = exports.getMarcaById = exports.getMarcas = exports.getAllMarcas = void 0;
 const Marca_1 = __importDefault(require("../models/Marca"));
 const sequelize_1 = require("sequelize");
 const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,6 +53,16 @@ const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getAllMarcas = getAllMarcas;
+const getMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const marcas = yield Marca_1.default.findAll();
+        res.status(200).json(marcas);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener las marcas", error });
+    }
+});
+exports.getMarcas = getMarcas;
 const getMarcaById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

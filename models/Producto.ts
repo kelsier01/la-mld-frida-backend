@@ -49,6 +49,11 @@ Producto.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    eliminado:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    }
   },
   {
     sequelize: db,

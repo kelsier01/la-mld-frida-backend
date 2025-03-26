@@ -51,6 +51,15 @@ export const getAllCategorias = async (
   }
 };
 
+export const getCategorias = async (req: Request, res: Response) => {
+  try {
+    const categorias = await Categoria.findAll();
+    res.status(200).json(categorias);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener las categorías", error });
+  }
+}
+
 export const getCategoriaById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

@@ -49,6 +49,4 @@ Abono.init(
   }
 );
 
-Abono.belongsTo(Pago, { foreignKey: "pagos_id", as: "pago"});
-
 export default Abono;

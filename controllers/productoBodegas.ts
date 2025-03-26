@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import ProductoBodega from "../models/ProductoBodega";
+import Bodega from "../models/Bodega";
 
 export const getAllProductoBodegas = async (req: Request, res: Response) => {
   try {
@@ -36,7 +37,15 @@ export const createProductoBodega = async (req: Request, res: Response) => {
       bodegas_id,
       stock,
     });
-    res.status(201).json(nuevoProductoBodega);
+
+    const productoBodegaConBodega = await ProductoBodega.findByPk(
+      nuevoProductoBodega.id,
+      {
+        include: [{ model: Bodega }],
+      }
+    );
+
+    res.status(201).json(productoBodegaConBodega);
   } catch (error) {
     res
       .status(500)

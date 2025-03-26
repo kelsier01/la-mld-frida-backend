@@ -5,6 +5,7 @@ const validarToken_1 = require("../middlewares/validarToken");
 const marcas_1 = require("../controllers/marcas");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], marcas_1.getAllMarcas);
+route.get("/all", [validarToken_1.validarjwt], marcas_1.getMarcas);
 route.get("/:id", [validarToken_1.validarjwt], marcas_1.getMarcaById);
 route.post("/", [validarToken_1.validarjwt], marcas_1.createMarca);
 route.put("/:id", [validarToken_1.validarjwt], marcas_1.updateMarca);

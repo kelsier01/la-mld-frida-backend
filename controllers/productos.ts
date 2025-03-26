@@ -52,6 +52,7 @@ export const getAllProductos = async (
         search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
       ...(categoria && { categoria_id: categoria }),
       ...(marca && { marcas_id: marca }),
+      eliminado: 0, // Exclude products with eliminado = 1
     };
 
     // Construcción de la condición de búsqueda en Direccion
@@ -159,6 +160,7 @@ export const updateProducto = async (req: Request, res: Response) => {
     nombre,
     precio_venta,
     Precio_compra_usd,
+    eliminado
   } = req.body;
   try {
     const producto = await Producto.findByPk(id);
@@ -170,6 +172,7 @@ export const updateProducto = async (req: Request, res: Response) => {
         nombre,
         precio_venta,
         Precio_compra_usd,
+        eliminado
       });
       res.status(200).json(producto);
     } else {

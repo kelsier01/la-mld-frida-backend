@@ -53,6 +53,15 @@ export const getAllMarcas = async (
   }
 };
 
+export const getMarcas = async (req: Request, res: Response) => {
+  try {
+    const marcas = await Marca.findAll();
+    res.status(200).json(marcas);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener las marcas", error });
+  }
+}
+
 export const getMarcaById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

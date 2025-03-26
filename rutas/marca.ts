@@ -6,11 +6,13 @@ import {
   getAllMarcas,
   getMarcaById,
   updateMarca,
+  getMarcas,
 } from "../controllers/marcas";
 
 const route = Router();
 
 route.get("/", [validarjwt], getAllMarcas);
+route.get("/all", [validarjwt], getMarcas);
 route.get("/:id", [validarjwt], getMarcaById);
 route.post("/", [validarjwt], createMarca);
 route.put("/:id", [validarjwt], updateMarca);
