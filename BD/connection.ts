@@ -17,16 +17,13 @@ const db = new Sequelize(BD_NAME, BD_USERNAME, BD_PASSWORD, {
   },
 });
 
-// BASE DE DATOS EN SERVIDOR
-// const db = new Sequelize(
-//  "agendafr_lmd_frida",
-//   "agendafr_lmd_frida",
-//  "8vrUEcUfhu2Gbn96YtGj",
-//  {
-//   host: "agendafree.cl",
-//   dialect: "mysql",
-// });
-
-// console.log("HOST CONECTADO A: agendafree.cl");
+// Sincronizar la base de datos sin modificar estructura
+db.sync({ alter: false, force: false })
+  .then(() => {
+    console.log("Conexión a la base de datos establecida correctamente.");
+  })
+  .catch((error) => {
+    console.error("Error al conectar la base de datos:", error);
+  });
 
 export default db;
