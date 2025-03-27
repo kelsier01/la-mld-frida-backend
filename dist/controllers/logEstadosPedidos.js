@@ -41,7 +41,7 @@ const getLogEstadoPedidosByPedidoId = (req, res) => __awaiter(void 0, void 0, vo
     try {
         const logEstadoPedidos = yield LogEstadoPedido_1.default.findAll({
             where: { pedidos_id: pedidoId },
-            include: [{ model: EstadoPedido_1.default, as: "estado" }],
+            include: [{ model: EstadoPedido_1.default }],
         });
         res.status(200).json(logEstadoPedidos);
     }

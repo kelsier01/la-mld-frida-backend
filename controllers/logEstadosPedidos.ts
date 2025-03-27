@@ -27,7 +27,7 @@ export const getLogEstadoPedidosByPedidoId = async (req: Request, res: Response)
   try {
     const logEstadoPedidos = await LogEstadoPedido.findAll({
       where: { pedidos_id: pedidoId },
-      include: [{ model: Estados, as: "estado" }],
+      include: [{ model: Estados }],
     });
     res.status(200).json(logEstadoPedidos);
   } catch (error) {
