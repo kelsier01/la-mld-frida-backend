@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
+exports.getPedidosByComprobanteVentaId = exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
 const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Cliente_1 = __importDefault(require("../models/Cliente"));
 const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
@@ -24,38 +24,7 @@ const Persona_1 = __importDefault(require("../models/Persona"));
 const sequelize_1 = require("sequelize");
 const Direccion_1 = __importDefault(require("../models/Direccion"));
 const Region_1 = __importDefault(require("../models/Region"));
-// export const getAllPedidos = async (req: Request, res: Response) => {
-//   try {
-//     const pedidos = await Pedido.findAll({
-//       include: [
-//         {
-//           model: Empleado,
-//         },
-//         {
-//           model: Cliente,
-//           include: [
-//             {
-//               model: Persona,
-//             },
-//           ],
-//         },
-//         { model: EstadoPedido },
-//         {
-//           model: Delivery,
-//         },
-//         {
-//           model: GuiaDespacho,
-//         },
-//         {
-//           model: ComprobanteVenta,
-//         },
-//       ],
-//     });
-//     res.status(200).json(pedidos);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error al obtener los pedidos", error });
-//   }
-// };
+const Comuna_1 = __importDefault(require("../models/Comuna"));
 const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { search = "", page = "1", limit = 10, fecha_desde, fecha_hasta, estadoId, clienteId, regionId, } = req.query;
@@ -216,4 +185,36 @@ const getPedidosByGuiaDespachoId = (req, res) => __awaiter(void 0, void 0, void 
     }
 });
 exports.getPedidosByGuiaDespachoId = getPedidosByGuiaDespachoId;
+const getPedidosByComprobanteVentaId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const pedido = yield Pedido_1.default.findAll({
+            where: {
+                comprobante_ventas_id: id,
+            },
+            include: [
+                { model: Empleado_1.default },
+                { model: Cliente_1.default, include: [{ model: Persona_1.default }] },
+                { model: EstadoPedido_1.default },
+                { model: Delivery_1.default },
+                { model: GuiaDespacho_1.default },
+                { model: ComprobanteVenta_1.default },
+                {
+                    model: Direccion_1.default,
+                    include: [{ model: Region_1.default }, { model: Comuna_1.default }],
+                },
+            ],
+        });
+        if (pedido) {
+            res.status(200).json(pedido);
+        }
+        else {
+            res.status(404).json({ message: "Pedido no encontrado" });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener el pedido", error });
+    }
+});
+exports.getPedidosByComprobanteVentaId = getPedidosByComprobanteVentaId;
 //# sourceMappingURL=pedidos.js.map

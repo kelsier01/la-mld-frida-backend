@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
-import Pago from "./Pago";
 
 class Abono extends Model {
   public id!: number;

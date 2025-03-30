@@ -6,7 +6,8 @@ import {
   getAllPedidos,
   getPedidoById,
   updatePedido,
-  getPedidosByGuiaDespachoId
+  getPedidosByGuiaDespachoId,
+  getPedidosByComprobanteVentaId
 } from "../controllers/pedidos";
 
 const route = Router();
@@ -17,5 +18,6 @@ route.post("/", [validarjwt], createPedido);
 route.put("/:id", [validarjwt], updatePedido);
 route.delete("/:id", [validarjwt], deletePedido);
 route.get("/guia/:id", [validarjwt], getPedidosByGuiaDespachoId);
+route.get("/comprobante/:id", [validarjwt], getPedidosByComprobanteVentaId);
 
 export default route;
