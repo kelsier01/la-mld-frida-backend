@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAbono = exports.updateAbono = exports.createAbono = exports.getAbonoById = exports.getAllAbonosByPedidoId = exports.getAllAbonos = void 0;
 const Abono_1 = __importDefault(require("../models/Abono"));
 const Pago_1 = __importDefault(require("../models/Pago"));
+const MetodoPago_1 = __importDefault(require("../models/MetodoPago"));
 const getAllAbonos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const abonos = yield Abono_1.default.findAll();
@@ -34,6 +35,9 @@ const getAllAbonosByPedidoId = (req, res) => __awaiter(void 0, void 0, void 0, f
                     model: Pago_1.default,
                     where: { pedidos_id: pedidoId },
                 },
+                {
+                    model: MetodoPago_1.default
+                }
             ],
         });
         res.status(200).json(abonos);

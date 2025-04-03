@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Abono from "../models/Abono";
 import Pago from "../models/Pago";
+import MetodoPago from "../models/MetodoPago";
 
 export const getAllAbonos = async (req: Request, res: Response) => {
   try {
@@ -20,6 +21,9 @@ export const getAllAbonosByPedidoId = async (req: Request, res: Response) => {
           model: Pago,
           where: { pedidos_id: pedidoId },
         },
+        {
+          model: MetodoPago
+        }
       ],
     });
     res.status(200).json(abonos);
