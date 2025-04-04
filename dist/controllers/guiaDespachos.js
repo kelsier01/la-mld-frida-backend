@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteGuiaDespacho = exports.updateGuiaDespacho = exports.createGuiaDespacho = exports.getGuiaDespachoById = exports.getAllGuiasDespacho = void 0;
+exports.generarCodigoGuiaDespacho = exports.deleteGuiaDespacho = exports.updateGuiaDespacho = exports.createGuiaDespacho = exports.getGuiaDespachoById = exports.getAllGuiasDespacho = void 0;
 const GuiaDespacho_1 = __importDefault(require("../models/GuiaDespacho"));
 const Estado_1 = __importDefault(require("../models/Estado"));
 const Region_1 = __importDefault(require("../models/Region"));
@@ -185,4 +185,29 @@ const deleteGuiaDespacho = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.deleteGuiaDespacho = deleteGuiaDespacho;
+const generarCodigoGuiaDespacho = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const añoActual = new Date().getFullYear();
+        const cantidadTotalGuiasPorAño = yield GuiaDespacho_1.default.count({
+            where: {
+                createdAt: {
+                    [sequelize_1.Op.gte]: new Date(`${añoActual}-01-01`),
+                    [sequelize_1.Op.lt]: new Date(`${añoActual + 1}-01-01`),
+                },
+            }
+        });
+        // Add leading zero when the count is less than 10
+        const numeroFormateado = (cantidadTotalGuiasPorAño + 1) < 10
+            ? `0${cantidadTotalGuiasPorAño + 1}`
+            : `${cantidadTotalGuiasPorAño + 1}`;
+        const nuevoCodigo = `${numeroFormateado}${añoActual}`;
+        res.status(200).json({ codigo: nuevoCodigo });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Error al generar el código de la guía de despacho"
+        });
+    }
+});
+exports.generarCodigoGuiaDespacho = generarCodigoGuiaDespacho;
 //# sourceMappingURL=guiaDespachos.js.map

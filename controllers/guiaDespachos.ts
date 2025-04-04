@@ -193,3 +193,29 @@ export const deleteGuiaDespacho = async (req: Request, res: Response) => {
       .json({ message: "Error al eliminar la guía de despacho", error });
   }
 };
+
+export const generarCodigoGuiaDespacho = async (req: Request, res: Response) => {
+  try {
+    const añoActual = new Date().getFullYear();
+    const cantidadTotalGuiasPorAño = await GuiaDespacho.count({
+      where: {
+        createdAt: {
+          [Op.gte]: new Date(`${añoActual}-01-01`),
+          [Op.lt]: new Date(`${añoActual + 1}-01-01`),
+        },
+      }
+    });
+    
+    // Add leading zero when the count is less than 10
+    const numeroFormateado = (cantidadTotalGuiasPorAño + 1) < 10 
+      ? `0${cantidadTotalGuiasPorAño + 1}` 
+      : `${cantidadTotalGuiasPorAño + 1}`;
+    
+    const nuevoCodigo = `${numeroFormateado}${añoActual}`;
+    res.status(200).json({ codigo: nuevoCodigo });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al generar el código de la guía de despacho"
+    });
+  }
+};
