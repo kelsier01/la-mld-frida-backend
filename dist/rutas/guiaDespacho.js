@@ -6,6 +6,7 @@ const guiaDespachos_1 = require("../controllers/guiaDespachos");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], guiaDespachos_1.getAllGuiasDespacho);
 route.get("/:id", [validarToken_1.validarjwt], guiaDespachos_1.getGuiaDespachoById);
+route.get("/generar/codigo", [validarToken_1.validarjwt], guiaDespachos_1.generarCodigoGuiaDespacho);
 route.post("/", [validarToken_1.validarjwt], guiaDespachos_1.createGuiaDespacho);
 route.put("/:id", [validarToken_1.validarjwt], guiaDespachos_1.updateGuiaDespacho);
 route.delete("/:id", [validarToken_1.validarjwt], guiaDespachos_1.deleteGuiaDespacho);
