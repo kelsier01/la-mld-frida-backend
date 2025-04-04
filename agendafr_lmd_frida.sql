@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-03-2025 a las 20:56:19
+-- Tiempo de generación: 30-03-2025 a las 04:03:14
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -69,7 +69,17 @@ INSERT INTO `abonos` (`id`, `pagos_id`, `monto`, `fecha`, `metodos_pago_id`, `em
 (24, 29, 3900, '2025-03-26 20:39:38', 3, 5, '2025-03-26 20:39:38', '2025-03-26 20:39:38'),
 (25, 30, 2600, '2025-03-26 20:40:19', 1, 5, '2025-03-26 20:40:19', '2025-03-26 20:40:19'),
 (26, 31, 2700, '2025-03-26 20:42:20', 3, 5, '2025-03-26 20:42:20', '2025-03-26 20:42:20'),
-(27, 32, 59990, '2025-03-26 21:44:34', 3, 5, '2025-03-26 21:44:34', '2025-03-26 21:44:34');
+(27, 32, 59990, '2025-03-26 21:44:34', 3, 5, '2025-03-26 21:44:34', '2025-03-26 21:44:34'),
+(28, 33, 30000, '2025-03-29 20:08:11', 3, 5, '2025-03-29 20:08:11', '2025-03-29 20:08:11'),
+(29, 34, 120000, '2025-03-29 20:26:01', 3, 5, '2025-03-29 20:26:01', '2025-03-29 20:26:01'),
+(30, 35, 500000, '2025-03-29 20:28:40', 3, 5, '2025-03-29 20:28:40', '2025-03-29 20:28:40'),
+(31, 36, 500000, '2025-03-29 20:28:47', 3, 5, '2025-03-29 20:28:47', '2025-03-29 20:28:47'),
+(32, 37, 500000, '2025-03-29 20:29:04', 3, 5, '2025-03-29 20:29:04', '2025-03-29 20:29:04'),
+(33, 38, 500, '2025-03-29 20:39:00', 3, 5, '2025-03-29 20:39:00', '2025-03-29 20:39:00'),
+(34, 39, 500, '2025-03-29 20:41:49', 1, 5, '2025-03-29 20:41:49', '2025-03-29 20:41:49'),
+(35, 40, 50000, '2025-03-29 21:00:26', 3, 5, '2025-03-29 21:00:26', '2025-03-29 21:00:26'),
+(36, 41, 600000, '2025-03-29 21:07:00', 3, 5, '2025-03-29 21:07:00', '2025-03-29 21:07:00'),
+(37, 42, 50000, '2025-03-29 22:45:33', 1, 5, '2025-03-29 22:45:33', '2025-03-29 22:45:33');
 
 -- --------------------------------------------------------
 
@@ -2257,7 +2267,8 @@ INSERT INTO `clientes` (`id`, `personas_id`, `cta_instagram`, `eliminado`, `crea
 (2108, 2108, NULL, 0, '2025-03-24 01:06:36', '2025-03-24 01:06:36'),
 (2109, 2109, NULL, 0, '2025-03-24 01:06:36', '2025-03-24 01:06:36'),
 (2110, 2110, NULL, 0, '2025-03-24 01:06:36', '2025-03-24 01:06:36'),
-(2125, 2128, '@dylan', 0, '2025-03-25 23:41:18', '2025-03-25 23:41:18');
+(2125, 2128, '@dylan', 0, '2025-03-25 23:41:18', '2025-03-25 23:41:18'),
+(2126, 2129, '@nefelicataaa', 0, '2025-03-29 20:04:30', '2025-03-29 20:04:30');
 
 -- --------------------------------------------------------
 
@@ -2272,6 +2283,18 @@ CREATE TABLE `comprobante_ventas` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `comprobante_ventas`
+--
+
+INSERT INTO `comprobante_ventas` (`id`, `codigo`, `estados_id`, `createdAt`, `updatedAt`) VALUES
+(1, 'CV-1-1', 2, '2025-03-29 18:18:20', '2025-03-30 01:27:21'),
+(2, 'CV-2-2', 2, '2025-03-29 18:18:20', '2025-03-30 01:39:56'),
+(3, 'CV-1-3', 2, '2025-03-29 19:09:50', '2025-03-30 01:25:03'),
+(4, 'CV-2126-4', 1, '2025-03-29 20:11:33', '2025-03-29 20:11:33'),
+(5, 'CV-2-5', 2, '2025-03-29 21:12:24', '2025-03-30 01:46:09'),
+(6, 'CV-2126-6', 1, '2025-03-29 22:46:31', '2025-03-29 22:46:31');
 
 -- --------------------------------------------------------
 
@@ -2538,17 +2561,27 @@ INSERT INTO `detalle_pedidos` (`id`, `pedidos_id`, `productos_id`, `cantidad`, `
 (19, 21, 2, 3, 50, 20000, 20, NULL, 'Ejemplo', 1, '2025-03-24 13:15:21', '2025-03-26 21:40:20'),
 (20, 22, 1, 3, 130, 50000, 50, NULL, 'Ejemplo 2', 1, '2025-03-24 13:20:44', '2025-03-26 21:40:22'),
 (21, 23, 4, 2, 500, 200000, 200, NULL, 'Dyson', 1, '2025-03-24 13:26:56', '2025-03-26 21:40:22'),
-(22, 24, 18, 2, 500000, 200000, 200, NULL, '16GB RAM', 2, '2025-03-24 14:04:55', '2025-03-24 14:04:55'),
-(23, 25, 6, 2, 3, 40000, 40, NULL, 'MAC', 1, '2025-03-24 14:08:38', '2025-03-26 21:38:27'),
-(24, 25, 7, 2, 600, 200000, 200, NULL, 'Iphone', 1, '2025-03-24 14:08:38', '2025-03-26 21:38:27'),
-(25, 26, 32, 3, 400000, 200000, 200, NULL, 'Blanco', 2, '2025-03-24 17:46:26', '2025-03-26 21:37:24'),
-(26, 27, 1, 3, 1300, 50000, 50, NULL, 'Modelo Especial', 1, '2025-03-24 18:05:30', '2025-03-26 21:37:25'),
-(27, 29, 1, 2, 130000, 50000, 50, NULL, 'Talla 56 Dylan', 1, '2025-03-25 23:45:44', '2025-03-26 21:11:57'),
-(28, 30, 1, 3, 1300, 500000, 500, NULL, 'Stock disp 5, cantidad 3', 2, '2025-03-26 20:39:37', '2025-03-27 19:39:28'),
-(29, 31, 1, 2, 1300, 500000, 500, NULL, 'stock disponi 2', 2, '2025-03-26 20:40:19', '2025-03-27 19:39:24'),
-(30, 32, 1, 2, 1300, 500000, 500, NULL, '-2', 1, '2025-03-26 20:42:20', '2025-03-27 19:39:24'),
-(31, 32, 2, 2, 50, 20000, 20, NULL, 'stock 5 -2', 1, '2025-03-26 20:42:20', '2025-03-27 19:39:24'),
-(32, 33, 12, 1, 59990, 40000, 40, NULL, 'El ultimo pedido', 2, '2025-03-26 21:44:34', '2025-03-27 19:39:23');
+(22, 24, 18, 2, 500000, 200000, 200, 200, '16GB RAM', 2, '2025-03-24 14:04:55', '2025-03-29 13:19:51'),
+(23, 25, 6, 2, 3, 40000, 40, 40, 'MAC', 1, '2025-03-24 14:08:38', '2025-03-29 13:19:51'),
+(24, 25, 7, 2, 600, 200000, 200, 200, 'Iphone', 1, '2025-03-24 14:08:38', '2025-03-29 13:19:51'),
+(25, 26, 32, 3, 400000, 200000, 200, 200, 'Blanco', 2, '2025-03-24 17:46:26', '2025-03-29 13:23:45'),
+(26, 27, 1, 3, 1300, 50000, 50, 500, 'Modelo Especial', 1, '2025-03-24 18:05:30', '2025-03-29 13:23:45'),
+(27, 29, 1, 2, 130000, 50000, 50, 500, 'Talla 56 Dylan', 1, '2025-03-25 23:45:44', '2025-03-29 13:15:07'),
+(28, 30, 1, 3, 1300, 500000, 500, 500, 'Stock disp 5, cantidad 3', 2, '2025-03-26 20:39:37', '2025-03-29 13:15:07'),
+(29, 31, 1, 2, 1300, 500000, 500, 500, 'stock disponi 2', 2, '2025-03-26 20:40:19', '2025-03-29 13:15:07'),
+(30, 32, 1, 2, 1300, 500000, 500, 500, '-2', 1, '2025-03-26 20:42:20', '2025-03-29 13:12:38'),
+(31, 32, 2, 2, 50, 20000, 20, 20, 'stock 5 -2', 1, '2025-03-26 20:42:20', '2025-03-29 13:12:38'),
+(32, 33, 12, 1, 59990, 40000, 40, 40, 'El ultimo pedido', 2, '2025-03-26 21:44:34', '2025-03-29 13:19:51'),
+(33, 34, 1, 3, 10000, 500000, 500, 500, 'Talla 38, Talla 41 y Talla 40', 1, '2025-03-29 20:08:11', '2025-03-29 20:09:14'),
+(34, 35, 21, 1, 600000, 400000, 400, NULL, 'Negro', 2, '2025-03-29 20:26:01', '2025-03-29 20:26:01'),
+(35, 36, 22, 1, 500000, 200000, 200, NULL, 'Modelo SnapDragon', 2, '2025-03-29 20:28:40', '2025-03-29 20:28:40'),
+(36, 37, 22, 1, 500000, 200000, 200, NULL, 'Modelo SnapDragon', 2, '2025-03-29 20:28:47', '2025-03-29 20:28:47'),
+(37, 38, 22, 1, 500000, 200000, 200, 200, 'Modelo SnapDragon', 2, '2025-03-29 20:29:04', '2025-03-30 02:01:21'),
+(38, 39, 4, 1, 500, 200000, 200, 200, 'Modelo XL', 1, '2025-03-29 20:39:00', '2025-03-30 02:01:21'),
+(39, 40, 4, 1, 500, 200000, 200, 200, 'XL', 1, '2025-03-29 20:41:49', '2025-03-30 02:01:21'),
+(40, 41, 3, 1, 50000, 20000, 20, 20, 'Talla 30', 2, '2025-03-29 21:00:26', '2025-03-29 21:08:27'),
+(41, 42, 15, 1, 600000, 500000, 500, 500, 'Modelo especial', 2, '2025-03-29 21:07:00', '2025-03-29 21:08:27'),
+(42, 43, 6, 1, 50000, 40000, 40, 40, 'MAc Ir', 1, '2025-03-29 22:45:33', '2025-03-29 22:46:07');
 
 -- --------------------------------------------------------
 
@@ -2585,7 +2618,8 @@ INSERT INTO `direcciones` (`id`, `clientes_id`, `direccion`, `region_id`, `comun
 (12, 10, 'Av. Inca', 5, 36, '2025-03-24 13:10:10', '2025-03-24 13:10:10'),
 (13, 1, 'Av. Siempre Viva 213', 1, 1, '2025-03-24 18:04:44', '2025-03-24 18:04:44'),
 (14, 2125, 'Kilometro 3 Azapa', 1, 1, '2025-03-25 23:41:18', '2025-03-25 23:41:18'),
-(15, 2125, 'Cerro la Cruz', 1, 1, '2025-03-25 23:42:41', '2025-03-25 23:42:41');
+(15, 2125, 'Cerro la Cruz', 1, 1, '2025-03-25 23:42:41', '2025-03-25 23:42:41'),
+(16, 2126, 'Olmue, Blanco Encalada #4538', 6, 45, '2025-03-29 20:04:30', '2025-03-29 20:04:30');
 
 -- --------------------------------------------------------
 
@@ -2653,7 +2687,7 @@ INSERT INTO `estado_pedidos` (`id`, `estado_pedido`, `createdAt`, `updatedAt`) V
 (1, 'Ingresado', '2025-03-24 01:06:37', '2025-03-24 01:06:37'),
 (2, 'Despachado USA', '2025-03-24 01:06:37', '2025-03-24 01:06:37'),
 (3, 'Recepcionada Chile', '2025-03-24 01:06:37', '2025-03-24 01:06:37'),
-(4, 'Despachao de Bodega en Chile', '2025-03-24 01:06:37', '2025-03-24 01:06:37'),
+(4, 'Despachado de Bodega en Chile', '2025-03-24 01:06:37', '2025-03-24 01:06:37'),
 (5, 'Finalizado', '2025-03-24 01:06:37', '2025-03-24 01:06:37');
 
 -- --------------------------------------------------------
@@ -2706,7 +2740,25 @@ INSERT INTO `guias_despachos` (`id`, `codigo`, `estados_id`, `subtotal`, `insura
 (25, 'Codigo', 2, 40, 0, 0, 40, '2025-03-27 19:07:16', '2025-03-27 19:23:41'),
 (26, 'Codigo', 2, 40, 0, 0, 40, '2025-03-27 19:30:18', '2025-03-27 19:39:23'),
 (27, 'Codigo-2342', 2, 2040, 0, 0, 2040, '2025-03-27 19:37:19', '2025-03-27 19:39:24'),
-(28, 'Codigo-99', 2, 1500, 0, 0, 1500, '2025-03-27 19:38:58', '2025-03-27 19:39:28');
+(28, 'Codigo-99', 2, 1500, 0, 0, 1500, '2025-03-27 19:38:58', '2025-03-27 19:39:28'),
+(29, 'Codigo', 2, 2080, 0, 0, 2080, '2025-03-28 14:41:33', '2025-03-28 15:08:22'),
+(30, 'Codigo-2', 2, 600, 0, 0, 600, '2025-03-28 14:43:01', '2025-03-28 15:08:20'),
+(31, 'Codigo-003', 2, 1500, 0, 0, 1500, '2025-03-28 14:46:34', '2025-03-28 15:08:18'),
+(32, 'Codigo-25', 2, 480, 0, 0, 480, '2025-03-28 14:47:26', '2025-03-28 15:08:16'),
+(33, 'Codigo-01', 2, 40, 0, 0, 40, '2025-03-28 15:08:40', '2025-03-28 15:12:03'),
+(34, 'Codigo-01', 2, 40, 0, 0, 40, '2025-03-28 15:12:16', '2025-03-28 15:18:11'),
+(35, 'Codigo-002', 2, 2040, 0, 0, 2040, '2025-03-28 15:12:51', '2025-03-28 15:38:30'),
+(36, 'Codigo-XBOX', 2, 600, 0, 0, 600, '2025-03-28 15:19:20', '2025-03-28 15:38:25'),
+(37, 'Codigo-04', 2, 600, 0, 0, 600, '2025-03-28 15:39:10', '2025-03-29 11:36:16'),
+(38, 'Codigo.02', 2, 40, 0, 0, 40, '2025-03-28 22:21:04', '2025-03-29 11:35:42'),
+(39, 'Codigo-01', 1, 1040, 0, 0, 1040, '2025-03-29 13:12:38', '2025-03-29 13:12:38'),
+(40, 'Codigo-03', 1, 3500, 0, 0, 3500, '2025-03-29 13:15:07', '2025-03-29 13:15:07'),
+(41, 'Codigo-05', 1, 920, 0, 0, 920, '2025-03-29 13:19:51', '2025-03-29 13:19:51'),
+(42, 'Codigo-05', 1, 2100, 0, 0, 2100, '2025-03-29 13:23:45', '2025-03-29 13:23:45'),
+(43, 'Codigo-1239', 1, 1500, 0, 0, 1500, '2025-03-29 20:09:14', '2025-03-29 20:09:14'),
+(44, 'Codigo-hgjhg', 1, 520, 0, 0, 520, '2025-03-29 21:08:27', '2025-03-29 21:08:27'),
+(45, 'Codigo-55', 1, 40, 0, 0, 40, '2025-03-29 22:46:07', '2025-03-29 22:46:07'),
+(46, 'Codigo-ASDAS', 1, 600, 0, 0, 600, '2025-03-30 02:01:21', '2025-03-30 02:01:21');
 
 -- --------------------------------------------------------
 
@@ -2751,7 +2803,69 @@ INSERT INTO `log_estado_pedidos` (`id`, `pedidos_id`, `estado_pedidos_id`, `empl
 (23, 30, 1, 5, '2025-03-26 20:39:37', '2025-03-26 20:39:37'),
 (24, 31, 1, 5, '2025-03-26 20:40:19', '2025-03-26 20:40:19'),
 (25, 32, 1, 5, '2025-03-26 20:42:20', '2025-03-26 20:42:20'),
-(26, 33, 1, 5, '2025-03-26 21:44:34', '2025-03-26 21:44:34');
+(26, 33, 1, 5, '2025-03-26 21:44:34', '2025-03-26 21:44:34'),
+(27, 26, 1, 5, '2025-03-28 15:38:25', '2025-03-28 15:38:25'),
+(28, 31, 1, 5, '2025-03-28 15:38:30', '2025-03-28 15:38:30'),
+(29, 32, 1, 5, '2025-03-28 15:38:30', '2025-03-28 15:38:30'),
+(30, 26, 2, 5, '2025-03-28 15:39:10', '2025-03-28 15:39:10'),
+(31, 33, 2, 5, '2025-03-28 22:21:04', '2025-03-28 22:21:04'),
+(37, 33, 1, 5, '2025-03-29 11:35:42', '2025-03-29 11:35:42'),
+(38, 26, 1, 5, '2025-03-29 11:36:16', '2025-03-29 11:36:16'),
+(39, 33, 2, 5, '2025-03-29 13:09:20', '2025-03-29 13:09:20'),
+(40, 33, 3, 5, '2025-03-29 13:10:26', '2025-03-29 13:10:26'),
+(41, 32, 2, 5, '2025-03-29 13:12:38', '2025-03-29 13:12:38'),
+(42, 32, 3, 5, '2025-03-29 13:12:57', '2025-03-29 13:12:57'),
+(43, 31, 2, 5, '2025-03-29 13:15:07', '2025-03-29 13:15:07'),
+(44, 30, 2, 5, '2025-03-29 13:15:07', '2025-03-29 13:15:07'),
+(45, 29, 2, 5, '2025-03-29 13:15:07', '2025-03-29 13:15:07'),
+(46, 31, 3, 5, '2025-03-29 13:15:38', '2025-03-29 13:15:38'),
+(47, 30, 3, 5, '2025-03-29 13:15:38', '2025-03-29 13:15:38'),
+(48, 29, 3, 5, '2025-03-29 13:15:38', '2025-03-29 13:15:38'),
+(49, 33, 2, 5, '2025-03-29 13:19:51', '2025-03-29 13:19:51'),
+(50, 25, 2, 5, '2025-03-29 13:19:51', '2025-03-29 13:19:51'),
+(51, 24, 2, 5, '2025-03-29 13:19:51', '2025-03-29 13:19:51'),
+(52, 33, 3, 5, '2025-03-29 13:20:05', '2025-03-29 13:20:05'),
+(53, 25, 3, 5, '2025-03-29 13:20:27', '2025-03-29 13:20:27'),
+(54, 24, 3, 5, '2025-03-29 13:20:39', '2025-03-29 13:20:39'),
+(55, 27, 2, 5, '2025-03-29 13:23:46', '2025-03-29 13:23:46'),
+(56, 26, 2, 5, '2025-03-29 13:23:46', '2025-03-29 13:23:46'),
+(57, 33, 4, 5, '2025-03-29 13:28:18', '2025-03-29 13:28:18'),
+(58, 30, 4, 5, '2025-03-29 13:29:03', '2025-03-29 13:29:03'),
+(59, 33, 5, 5, '2025-03-29 18:08:12', '2025-03-29 18:08:12'),
+(60, 30, 5, 5, '2025-03-29 18:08:12', '2025-03-29 18:08:12'),
+(61, 33, 5, 5, '2025-03-29 18:18:20', '2025-03-29 18:18:20'),
+(62, 30, 5, 5, '2025-03-29 18:18:20', '2025-03-29 18:18:20'),
+(63, 32, 4, 5, '2025-03-29 19:09:33', '2025-03-29 19:09:33'),
+(64, 31, 4, 5, '2025-03-29 19:09:33', '2025-03-29 19:09:33'),
+(65, 32, 5, 5, '2025-03-29 19:09:50', '2025-03-29 19:09:50'),
+(66, 31, 5, 5, '2025-03-29 19:09:50', '2025-03-29 19:09:50'),
+(67, 34, 1, 5, '2025-03-29 20:08:11', '2025-03-29 20:08:11'),
+(68, 34, 2, 5, '2025-03-29 20:09:14', '2025-03-29 20:09:14'),
+(69, 34, 3, 5, '2025-03-29 20:10:56', '2025-03-29 20:10:56'),
+(70, 34, 4, 5, '2025-03-29 20:11:11', '2025-03-29 20:11:11'),
+(71, 34, 5, 5, '2025-03-29 20:11:33', '2025-03-29 20:11:33'),
+(72, 35, 1, 5, '2025-03-29 20:26:01', '2025-03-29 20:26:01'),
+(73, 36, 1, 5, '2025-03-29 20:28:40', '2025-03-29 20:28:40'),
+(74, 37, 1, 5, '2025-03-29 20:28:47', '2025-03-29 20:28:47'),
+(75, 38, 1, 5, '2025-03-29 20:29:04', '2025-03-29 20:29:04'),
+(76, 39, 1, 5, '2025-03-29 20:39:00', '2025-03-29 20:39:00'),
+(77, 40, 1, 5, '2025-03-29 20:41:49', '2025-03-29 20:41:49'),
+(78, 41, 1, 5, '2025-03-29 21:00:26', '2025-03-29 21:00:26'),
+(79, 42, 1, 5, '2025-03-29 21:07:00', '2025-03-29 21:07:00'),
+(80, 42, 2, 5, '2025-03-29 21:08:27', '2025-03-29 21:08:27'),
+(81, 41, 2, 5, '2025-03-29 21:08:27', '2025-03-29 21:08:27'),
+(82, 42, 3, 5, '2025-03-29 21:08:41', '2025-03-29 21:08:41'),
+(83, 42, 4, 5, '2025-03-29 21:10:11', '2025-03-29 21:10:11'),
+(84, 42, 5, 5, '2025-03-29 21:12:24', '2025-03-29 21:12:24'),
+(85, 43, 1, 5, '2025-03-29 22:45:33', '2025-03-29 22:45:33'),
+(86, 43, 2, 5, '2025-03-29 22:46:07', '2025-03-29 22:46:07'),
+(87, 43, 3, 5, '2025-03-29 22:46:18', '2025-03-29 22:46:18'),
+(88, 43, 4, 5, '2025-03-29 22:46:23', '2025-03-29 22:46:23'),
+(89, 43, 5, 5, '2025-03-29 22:46:31', '2025-03-29 22:46:31'),
+(90, 42, 4, 5, '2025-03-30 01:46:09', '2025-03-30 01:46:09'),
+(91, 40, 2, 5, '2025-03-30 02:01:21', '2025-03-30 02:01:21'),
+(92, 39, 2, 5, '2025-03-30 02:01:21', '2025-03-30 02:01:21'),
+(93, 38, 2, 5, '2025-03-30 02:01:21', '2025-03-30 02:01:21');
 
 -- --------------------------------------------------------
 
@@ -2870,7 +2984,17 @@ INSERT INTO `pagos` (`id`, `pedidos_id`, `monto`, `fecha_pago`, `pago_parcializa
 (29, 30, 3900, '2025-03-26 20:39:37', 0, 3, '2025-03-26 20:39:37', '2025-03-26 20:39:37'),
 (30, 31, 2600, '2025-03-26 20:40:19', 0, 1, '2025-03-26 20:40:19', '2025-03-26 20:40:19'),
 (31, 32, 2700, '2025-03-26 20:42:20', 0, 3, '2025-03-26 20:42:20', '2025-03-26 20:42:20'),
-(32, 33, 59990, '2025-03-26 21:44:34', 0, 3, '2025-03-26 21:44:34', '2025-03-26 21:44:34');
+(32, 33, 59990, '2025-03-26 21:44:34', 0, 3, '2025-03-26 21:44:34', '2025-03-26 21:44:34'),
+(33, 34, 30000, '2025-03-29 20:08:11', 0, 3, '2025-03-29 20:08:11', '2025-03-29 20:08:11'),
+(34, 35, 120000, '2025-03-29 20:26:01', 1, 3, '2025-03-29 20:26:01', '2025-03-29 20:26:01'),
+(35, 36, 500000, '2025-03-29 20:28:40', 0, 3, '2025-03-29 20:28:40', '2025-03-29 20:28:40'),
+(36, 37, 500000, '2025-03-29 20:28:47', 0, 3, '2025-03-29 20:28:47', '2025-03-29 20:28:47'),
+(37, 38, 500000, '2025-03-29 20:29:04', 0, 3, '2025-03-29 20:29:04', '2025-03-29 20:29:04'),
+(38, 39, 500, '2025-03-29 20:39:00', 0, 3, '2025-03-29 20:39:00', '2025-03-29 20:39:00'),
+(39, 40, 500, '2025-03-29 20:41:49', 0, 1, '2025-03-29 20:41:49', '2025-03-29 20:41:49'),
+(40, 41, 50000, '2025-03-29 21:00:26', 0, 3, '2025-03-29 21:00:26', '2025-03-29 21:00:26'),
+(41, 42, 600000, '2025-03-29 21:07:00', 0, 3, '2025-03-29 21:07:00', '2025-03-29 21:07:00'),
+(42, 43, 50000, '2025-03-29 22:45:33', 0, 1, '2025-03-29 22:45:33', '2025-03-29 22:45:33');
 
 -- --------------------------------------------------------
 
@@ -2913,15 +3037,25 @@ INSERT INTO `pedidos` (`id`, `empleados_id`, `clientes_id`, `estado_pedidos_id`,
 (21, 5, 1, 1, NULL, 150, NULL, NULL, NULL, 2, '2025-03-24 13:15:21', '2025-03-26 21:40:20'),
 (22, 5, 1, 1, NULL, 390, NULL, NULL, NULL, 2, '2025-03-24 13:20:44', '2025-03-26 21:40:22'),
 (23, 5, 1, 1, NULL, 1000, NULL, NULL, NULL, 2, '2025-03-24 13:26:55', '2025-03-26 21:40:22'),
-(24, 5, 1, 1, NULL, 1000000, NULL, NULL, NULL, 2, '2025-03-24 14:04:55', '2025-03-24 14:04:55'),
-(25, 5, 1, 1, NULL, 1206, NULL, NULL, NULL, 2, '2025-03-24 14:08:38', '2025-03-26 21:38:27'),
-(26, 5, 1, 1, NULL, 1200000, NULL, NULL, NULL, 2, '2025-03-24 17:46:25', '2025-03-26 21:37:24'),
-(27, 5, 1, 1, NULL, 3900, NULL, NULL, NULL, 13, '2025-03-24 18:05:29', '2025-03-26 21:37:24'),
-(29, 5, 2125, 1, NULL, 260000, NULL, NULL, NULL, 14, '2025-03-25 23:45:44', '2025-03-26 21:11:57'),
-(30, 5, 1, 1, NULL, 3900, NULL, NULL, NULL, 2, '2025-03-26 20:39:37', '2025-03-27 19:39:28'),
-(31, 5, 1, 1, NULL, 2600, NULL, NULL, NULL, 2, '2025-03-26 20:40:19', '2025-03-27 19:39:24'),
-(32, 5, 1, 1, NULL, 2700, NULL, NULL, NULL, 2, '2025-03-26 20:42:20', '2025-03-27 19:39:24'),
-(33, 5, 2, 1, NULL, 59990, NULL, NULL, NULL, 4, '2025-03-26 21:44:34', '2025-03-27 19:39:23');
+(24, 5, 1, 3, NULL, 1000000, 41, NULL, NULL, 2, '2025-03-24 14:04:55', '2025-03-29 13:20:38'),
+(25, 5, 1, 3, NULL, 1206, 41, NULL, NULL, 2, '2025-03-24 14:08:38', '2025-03-29 13:20:27'),
+(26, 5, 1, 2, NULL, 1200000, 42, NULL, NULL, 2, '2025-03-24 17:46:25', '2025-03-29 13:23:46'),
+(27, 5, 1, 2, NULL, 3900, 42, NULL, NULL, 13, '2025-03-24 18:05:29', '2025-03-29 13:23:46'),
+(29, 5, 2125, 3, NULL, 260000, 40, NULL, NULL, 14, '2025-03-25 23:45:44', '2025-03-29 13:15:38'),
+(30, 5, 1, 4, NULL, 3900, 40, NULL, NULL, 2, '2025-03-26 20:39:37', '2025-03-30 01:27:21'),
+(31, 5, 1, 4, NULL, 2600, 40, NULL, NULL, 2, '2025-03-26 20:40:19', '2025-03-30 01:25:03'),
+(32, 5, 1, 4, NULL, 2700, 39, NULL, NULL, 2, '2025-03-26 20:42:20', '2025-03-30 01:25:03'),
+(33, 5, 2, 4, NULL, 59990, 41, NULL, NULL, 4, '2025-03-26 21:44:34', '2025-03-30 01:39:56'),
+(34, 5, 2126, 5, NULL, 30000, 43, NULL, 4, 16, '2025-03-29 20:08:11', '2025-03-29 20:11:33'),
+(35, 5, 2126, 1, NULL, 600000, NULL, NULL, NULL, 16, '2025-03-29 20:26:01', '2025-03-29 20:26:01'),
+(36, 5, 2126, 1, NULL, 500000, NULL, NULL, NULL, 16, '2025-03-29 20:28:40', '2025-03-29 20:28:40'),
+(37, 5, 2126, 1, NULL, 500000, NULL, NULL, NULL, 16, '2025-03-29 20:28:47', '2025-03-29 20:28:47'),
+(38, 5, 2126, 2, NULL, 500000, 46, NULL, NULL, 16, '2025-03-29 20:29:04', '2025-03-30 02:01:21'),
+(39, 5, 2126, 2, NULL, 500, 46, NULL, NULL, 16, '2025-03-29 20:39:00', '2025-03-30 02:01:21'),
+(40, 5, 1, 2, NULL, 500, 46, NULL, NULL, 2, '2025-03-29 20:41:49', '2025-03-30 02:01:21'),
+(41, 5, 2126, 2, NULL, 50000, 44, NULL, NULL, 16, '2025-03-29 21:00:26', '2025-03-29 21:08:27'),
+(42, 5, 2, 4, NULL, 600000, 44, NULL, NULL, 4, '2025-03-29 21:07:00', '2025-03-30 01:46:09'),
+(43, 5, 2126, 5, NULL, 50000, 45, NULL, 6, 16, '2025-03-29 22:45:33', '2025-03-29 22:46:31');
 
 -- --------------------------------------------------------
 
@@ -5076,7 +5210,8 @@ INSERT INTO `personas` (`id`, `nombre`, `correo`, `n_identificacion`, `fono`, `c
 (2125, 'ADMINISTRADOR', 'administrador@gmail.com', '111111-0', '9999999', '2025-03-12 20:00:45', '2025-03-12 20:00:45'),
 (2126, 'EJEMPLO', 'ejemplo@gmail.com', '1231232-0', '99999999', '2025-03-12 23:11:46', '2025-03-12 23:11:46'),
 (2127, 'Eduardo Espinoza', 'eduardo@gmail.com', '123123-0', '93453453', '2025-03-17 21:06:46', '2025-03-17 21:06:46'),
-(2128, 'Dylan Cancino', 'dylan@gmail.com', '21232547-2', '87876876', '2025-03-25 23:41:18', '2025-03-25 23:41:18');
+(2128, 'Dylan Cancino', 'dylan@gmail.com', '21232547-2', '87876876', '2025-03-25 23:41:18', '2025-03-25 23:41:18'),
+(2129, 'Catalina Leiva Nuñez', 'cataleiva2418@gmail.com', '21525542-5', '91231232', '2025-03-29 20:04:30', '2025-03-29 20:04:30');
 
 -- --------------------------------------------------------
 
@@ -5149,25 +5284,25 @@ CREATE TABLE `producto_bodegas` (
 
 INSERT INTO `producto_bodegas` (`id`, `productos_id`, `bodegas_id`, `stock`, `createdAt`, `updatedAt`) VALUES
 (2, 2, 1, 3, '2025-03-02 10:19:08', '2025-03-26 20:42:20'),
-(3, 3, 2, 4, '2025-03-03 10:00:59', '2025-03-03 10:00:59'),
-(4, 4, 1, 4, '2025-03-03 12:52:32', '2025-03-03 12:52:32'),
+(3, 3, 2, 3, '2025-03-03 10:00:59', '2025-03-29 21:00:26'),
+(4, 4, 1, 2, '2025-03-03 12:52:32', '2025-03-29 20:41:49'),
 (5, 5, 2, 1, '2025-03-03 13:07:06', '2025-03-03 13:07:06'),
-(6, 6, 1, 4, '2025-03-04 02:01:15', '2025-03-04 02:01:15'),
+(6, 6, 1, 3, '2025-03-04 02:01:15', '2025-03-29 22:45:33'),
 (7, 7, 1, 3, '2025-03-04 02:56:20', '2025-03-04 02:56:20'),
 (10, 10, 1, 4, '2025-03-10 09:36:05', '2025-03-10 09:36:05'),
 (11, 11, 1, 9, '2025-03-10 09:39:15', '2025-03-10 09:39:15'),
 (12, 12, 2, 0, '2025-03-10 09:46:52', '2025-03-26 21:44:34'),
 (13, 13, 2, 1, '2025-03-10 09:56:15', '2025-03-10 09:56:15'),
 (14, 14, 1, 5, '2025-03-10 10:03:40', '2025-03-10 10:03:40'),
-(15, 15, 2, 3, '2025-03-10 10:05:16', '2025-03-10 10:05:16'),
+(15, 15, 2, 2, '2025-03-10 10:05:16', '2025-03-29 21:07:00'),
 (16, 16, 1, 9, '2025-03-10 10:10:39', '2025-03-10 10:10:39'),
 (17, 17, 2, 6, '2025-03-10 10:11:45', '2025-03-10 10:11:45'),
 (18, 18, 2, 4, '2025-03-10 15:50:00', '2025-03-10 15:50:00'),
 (19, 19, 1, 3, '2025-03-10 15:55:08', '2025-03-10 15:55:08'),
 (20, 20, 2, 5, '2025-03-10 16:04:27', '2025-03-10 16:04:27'),
 (21, 1, 2, 0, '2025-03-10 15:22:14', '2025-03-26 20:40:19'),
-(22, 21, 2, 5, '2025-03-10 20:19:45', '2025-03-10 20:19:45'),
-(23, 22, 2, 2, '2025-03-10 23:52:49', '2025-03-10 23:52:49'),
+(22, 21, 2, 4, '2025-03-10 20:19:45', '2025-03-29 20:26:01'),
+(23, 22, 2, 0, '2025-03-10 23:52:49', '2025-03-29 20:28:47'),
 (24, 23, 2, 5, '2025-03-11 21:08:11', '2025-03-11 21:08:11'),
 (30, 29, 2, 5, '2025-03-13 18:48:08', '2025-03-13 18:48:08'),
 (31, 30, 2, 6, '2025-03-13 18:50:12', '2025-03-13 18:50:12'),
@@ -5179,7 +5314,7 @@ INSERT INTO `producto_bodegas` (`id`, `productos_id`, `bodegas_id`, `stock`, `cr
 (40, 4, 3, 8, '2025-03-26 15:48:08', '2025-03-26 15:48:08'),
 (43, 5, 3, 6, '2025-03-26 15:49:26', '2025-03-26 15:49:26'),
 (44, 6, 2, 8, '2025-03-26 15:56:28', '2025-03-26 15:56:28'),
-(47, 1, 1, 3, '2025-03-26 20:09:02', '2025-03-26 20:42:20');
+(47, 1, 1, 0, '2025-03-26 20:09:02', '2025-03-29 20:08:11');
 
 -- --------------------------------------------------------
 
@@ -5444,11 +5579,11 @@ ALTER TABLE `pedidos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `empleados_id` (`empleados_id`),
   ADD KEY `clientes_id` (`clientes_id`),
-  ADD KEY `estado_pedidos_id` (`estado_pedidos_id`),
   ADD KEY `deliverys_id` (`deliverys_id`),
   ADD KEY `guia_despacho_id` (`guia_despacho_id`),
   ADD KEY `comprobante_ventas_id` (`comprobante_ventas_id`),
-  ADD KEY `direccion_id` (`direccion_id`);
+  ADD KEY `direccion_id` (`direccion_id`),
+  ADD KEY `estado_pedidos_id` (`estado_pedidos_id`) USING BTREE;
 
 --
 -- Indices de la tabla `personas`
@@ -5507,7 +5642,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `abonos`
 --
 ALTER TABLE `abonos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `bodegas`
@@ -5525,13 +5660,13 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2126;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2127;
 
 --
 -- AUTO_INCREMENT de la tabla `comprobante_ventas`
 --
 ALTER TABLE `comprobante_ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `comunas`
@@ -5549,13 +5684,13 @@ ALTER TABLE `deliverys`
 -- AUTO_INCREMENT de la tabla `detalle_pedidos`
 --
 ALTER TABLE `detalle_pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `direcciones`
 --
 ALTER TABLE `direcciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -5579,13 +5714,13 @@ ALTER TABLE `estado_pedidos`
 -- AUTO_INCREMENT de la tabla `guias_despachos`
 --
 ALTER TABLE `guias_despachos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `log_estado_pedidos`
 --
 ALTER TABLE `log_estado_pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT de la tabla `marcas`
@@ -5603,19 +5738,19 @@ ALTER TABLE `metodos_pagos`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
 --
 ALTER TABLE `personas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2129;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2130;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
@@ -5661,9 +5796,9 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `abonos`
 --
 ALTER TABLE `abonos`
-  ADD CONSTRAINT `abonos_ibfk_1338` FOREIGN KEY (`pagos_id`) REFERENCES `pagos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `abonos_ibfk_1339` FOREIGN KEY (`metodos_pago_id`) REFERENCES `metodos_pagos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `abonos_ibfk_1340` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `abonos_ibfk_1389` FOREIGN KEY (`pagos_id`) REFERENCES `pagos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `abonos_ibfk_1390` FOREIGN KEY (`metodos_pago_id`) REFERENCES `metodos_pagos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `abonos_ibfk_1391` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `clientes`
@@ -5675,8 +5810,7 @@ ALTER TABLE `clientes`
 -- Filtros para la tabla `comprobante_ventas`
 --
 ALTER TABLE `comprobante_ventas`
-  ADD CONSTRAINT `comprobante_ventas_ibfk_22` FOREIGN KEY (`estados_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `comprobante_ventas_ibfk_23` FOREIGN KEY (`estados_id`) REFERENCES `estados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `comprobante_ventas_ibfk_1` FOREIGN KEY (`estados_id`) REFERENCES `estados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `comunas`
@@ -5688,74 +5822,71 @@ ALTER TABLE `comunas`
 -- Filtros para la tabla `detalle_pedidos`
 --
 ALTER TABLE `detalle_pedidos`
-  ADD CONSTRAINT `detalle_pedidos_ibfk_1247` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `detalle_pedidos_ibfk_1248` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `detalle_pedidos_ibfk_1249` FOREIGN KEY (`bodegas_id`) REFERENCES `bodegas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `detalle_pedidos_ibfk_1294` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `detalle_pedidos_ibfk_1295` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `detalle_pedidos_ibfk_1296` FOREIGN KEY (`bodegas_id`) REFERENCES `bodegas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `direcciones`
 --
 ALTER TABLE `direcciones`
-  ADD CONSTRAINT `direcciones_ibfk_1066` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `direcciones_ibfk_1067` FOREIGN KEY (`region_id`) REFERENCES `regiones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `direcciones_ibfk_1068` FOREIGN KEY (`comuna_id`) REFERENCES `comunas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `direcciones_ibfk_1120` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `direcciones_ibfk_1121` FOREIGN KEY (`region_id`) REFERENCES `regiones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `direcciones_ibfk_1122` FOREIGN KEY (`comuna_id`) REFERENCES `comunas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  ADD CONSTRAINT `empleados_ibfk_1163` FOREIGN KEY (`personas_id`) REFERENCES `personas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `empleados_ibfk_1164` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `empleados_ibfk_1199` FOREIGN KEY (`personas_id`) REFERENCES `personas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `empleados_ibfk_1200` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `guias_despachos`
 --
 ALTER TABLE `guias_despachos`
-  ADD CONSTRAINT `guias_despachos_ibfk_22` FOREIGN KEY (`estados_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `guias_despachos_ibfk_23` FOREIGN KEY (`estados_id`) REFERENCES `estados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `guias_despachos_ibfk_1` FOREIGN KEY (`estados_id`) REFERENCES `estados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `log_estado_pedidos`
 --
 ALTER TABLE `log_estado_pedidos`
-  ADD CONSTRAINT `log_estado_pedidos_ibfk_1082` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `log_estado_pedidos_ibfk_1221` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `log_estado_pedidos_ibfk_1222` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `log_estado_pedidos_ibfk_1223` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `log_estado_pedidos_ibfk_1266` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `log_estado_pedidos_ibfk_1267` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `log_estado_pedidos_ibfk_1268` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  ADD CONSTRAINT `pagos_ibfk_905` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `pagos_ibfk_906` FOREIGN KEY (`metodos_pago_id`) REFERENCES `metodos_pagos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `pagos_ibfk_939` FOREIGN KEY (`pedidos_id`) REFERENCES `pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `pagos_ibfk_940` FOREIGN KEY (`metodos_pago_id`) REFERENCES `metodos_pagos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  ADD CONSTRAINT `pedidos_ibfk_1597` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1994` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1995` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1996` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1997` FOREIGN KEY (`deliverys_id`) REFERENCES `deliverys` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1998` FOREIGN KEY (`guia_despacho_id`) REFERENCES `guias_despachos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_1999` FOREIGN KEY (`comprobante_ventas_id`) REFERENCES `comprobante_ventas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `pedidos_ibfk_2000` FOREIGN KEY (`direccion_id`) REFERENCES `direcciones` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `pedidos_ibfk_2113` FOREIGN KEY (`empleados_id`) REFERENCES `empleados` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2114` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2115` FOREIGN KEY (`estado_pedidos_id`) REFERENCES `estado_pedidos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2116` FOREIGN KEY (`deliverys_id`) REFERENCES `deliverys` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2117` FOREIGN KEY (`guia_despacho_id`) REFERENCES `guias_despachos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2118` FOREIGN KEY (`comprobante_ventas_id`) REFERENCES `comprobante_ventas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `pedidos_ibfk_2119` FOREIGN KEY (`direccion_id`) REFERENCES `direcciones` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `productos`
 --
 ALTER TABLE `productos`
-  ADD CONSTRAINT `productos_ibfk_731` FOREIGN KEY (`Categoria_id`) REFERENCES `categorias` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `productos_ibfk_732` FOREIGN KEY (`marcas_id`) REFERENCES `marcas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `productos_ibfk_763` FOREIGN KEY (`Categoria_id`) REFERENCES `categorias` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `productos_ibfk_764` FOREIGN KEY (`marcas_id`) REFERENCES `marcas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `producto_bodegas`
 --
 ALTER TABLE `producto_bodegas`
-  ADD CONSTRAINT `producto_bodegas_ibfk_715` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `producto_bodegas_ibfk_716` FOREIGN KEY (`bodegas_id`) REFERENCES `bodegas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `producto_bodegas_ibfk_747` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `producto_bodegas_ibfk_748` FOREIGN KEY (`bodegas_id`) REFERENCES `bodegas` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `producto_imagenes`

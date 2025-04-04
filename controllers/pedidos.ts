@@ -10,40 +10,7 @@ import Persona from "../models/Persona";
 import { Op } from "sequelize";
 import Direccion from "../models/Direccion";
 import Region from "../models/Region";
-
-// export const getAllPedidos = async (req: Request, res: Response) => {
-//   try {
-//     const pedidos = await Pedido.findAll({
-//       include: [
-//         {
-//           model: Empleado,
-//         },
-//         {
-//           model: Cliente,
-
-//           include: [
-//             {
-//               model: Persona,
-//             },
-//           ],
-//         },
-//         { model: EstadoPedido },
-//         {
-//           model: Delivery,
-//         },
-//         {
-//           model: GuiaDespacho,
-//         },
-//         {
-//           model: ComprobanteVenta,
-//         },
-//       ],
-//     });
-//     res.status(200).json(pedidos);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error al obtener los pedidos", error });
-//   }
-// };
+import Comuna from "../models/Comuna";
 
 export const getAllPedidos = async (
   req: Request,
@@ -189,7 +156,7 @@ export const createPedido = async (req: Request, res: Response) => {
 export const updatePedido = async (req: Request, res: Response) => {
   const { id } = req.params;
   const {
-    empleados_id,
+    empleados_id, 
     clientes_id,
     estado_pedidos_id,
     deliverys_id,
@@ -244,6 +211,36 @@ export const getPedidosByGuiaDespachoId = async (req: Request, res: Response) =>
       where: {
         guia_despacho_id: id,
       },
+    });
+    if (pedido) {
+      res.status(200).json(pedido);
+    } else {
+      res.status(404).json({ message: "Pedido no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el pedido", error });
+  }
+};
+
+export const getPedidosByComprobanteVentaId = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const pedido = await Pedido.findAll({
+      where: {
+        comprobante_ventas_id: id,
+      },
+      include: [
+        { model: Empleado },
+        { model: Cliente, include: [{ model: Persona }] },
+        { model: EstadoPedido },
+        { model: Delivery },
+        { model: GuiaDespacho },
+        { model: ComprobanteVenta },
+        {
+          model: Direccion,
+          include: [{ model: Region }, { model: Comuna }],
+        },
+      ],
     });
     if (pedido) {
       res.status(200).json(pedido);

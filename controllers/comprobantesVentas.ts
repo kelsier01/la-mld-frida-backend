@@ -31,8 +31,9 @@ export const getComprobanteVentaById = async (req: Request, res: Response) => {
 export const createComprobanteVenta = async (req: Request, res: Response) => {
   const { codigo, estados_id } = req.body;
   try {
+    const ultimoId = await ComprobanteVenta.max("id") as number;
     const nuevoComprobanteVenta = await ComprobanteVenta.create({
-      codigo,
+      codigo: `${codigo}${ultimoId + 1}`,
       estados_id,
     });
     res.status(201).json(nuevoComprobanteVenta);

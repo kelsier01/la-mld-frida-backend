@@ -47,8 +47,9 @@ exports.getComprobanteVentaById = getComprobanteVentaById;
 const createComprobanteVenta = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { codigo, estados_id } = req.body;
     try {
+        const ultimoId = yield ComprobanteVenta_1.default.max("id");
         const nuevoComprobanteVenta = yield ComprobanteVenta_1.default.create({
-            codigo,
+            codigo: `${codigo}${ultimoId + 1}`,
             estados_id,
         });
         res.status(201).json(nuevoComprobanteVenta);
