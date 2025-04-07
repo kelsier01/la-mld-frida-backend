@@ -8,6 +8,6 @@ route.get("/", [validarToken_1.validarjwt], clientes_1.getAllClientes);
 route.get("/:id", [validarToken_1.validarjwt], clientes_1.getClienteById);
 route.post("/", [validarToken_1.validarjwt], clientes_1.createCliente);
 route.put("/:id", [validarToken_1.validarjwt], clientes_1.updateCliente);
-route.delete("/:id", [validarToken_1.validarjwt], clientes_1.deleteCliente);
+route.put("/eliminar/:id", [validarToken_1.validarjwt], clientes_1.deleteCliente);
 exports.default = route;
 //# sourceMappingURL=cliente.js.map

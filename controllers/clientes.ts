@@ -146,10 +146,6 @@ export const createCliente = async (req: Request, res: Response) => {
         region_id,
         comuna_id,
       });
-
-      
-      
-
       return res.status(201).json({nuevoCliente, nuevaDireccion, persona, region, comuna});
     }else{
         // Si la persona no existe, la creamos
@@ -159,14 +155,12 @@ export const createCliente = async (req: Request, res: Response) => {
         n_identificacion,
         fono,
       });
-
       // Crear el cliente con la persona recién creada
       const nuevoCliente: any = await Cliente.create({
         personas_id: persona.id,
         cta_instagram,
         eliminado: 0
       });
-
       // Crear la dirección del cliente
       const nuevaDireccion = await Direccion.create({
         clientes_id: nuevoCliente.id,
@@ -184,7 +178,7 @@ export const createCliente = async (req: Request, res: Response) => {
 
 export const updateCliente = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { nombre, n_identificacion, correo, fono, cta_instagram } = req.body;
+  const { nombre, n_identificacion, correo, fono, cta_instagram, eliminado } = req.body;
 
   try {
     const cliente: any = await Cliente.findByPk(id);
@@ -202,7 +196,7 @@ export const updateCliente = async (req: Request, res: Response) => {
     await persona.update({ nombre, n_identificacion, correo, fono });
 
     // Actualizar los datos del cliente
-    await cliente.update({ cta_instagram });
+    await cliente.update({ cta_instagram, eliminado });
 
     res.status(200).json(cliente);
   } catch (error) {
@@ -215,7 +209,7 @@ export const deleteCliente = async (req: Request, res: Response) => {
   try {
     const cliente = await Cliente.findByPk(id);
     if (cliente) {
-      await cliente.update({ eliminado: true });
+      await cliente.update({ eliminado: 1 });
       res.status(200).json({ message: "Cliente eliminado correctamente" });
     } else {
       res.status(404).json({ message: "Cliente no encontrado" });

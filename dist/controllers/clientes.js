@@ -167,7 +167,7 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.createCliente = createCliente;
 const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { nombre, n_identificacion, correo, fono, cta_instagram } = req.body;
+    const { nombre, n_identificacion, correo, fono, cta_instagram, eliminado } = req.body;
     try {
         const cliente = yield Cliente_1.default.findByPk(id);
         if (!cliente) {
@@ -181,7 +181,7 @@ const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         // Actualizar los datos de la persona
         yield persona.update({ nombre, n_identificacion, correo, fono });
         // Actualizar los datos del cliente
-        yield cliente.update({ cta_instagram });
+        yield cliente.update({ cta_instagram, eliminado });
         res.status(200).json(cliente);
     }
     catch (error) {
@@ -194,7 +194,7 @@ const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const cliente = yield Cliente_1.default.findByPk(id);
         if (cliente) {
-            yield cliente.update({ eliminado: true });
+            yield cliente.update({ eliminado: 1 });
             res.status(200).json({ message: "Cliente eliminado correctamente" });
         }
         else {
