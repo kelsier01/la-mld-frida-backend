@@ -142,8 +142,8 @@ Direccion_1.default.belongsTo(Comuna_1.default, { foreignKey: "comuna_id" });
 // =================================================
 const syncModels = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield connection_1.default.sync({ alter: true });
-        // await db.sync({ alter: false, force: false });
+        // await db.sync({ alter: true });
+        yield connection_1.default.sync({ alter: false, force: false });
         console.log("Modelos sincronizados correctamente");
     }
     catch (error) {

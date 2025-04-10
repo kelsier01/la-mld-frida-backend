@@ -24,19 +24,18 @@ const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const { search = "", page = "1", region, limit = 10, } = req.query;
         // Validación de la paginación
         const pageNumber = Number(page);
-        let regionNumber = region;
-        let validTrue = true;
-        if (region == 0) {
-            regionNumber = undefined;
-            validTrue = false;
-        }
+        let regionNumber = region == 0 ? undefined : Number(region);
+        let validRegion = region == 0 ? false : true;
+        const offset = (pageNumber - 1) * Number(limit);
+        let limite = Number(limit);
         if (isNaN(pageNumber) || pageNumber < 1) {
             return res
                 .status(400)
                 .json({ error: "El parámetro 'page' debe ser un número positivo." });
         }
-        const offset = (pageNumber - 1) * Number(limit);
-        const limite = Number(limit);
+        if (search || region) {
+            limite = 100;
+        }
         // Construcción de la condición de búsqueda en Persona
         const personaWhere = search
             ? {
@@ -48,6 +47,7 @@ const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             : {};
         // Construcción de la condición de búsqueda en Direccion
         const direccionWhere = Object.assign({}, (regionNumber && { region_id: regionNumber }));
+        console.log("direccionWhere", direccionWhere);
         // Ejecución de la consulta con Sequelize
         const { rows: clientes, count: total } = yield Cliente_1.default.findAndCountAll({
             include: [
@@ -61,7 +61,7 @@ const getAllClientes = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                     model: Direccion_1.default,
                     as: "Direccions",
                     where: direccionWhere,
-                    required: false, // INNER JOIN para que solo traiga clientes con Persona asociada
+                    required: validRegion, // INNER JOIN para que solo traiga clientes con Persona asociada
                     include: [
                         { model: Region_1.default, required: false },
                         { model: Comuna_1.default, required: false },
@@ -104,7 +104,7 @@ const getClienteById = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getClienteById = getClienteById;
 const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { n_identificacion, nombre, correo, fono, direccion, cta_instagram, region_id, comuna_id } = req.body;
+    const { n_identificacion, nombre, correo, fono, direccion, cta_instagram, region_id, comuna_id, } = req.body;
     try {
         // Buscar si la persona ya existe por n_identificacion
         let persona = yield Persona_1.default.findOne({ where: { n_identificacion } });
@@ -124,7 +124,7 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const nuevoCliente = yield Cliente_1.default.create({
                 personas_id: persona.id,
                 cta_instagram,
-                eliminado: 0
+                eliminado: 0,
             });
             // Crear la dirección del cliente
             // Crear la dirección del cliente
@@ -134,7 +134,9 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 region_id,
                 comuna_id,
             });
-            return res.status(201).json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+            return res
+                .status(201)
+                .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
         }
         else {
             // Si la persona no existe, la creamos
@@ -148,7 +150,7 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const nuevoCliente = yield Cliente_1.default.create({
                 personas_id: persona.id,
                 cta_instagram,
-                eliminado: 0
+                eliminado: 0,
             });
             // Crear la dirección del cliente
             const nuevaDireccion = yield Direccion_1.default.create({
@@ -157,7 +159,9 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 region_id,
                 comuna_id,
             });
-            res.status(201).json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+            res
+                .status(201)
+                .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
         }
     }
     catch (error) {

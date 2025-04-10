@@ -25,7 +25,7 @@ export const getAllPedidos = async (
       fecha_desde,
       fecha_hasta,
       estadoId,
-      clienteId,
+      searchCliente = "",
       regionId,
     } = req.query as {
       search?: string;
@@ -34,7 +34,7 @@ export const getAllPedidos = async (
       fecha_desde?: string;
       fecha_hasta?: string;
       estadoId?: Number;
-      clienteId?: Number;
+      searchCliente?: string;
       regionId?: Number;
     };
 
@@ -43,7 +43,6 @@ export const getAllPedidos = async (
     const desde = fecha_desde || "";
     const hasta = fecha_hasta || "";
     const estado = estadoId != 0 ? estadoId : "";
-    const cliente = clienteId != 0 ? clienteId : "";
     const region = regionId != 0 ? regionId : "";
 
     console.log(
@@ -51,7 +50,7 @@ export const getAllPedidos = async (
        - desde = ${desde} - 
        hasta = ${hasta} - 
        estado = ${estado} - 
-       cliente = ${cliente} - 
+       cliente = ${searchCliente} - 
        region = ${region}`
     );
 
@@ -62,15 +61,32 @@ export const getAllPedidos = async (
     }
 
     const offset = (pageNumber - 1) * limite;
+    const fechaActual = new Date();
 
     // Construcción de la condición de búsqueda en Pedido
     const pedidoWhere: any = {
       ...(search &&
         search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
+      ...(desde &&
+        !hasta && {
+          createdAt: {
+            [Op.between]: [new Date(desde), fechaActual],
+          },
+        }),
+      ...(desde &&
+        hasta && {
+          createdAt: {
+            [Op.between]: [new Date(desde), new Date(hasta)],
+          },
+        }),
       ...(estado && { estado_pedidos_id: estado }),
-      ...(cliente && { cliente_id: cliente }),
-      ...(desde && { createdAt: { [Op.gte]: desde } }),
-      ...(hasta && { createdAt: { [Op.lte]: hasta } }),
+    };
+
+    const clienteWhere: any = {
+      ...(searchCliente &&
+        searchCliente.trim() && {
+          nombre: { [Op.like]: `%${searchCliente.trim()}%` },
+        }),
     };
 
     const regionWhere: any = {
@@ -81,7 +97,7 @@ export const getAllPedidos = async (
       where: pedidoWhere,
       include: [
         { model: Empleado },
-        { model: Cliente, include: [{ model: Persona }] },
+        { model: Cliente, include: [{ model: Persona, where: clienteWhere }] },
         { model: EstadoPedido },
         { model: Delivery },
         { model: GuiaDespacho },
@@ -135,6 +151,7 @@ export const createPedido = async (req: Request, res: Response) => {
     comprobante_ventas_id,
     direccion_id,
   } = req.body;
+  console.log("createPedido", req.body);
   try {
     const nuevoPedido = await Pedido.create({
       empleados_id,
@@ -149,6 +166,8 @@ export const createPedido = async (req: Request, res: Response) => {
     });
     res.status(201).json(nuevoPedido);
   } catch (error) {
+    console.log("Error al crear el pedido", error);
+
     res.status(500).json({ message: "Error al crear el pedido", error });
   }
 };
@@ -156,7 +175,7 @@ export const createPedido = async (req: Request, res: Response) => {
 export const updatePedido = async (req: Request, res: Response) => {
   const { id } = req.params;
   const {
-    empleados_id, 
+    empleados_id,
     clientes_id,
     estado_pedidos_id,
     deliverys_id,
@@ -204,7 +223,10 @@ export const deletePedido = async (req: Request, res: Response) => {
   }
 };
 
-export const getPedidosByGuiaDespachoId = async (req: Request, res: Response) => {
+export const getPedidosByGuiaDespachoId = async (
+  req: Request,
+  res: Response
+) => {
   const { id } = req.params;
   try {
     const pedido = await Pedido.findAll({
@@ -222,7 +244,10 @@ export const getPedidosByGuiaDespachoId = async (req: Request, res: Response) =>
   }
 };
 
-export const getPedidosByComprobanteVentaId = async (req: Request, res: Response) => {
+export const getPedidosByComprobanteVentaId = async (
+  req: Request,
+  res: Response
+) => {
   const { id } = req.params;
   try {
     const pedido = await Pedido.findAll({

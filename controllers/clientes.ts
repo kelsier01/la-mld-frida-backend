@@ -5,6 +5,7 @@ import Direccion from "../models/Direccion";
 import { Op } from "sequelize";
 import Region from "../models/Region";
 import Comuna from "../models/Comuna";
+import { log } from "console";
 
 export const getAllClientes = async (
   req: Request,
@@ -26,20 +27,19 @@ export const getAllClientes = async (
 
     // Validación de la paginación
     const pageNumber = Number(page);
-    let regionNumber = region;
-    let validTrue = true;
-    if (region == 0) {
-      regionNumber = undefined;
-      validTrue = false;
-    }
+    let regionNumber = region == 0 ? undefined : Number(region);
+    let validRegion = region == 0 ? false : true;
+    const offset = (pageNumber - 1) * Number(limit);
+    let limite = Number(limit);
 
     if (isNaN(pageNumber) || pageNumber < 1) {
       return res
         .status(400)
         .json({ error: "El parámetro 'page' debe ser un número positivo." });
     }
-    const offset = (pageNumber - 1) * Number(limit);
-    const limite = Number(limit);
+    if (search || region) {
+      limite = 100;
+    }
     // Construcción de la condición de búsqueda en Persona
     const personaWhere: any = search
       ? {
@@ -54,6 +54,7 @@ export const getAllClientes = async (
     const direccionWhere: any = {
       ...(regionNumber && { region_id: regionNumber }),
     };
+    console.log("direccionWhere", direccionWhere);
 
     // Ejecución de la consulta con Sequelize
     const { rows: clientes, count: total } = await Cliente.findAndCountAll({
@@ -68,7 +69,7 @@ export const getAllClientes = async (
           model: Direccion,
           as: "Direccions",
           where: direccionWhere,
-          required: false, // INNER JOIN para que solo traiga clientes con Persona asociada
+          required: validRegion, // INNER JOIN para que solo traiga clientes con Persona asociada
           include: [
             { model: Region, required: false },
             { model: Comuna, required: false },
@@ -109,8 +110,16 @@ export const getClienteById = async (req: Request, res: Response) => {
 };
 
 export const createCliente = async (req: Request, res: Response) => {
-  const { n_identificacion, nombre, correo, fono, direccion, cta_instagram, region_id, comuna_id } =
-    req.body;
+  const {
+    n_identificacion,
+    nombre,
+    correo,
+    fono,
+    direccion,
+    cta_instagram,
+    region_id,
+    comuna_id,
+  } = req.body;
 
   try {
     // Buscar si la persona ya existe por n_identificacion
@@ -131,10 +140,10 @@ export const createCliente = async (req: Request, res: Response) => {
       }
 
       // Si la persona existe pero no es cliente, crear el cliente con la ID de la persona existente
-      const nuevoCliente:any = await Cliente.create({
+      const nuevoCliente: any = await Cliente.create({
         personas_id: persona.id,
         cta_instagram,
-        eliminado: 0
+        eliminado: 0,
       });
 
       // Crear la dirección del cliente
@@ -147,12 +156,11 @@ export const createCliente = async (req: Request, res: Response) => {
         comuna_id,
       });
 
-      
-      
-
-      return res.status(201).json({nuevoCliente, nuevaDireccion, persona, region, comuna});
-    }else{
-        // Si la persona no existe, la creamos
+      return res
+        .status(201)
+        .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+    } else {
+      // Si la persona no existe, la creamos
       persona = await Persona.create({
         nombre,
         correo,
@@ -164,7 +172,7 @@ export const createCliente = async (req: Request, res: Response) => {
       const nuevoCliente: any = await Cliente.create({
         personas_id: persona.id,
         cta_instagram,
-        eliminado: 0
+        eliminado: 0,
       });
 
       // Crear la dirección del cliente
@@ -174,8 +182,10 @@ export const createCliente = async (req: Request, res: Response) => {
         region_id,
         comuna_id,
       });
-      
-      res.status(201).json({nuevoCliente, nuevaDireccion, persona, region, comuna});
+
+      res
+        .status(201)
+        .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
     }
   } catch (error) {
     res.status(500).json({ message: "Error al crear el cliente", error });

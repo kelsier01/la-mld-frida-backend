@@ -27,19 +27,18 @@ const Region_1 = __importDefault(require("../models/Region"));
 const Comuna_1 = __importDefault(require("../models/Comuna"));
 const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { search = "", page = "1", limit = 10, fecha_desde, fecha_hasta, estadoId, clienteId, regionId, } = req.query;
+        const { search = "", page = "1", limit = 10, fecha_desde, fecha_hasta, estadoId, searchCliente = "", regionId, } = req.query;
         const pageNumber = Number(page);
         const limite = Number(limit);
         const desde = fecha_desde || "";
         const hasta = fecha_hasta || "";
         const estado = estadoId != 0 ? estadoId : "";
-        const cliente = clienteId != 0 ? clienteId : "";
         const region = regionId != 0 ? regionId : "";
         console.log(`search = ${search}
        - desde = ${desde} - 
        hasta = ${hasta} - 
        estado = ${estado} - 
-       cliente = ${cliente} - 
+       cliente = ${searchCliente} - 
        region = ${region}`);
         if (isNaN(pageNumber) || pageNumber < 1) {
             return res
@@ -47,15 +46,30 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
                 .json({ error: "El parámetro 'page' debe ser un número positivo." });
         }
         const offset = (pageNumber - 1) * limite;
+        const fechaActual = new Date();
         // Construcción de la condición de búsqueda en Pedido
-        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (search &&
-            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (estado && { estado_pedidos_id: estado })), (cliente && { cliente_id: cliente })), (desde && { createdAt: { [sequelize_1.Op.gte]: desde } })), (hasta && { createdAt: { [sequelize_1.Op.lte]: hasta } }));
+        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign({}, (search &&
+            search.trim() && { codigo: { [sequelize_1.Op.like]: `%${search.trim()}%` } })), (desde &&
+            !hasta && {
+            createdAt: {
+                [sequelize_1.Op.between]: [new Date(desde), fechaActual],
+            },
+        })), (desde &&
+            hasta && {
+            createdAt: {
+                [sequelize_1.Op.between]: [new Date(desde), new Date(hasta)],
+            },
+        })), (estado && { estado_pedidos_id: estado }));
+        const clienteWhere = Object.assign({}, (searchCliente &&
+            searchCliente.trim() && {
+            nombre: { [sequelize_1.Op.like]: `%${searchCliente.trim()}%` },
+        }));
         const regionWhere = Object.assign({}, (region && { region_id: region }));
         const { rows: pedidos, count: total } = yield Pedido_1.default.findAndCountAll({
             where: pedidoWhere,
             include: [
                 { model: Empleado_1.default },
-                { model: Cliente_1.default, include: [{ model: Persona_1.default }] },
+                { model: Cliente_1.default, include: [{ model: Persona_1.default, where: clienteWhere }] },
                 { model: EstadoPedido_1.default },
                 { model: Delivery_1.default },
                 { model: GuiaDespacho_1.default },
@@ -101,6 +115,7 @@ const getPedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.getPedidoById = getPedidoById;
 const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, } = req.body;
+    console.log("createPedido", req.body);
     try {
         const nuevoPedido = yield Pedido_1.default.create({
             empleados_id,
@@ -116,6 +131,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(201).json(nuevoPedido);
     }
     catch (error) {
+        console.log("Error al crear el pedido", error);
         res.status(500).json({ message: "Error al crear el pedido", error });
     }
 });
