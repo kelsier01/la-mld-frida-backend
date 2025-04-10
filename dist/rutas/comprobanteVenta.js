@@ -6,6 +6,7 @@ const comprobantesVentas_1 = require("../controllers/comprobantesVentas");
 const route = (0, express_1.Router)();
 route.get("/", [validarToken_1.validarjwt], comprobantesVentas_1.getAllComprobantesVenta);
 route.get("/:id", [validarToken_1.validarjwt], comprobantesVentas_1.getComprobanteVentaById);
+route.get("/generar/codigo", [validarToken_1.validarjwt], comprobantesVentas_1.generarCodigoComprobanteVenta);
 route.post("/", [validarToken_1.validarjwt], comprobantesVentas_1.createComprobanteVenta);
 route.put("/:id", [validarToken_1.validarjwt], comprobantesVentas_1.updateComprobanteVenta);
 route.delete("/:id", [validarToken_1.validarjwt], comprobantesVentas_1.deleteComprobanteVenta);

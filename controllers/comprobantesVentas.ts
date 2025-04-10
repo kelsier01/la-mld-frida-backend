@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import ComprobanteVenta from "../models/ComprobanteVenta";
+import { Op } from "sequelize";
 
 export const getAllComprobantesVenta = async (req: Request, res: Response) => {
   try {
@@ -31,9 +32,8 @@ export const getComprobanteVentaById = async (req: Request, res: Response) => {
 export const createComprobanteVenta = async (req: Request, res: Response) => {
   const { codigo, estados_id } = req.body;
   try {
-    const ultimoId = await ComprobanteVenta.max("id") as number;
     const nuevoComprobanteVenta = await ComprobanteVenta.create({
-      codigo: `${codigo}${ultimoId + 1}`,
+      codigo: codigo,
       estados_id,
     });
     res.status(201).json(nuevoComprobanteVenta);
@@ -78,5 +78,31 @@ export const deleteComprobanteVenta = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ message: "Error al eliminar el comprobante de venta", error });
+  }
+};
+
+export const generarCodigoComprobanteVenta = async (req: Request, res: Response) => {
+  try {
+    const añoActual = new Date().getFullYear();
+    const cantidadTotalCompVentaPorAño = await ComprobanteVenta.count({
+      where: {
+        createdAt: {
+          [Op.gte]: new Date(`${añoActual}-01-01`),
+          [Op.lt]: new Date(`${añoActual + 1}-01-01`),
+        },
+      }
+    });
+    
+    // Add leading zero when the count is less than 10
+    const numeroFormateado = (cantidadTotalCompVentaPorAño + 1) < 10 
+      ? `0${cantidadTotalCompVentaPorAño + 1}` 
+      : `${cantidadTotalCompVentaPorAño + 1}`;
+    
+    const nuevoCodigo = `${numeroFormateado}${añoActual}`;
+    res.status(200).json({ codigo: nuevoCodigo });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al generar el código de la guía de despacho"
+    });
   }
 };
