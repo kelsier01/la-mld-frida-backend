@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteComprobanteVenta = exports.updateComprobanteVenta = exports.createComprobanteVenta = exports.getComprobanteVentaById = exports.getAllComprobantesVenta = void 0;
+exports.generarCodigoComprobanteVenta = exports.deleteComprobanteVenta = exports.updateComprobanteVenta = exports.createComprobanteVenta = exports.getComprobanteVentaById = exports.getAllComprobantesVenta = void 0;
 const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
+const sequelize_1 = require("sequelize");
 const getAllComprobantesVenta = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const comprobantesVenta = yield ComprobanteVenta_1.default.findAll();
@@ -47,9 +48,8 @@ exports.getComprobanteVentaById = getComprobanteVentaById;
 const createComprobanteVenta = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { codigo, estados_id } = req.body;
     try {
-        const ultimoId = yield ComprobanteVenta_1.default.max("id");
         const nuevoComprobanteVenta = yield ComprobanteVenta_1.default.create({
-            codigo: `${codigo}${ultimoId + 1}`,
+            codigo: codigo,
             estados_id,
         });
         res.status(201).json(nuevoComprobanteVenta);
@@ -102,4 +102,29 @@ const deleteComprobanteVenta = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.deleteComprobanteVenta = deleteComprobanteVenta;
+const generarCodigoComprobanteVenta = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const añoActual = new Date().getFullYear();
+        const cantidadTotalCompVentaPorAño = yield ComprobanteVenta_1.default.count({
+            where: {
+                createdAt: {
+                    [sequelize_1.Op.gte]: new Date(`${añoActual}-01-01`),
+                    [sequelize_1.Op.lt]: new Date(`${añoActual + 1}-01-01`),
+                },
+            }
+        });
+        // Add leading zero when the count is less than 10
+        const numeroFormateado = (cantidadTotalCompVentaPorAño + 1) < 10
+            ? `0${cantidadTotalCompVentaPorAño + 1}`
+            : `${cantidadTotalCompVentaPorAño + 1}`;
+        const nuevoCodigo = `${numeroFormateado}${añoActual}`;
+        res.status(200).json({ codigo: nuevoCodigo });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Error al generar el código de la guía de despacho"
+        });
+    }
+});
+exports.generarCodigoComprobanteVenta = generarCodigoComprobanteVenta;
 //# sourceMappingURL=comprobantesVentas.js.map

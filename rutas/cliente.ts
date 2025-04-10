@@ -15,6 +15,6 @@ route.get("/", [validarjwt], getAllClientes);
 route.get("/:id", [validarjwt], getClienteById);
 route.post("/", [validarjwt], createCliente);
 route.put("/:id", [validarjwt], updateCliente);
-route.delete("/:id", [validarjwt], deleteCliente);
+route.put("/eliminar/:id", [validarjwt], deleteCliente);
 
 export default route;
