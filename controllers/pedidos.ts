@@ -11,6 +11,7 @@ import { Op } from "sequelize";
 import Direccion from "../models/Direccion";
 import Region from "../models/Region";
 import Comuna from "../models/Comuna";
+import { log } from "console";
 
 export const getAllPedidos = async (
   req: Request,
@@ -19,31 +20,29 @@ export const getAllPedidos = async (
 ) => {
   try {
     const {
-      search = "",
       page = "1",
-      limit = 10,
+      search = "",
+      searchCliente = "",
       fecha_desde,
       fecha_hasta,
       estadoId,
-      searchCliente = "",
       regionId,
-    } = req.query as {
-      search?: string;
-      page?: Number;
-      limit?: Number;
-      fecha_desde?: string;
-      fecha_hasta?: string;
-      estadoId?: Number;
-      searchCliente?: string;
-      regionId?: Number;
-    };
+      limit = "10",
+    } = req.query as Record<string, string>;
 
-    const pageNumber = Number(page);
-    const limite = Number(limit);
     const desde = fecha_desde || "";
     const hasta = fecha_hasta || "";
-    const estado = estadoId != 0 ? estadoId : "";
-    const region = regionId != 0 ? regionId : "";
+    const estado = estadoId ? Number(estadoId) : undefined;
+    const region = regionId ? Number(regionId) : undefined;
+    const pageNumber = Math.max(1, parseInt(page, 10));
+    const limite = Math.max(1, parseInt(limit, 10));
+    const offset = (pageNumber - 1) * limite;
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
 
     console.log(
       `search = ${search}
@@ -54,59 +53,69 @@ export const getAllPedidos = async (
        region = ${region}`
     );
 
-    if (isNaN(pageNumber) || pageNumber < 1) {
-      return res
-        .status(400)
-        .json({ error: "El parámetro 'page' debe ser un número positivo." });
-    }
-
-    const offset = (pageNumber - 1) * limite;
-    const fechaActual = new Date();
-
-    // Construcción de la condición de búsqueda en Pedido
+    // 2. Construir filtro de Pedido (ID, fechas, estado)
     const pedidoWhere: any = {
-      ...(search &&
-        search.trim() && { codigo: { [Op.like]: `%${search.trim()}%` } }),
-      ...(desde &&
-        !hasta && {
+      ...(search.trim() && {
+        id: { [Op.like]: `%${search.trim()}%` },
+      }),
+      ...(fecha_desde &&
+        !fecha_hasta && {
+          createdAt: { [Op.between]: [new Date(fecha_desde), new Date()] },
+        }),
+      ...(fecha_desde &&
+        fecha_hasta && {
           createdAt: {
-            [Op.between]: [new Date(desde), fechaActual],
+            [Op.between]: [new Date(fecha_desde), new Date(fecha_hasta)],
           },
         }),
-      ...(desde &&
-        hasta && {
-          createdAt: {
-            [Op.between]: [new Date(desde), new Date(hasta)],
-          },
-        }),
-      ...(estado && { estado_pedidos_id: estado }),
-    };
-
-    const clienteWhere: any = {
-      ...(searchCliente &&
-        searchCliente.trim() && {
-          nombre: { [Op.like]: `%${searchCliente.trim()}%` },
+      ...(estadoId &&
+        Number(estadoId) !== 0 && {
+          estado_pedidos_id: Number(estadoId),
         }),
     };
 
-    const regionWhere: any = {
-      ...(region && { region_id: region }),
+    // 3. Preparar include de Cliente → Persona, con filtro condicional
+    const clienteInclude: any = {
+      model: Cliente,
+      ...(searchCliente.trim() && { required: true }),
+      include: [
+        {
+          model: Persona,
+          ...(searchCliente.trim() && {
+            where: {
+              nombre: { [Op.like]: `%${searchCliente.trim()}%` },
+            },
+          }),
+        },
+      ],
     };
 
+    // 4. Preparar include de Dirección → Región, con filtro condicional
+    const direccionInclude: any = {
+      model: Direccion,
+      include: [
+        {
+          model: Region,
+          ...(regionId &&
+            Number(regionId) !== 0 && {
+              where: { id: Number(regionId) },
+              required: true,
+            }),
+        },
+      ],
+    };
+
+    // 5. Ejecutar la consulta con todos los includes
     const { rows: pedidos, count: total } = await Pedido.findAndCountAll({
       where: pedidoWhere,
       include: [
         { model: Empleado },
-        { model: Cliente, include: [{ model: Persona, where: clienteWhere }] },
+        clienteInclude,
         { model: EstadoPedido },
         { model: Delivery },
         { model: GuiaDespacho },
         { model: ComprobanteVenta },
-        {
-          model: Direccion,
-          where: regionWhere,
-          include: [{ model: Region }],
-        },
+        direccionInclude,
       ],
       limit: limite,
       offset,
@@ -122,6 +131,7 @@ export const getAllPedidos = async (
     });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los pedidos", error });
+    console.log("Error al obtener los pedidos", error);
   }
 };
 
