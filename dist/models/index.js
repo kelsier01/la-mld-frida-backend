@@ -139,11 +139,13 @@ Direccion_1.default.belongsTo(Region_1.default, { foreignKey: "region_id" });
 // Comuna - Direccion
 Comuna_1.default.hasMany(Direccion_1.default, { foreignKey: "comuna_id" });
 Direccion_1.default.belongsTo(Comuna_1.default, { foreignKey: "comuna_id" });
+GuiaDespacho_1.default.belongsTo(Bodega_1.default, { foreignKey: "bodega_id" });
+Bodega_1.default.hasMany(GuiaDespacho_1.default, { foreignKey: "bodega_id" });
 // =================================================
 const syncModels = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // await db.sync({ alter: true });
-        yield connection_1.default.sync({ alter: false, force: false });
+        yield connection_1.default.sync({ alter: true });
+        // await db.sync({ alter: false, force: false });
         console.log("Modelos sincronizados correctamente");
     }
     catch (error) {
