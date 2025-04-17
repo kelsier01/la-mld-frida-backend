@@ -21,6 +21,10 @@ GuiaDespacho.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    bodega_id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: true,
+    },
     subtotal: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,

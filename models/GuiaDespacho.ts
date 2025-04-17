@@ -5,6 +5,11 @@ class GuiaDespacho extends Model {
   public id!: number;
   public codigo!: string;
   public estados_id!: number;
+  public bodega_id!: number;
+  public subtotal!: number;
+  public insurage!: number;
+  public other!: number;
+  public total!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -24,6 +29,10 @@ GuiaDespacho.init(
     estados_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    bodega_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     subtotal:{
       type: DataTypes.INTEGER,
