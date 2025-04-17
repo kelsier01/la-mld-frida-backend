@@ -41,8 +41,7 @@ export const createDireccion = async (req: Request, res: Response) => {
     const region = await Region.findByPk(region_id);
     const comuna = await Comuna.findByPk(comuna_id);
 
-
-    res.status(201).json({nuevaDireccion, region, comuna});
+    res.status(201).json({ nuevaDireccion, region, comuna });
   } catch (error) {
     res.status(500).json({ message: "Error al crear la dirección", error });
   }
@@ -50,15 +49,15 @@ export const createDireccion = async (req: Request, res: Response) => {
 
 export const updateDireccion = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { clientes_id, direccion, region, comuna } = req.body;
+  const { clientes_id, direccion, region_id, comuna_id } = req.body;
   try {
     const direccionExistente = await Direccion.findByPk(id);
     if (direccionExistente) {
       await direccionExistente.update({
         clientes_id,
         direccion,
-        region,
-        comuna,
+        region_id,
+        comuna_id,
       });
       res.status(200).json(direccionExistente);
     } else {
@@ -76,7 +75,7 @@ export const deleteDireccion = async (req: Request, res: Response) => {
   try {
     const direccion = await Direccion.findByPk(id);
     if (direccion) {
-      await direccion.destroy();
+      await direccion.update({ eliminado: 1 });
       res.status(200).json({ message: "Dirección eliminada correctamente" });
     } else {
       res.status(404).json({ message: "Dirección no encontrada" });

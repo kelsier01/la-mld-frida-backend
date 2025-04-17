@@ -25,6 +25,11 @@ Direccion.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    eliminado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
     comuna_id: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,

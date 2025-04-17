@@ -64,15 +64,15 @@ const createDireccion = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.createDireccion = createDireccion;
 const updateDireccion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { clientes_id, direccion, region, comuna } = req.body;
+    const { clientes_id, direccion, region_id, comuna_id } = req.body;
     try {
         const direccionExistente = yield Direccion_1.default.findByPk(id);
         if (direccionExistente) {
             yield direccionExistente.update({
                 clientes_id,
                 direccion,
-                region,
-                comuna,
+                region_id,
+                comuna_id,
             });
             res.status(200).json(direccionExistente);
         }
@@ -92,7 +92,7 @@ const deleteDireccion = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const direccion = yield Direccion_1.default.findByPk(id);
         if (direccion) {
-            yield direccion.destroy();
+            yield direccion.update({ eliminado: 1 });
             res.status(200).json({ message: "Dirección eliminada correctamente" });
         }
         else {

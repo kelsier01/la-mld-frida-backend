@@ -31,6 +31,11 @@ Direccion.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    eliminado: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     comuna_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

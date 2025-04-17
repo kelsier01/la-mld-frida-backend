@@ -97,7 +97,17 @@ export const getClienteById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const cliente = await Cliente.findByPk(id, {
-      include: [Persona, Direccion],
+      include: [
+        { model: Persona },
+        {
+          model: Direccion,
+          required: false,
+          include: [
+            { model: Region, required: true },
+            { model: Comuna, required: true },
+          ],
+        },
+      ],
     });
     if (cliente) {
       res.status(200).json(cliente);
@@ -124,8 +134,6 @@ export const createCliente = async (req: Request, res: Response) => {
   try {
     // Buscar si la persona ya existe por n_identificacion
     let persona: any = await Persona.findOne({ where: { n_identificacion } });
-    let region: any = await Region.findByPk(region_id);
-    let comuna: any = await Comuna.findByPk(comuna_id);
 
     if (persona) {
       // Verificar si la persona ya está asociada a un cliente
@@ -138,7 +146,8 @@ export const createCliente = async (req: Request, res: Response) => {
           .status(400)
           .json({ message: "La persona ya está registrada como cliente" });
       }
-
+      let region: any = await Region.findByPk(region_id);
+      let comuna: any = await Comuna.findByPk(comuna_id);
       // Si la persona existe pero no es cliente, crear el cliente con la ID de la persona existente
       const nuevoCliente: any = await Cliente.create({
         personas_id: persona.id,
@@ -181,9 +190,7 @@ export const createCliente = async (req: Request, res: Response) => {
         comuna_id,
       });
 
-      res
-        .status(201)
-        .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+      res.status(201).json({ nuevoCliente, nuevaDireccion, persona });
     }
   } catch (error) {
     res.status(500).json({ message: "Error al crear el cliente", error });

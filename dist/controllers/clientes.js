@@ -89,7 +89,17 @@ const getClienteById = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { id } = req.params;
     try {
         const cliente = yield Cliente_1.default.findByPk(id, {
-            include: [Persona_1.default, Direccion_1.default],
+            include: [
+                { model: Persona_1.default },
+                {
+                    model: Direccion_1.default,
+                    required: false,
+                    include: [
+                        { model: Region_1.default, required: true },
+                        { model: Comuna_1.default, required: true },
+                    ],
+                },
+            ],
         });
         if (cliente) {
             res.status(200).json(cliente);
@@ -108,8 +118,6 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         // Buscar si la persona ya existe por n_identificacion
         let persona = yield Persona_1.default.findOne({ where: { n_identificacion } });
-        let region = yield Region_1.default.findByPk(region_id);
-        let comuna = yield Comuna_1.default.findByPk(comuna_id);
         if (persona) {
             // Verificar si la persona ya está asociada a un cliente
             const clienteExistente = yield Cliente_1.default.findOne({
@@ -120,6 +128,8 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                     .status(400)
                     .json({ message: "La persona ya está registrada como cliente" });
             }
+            let region = yield Region_1.default.findByPk(region_id);
+            let comuna = yield Comuna_1.default.findByPk(comuna_id);
             // Si la persona existe pero no es cliente, crear el cliente con la ID de la persona existente
             const nuevoCliente = yield Cliente_1.default.create({
                 personas_id: persona.id,
@@ -159,9 +169,7 @@ const createCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 region_id,
                 comuna_id,
             });
-            res
-                .status(201)
-                .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+            res.status(201).json({ nuevoCliente, nuevaDireccion, persona });
         }
     }
     catch (error) {
