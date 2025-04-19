@@ -12,6 +12,8 @@ import Direccion from "../models/Direccion";
 import Region from "../models/Region";
 import Comuna from "../models/Comuna";
 import { log } from "console";
+import Pago from "../models/Pago";
+import Abono from "../models/Abono";
 
 export const getAllPedidos = async (
   req: Request,
@@ -44,13 +46,16 @@ export const getAllPedidos = async (
         .json({ error: "El parámetro 'page' debe ser un número positivo." });
     }
 
+    let validRegion = region == 0 ? false : true;
+
     console.log(
       `search = ${search}
        - desde = ${desde} - 
        hasta = ${hasta} - 
        estado = ${estado} - 
        cliente = ${searchCliente} - 
-       region = ${region}`
+       region = ${region} - 
+       validRegion = ${validRegion}`
     );
 
     // 2. Construir filtro de Pedido (ID, fechas, estado)
@@ -93,6 +98,7 @@ export const getAllPedidos = async (
     // 4. Preparar include de Dirección → Región, con filtro condicional
     const direccionInclude: any = {
       model: Direccion,
+      required: validRegion,
       include: [
         {
           model: Region,
@@ -276,6 +282,25 @@ export const getPedidosByComprobanteVentaId = async (
           include: [{ model: Region }, { model: Comuna }],
         },
       ],
+    });
+    if (pedido) {
+      res.status(200).json(pedido);
+    } else {
+      res.status(404).json({ message: "Pedido no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el pedido", error });
+  }
+};
+
+export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const pedido = await Pedido.findAll({
+      where: {
+        clientes_id: id,
+      },
+      include: [{ model: Pago, include: [{ model: Abono }] }],
     });
     if (pedido) {
       res.status(200).json(pedido);

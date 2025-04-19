@@ -144,8 +144,8 @@ Bodega_1.default.hasMany(GuiaDespacho_1.default, { foreignKey: "bodega_id" });
 // =================================================
 const syncModels = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield connection_1.default.sync({ alter: true });
-        // await db.sync({ alter: false, force: false });
+        // await db.sync({ alter: true });
+        yield connection_1.default.sync({ alter: false, force: false });
         console.log("Modelos sincronizados correctamente");
     }
     catch (error) {

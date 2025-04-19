@@ -7,7 +7,8 @@ import {
   getPedidoById,
   updatePedido,
   getPedidosByGuiaDespachoId,
-  getPedidosByComprobanteVentaId
+  getPedidosByComprobanteVentaId,
+  getPedidosBySaldoCliente,
 } from "../controllers/pedidos";
 
 const route = Router();
@@ -19,5 +20,6 @@ route.put("/:id", [validarjwt], updatePedido);
 route.delete("/:id", [validarjwt], deletePedido);
 route.get("/guia/:id", [validarjwt], getPedidosByGuiaDespachoId);
 route.get("/comprobante/:id", [validarjwt], getPedidosByComprobanteVentaId);
+route.get("/saldosCliente/:id", getPedidosBySaldoCliente);
 
 export default route;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPedidosByComprobanteVentaId = exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
+exports.getPedidosBySaldoCliente = exports.getPedidosByComprobanteVentaId = exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
 const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Cliente_1 = __importDefault(require("../models/Cliente"));
 const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
@@ -25,6 +25,8 @@ const sequelize_1 = require("sequelize");
 const Direccion_1 = __importDefault(require("../models/Direccion"));
 const Region_1 = __importDefault(require("../models/Region"));
 const Comuna_1 = __importDefault(require("../models/Comuna"));
+const Pago_1 = __importDefault(require("../models/Pago"));
+const Abono_1 = __importDefault(require("../models/Abono"));
 const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { page = "1", search = "", searchCliente = "", fecha_desde, fecha_hasta, estadoId, regionId, limit = "10", } = req.query;
@@ -40,12 +42,14 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
                 .status(400)
                 .json({ error: "El parámetro 'page' debe ser un número positivo." });
         }
+        let validRegion = region == 0 ? false : true;
         console.log(`search = ${search}
        - desde = ${desde} - 
        hasta = ${hasta} - 
        estado = ${estado} - 
        cliente = ${searchCliente} - 
-       region = ${region}`);
+       region = ${region} - 
+       validRegion = ${validRegion}`);
         // 2. Construir filtro de Pedido (ID, fechas, estado)
         const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign({}, (search.trim() && {
             id: { [sequelize_1.Op.like]: `%${search.trim()}%` },
@@ -72,6 +76,7 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         // 4. Preparar include de Dirección → Región, con filtro condicional
         const direccionInclude = {
             model: Direccion_1.default,
+            required: validRegion,
             include: [
                 Object.assign({ model: Region_1.default }, (regionId &&
                     Number(regionId) !== 0 && {
@@ -246,4 +251,25 @@ const getPedidosByComprobanteVentaId = (req, res) => __awaiter(void 0, void 0, v
     }
 });
 exports.getPedidosByComprobanteVentaId = getPedidosByComprobanteVentaId;
+const getPedidosBySaldoCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const pedido = yield Pedido_1.default.findAll({
+            where: {
+                clientes_id: id,
+            },
+            include: [{ model: Pago_1.default, include: [{ model: Abono_1.default }] }],
+        });
+        if (pedido) {
+            res.status(200).json(pedido);
+        }
+        else {
+            res.status(404).json({ message: "Pedido no encontrado" });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener el pedido", error });
+    }
+});
+exports.getPedidosBySaldoCliente = getPedidosBySaldoCliente;
 //# sourceMappingURL=pedidos.js.map

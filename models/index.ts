@@ -166,8 +166,8 @@ Bodega.hasMany(GuiaDespacho, { foreignKey: "bodega_id" });
 
 export const syncModels = async () => {
   try {
-    await db.sync({ alter: true });
-    // await db.sync({ alter: false, force: false });
+    // await db.sync({ alter: true });
+    await db.sync({ alter: false, force: false });
     console.log("Modelos sincronizados correctamente");
   } catch (error) {
     console.error("Error al sincronizar los modelos:", error);
