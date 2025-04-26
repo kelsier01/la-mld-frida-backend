@@ -132,7 +132,7 @@ const getPedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getPedidoById = getPedidoById;
 const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, bodega_destino_id } = req.body;
     console.log("createPedido", req.body);
     try {
         const nuevoPedido = yield Pedido_1.default.create({
@@ -145,6 +145,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             n_despacho_chile,
             comprobante_ventas_id,
             direccion_id,
+            bodega_destino_id
         });
         res.status(201).json(nuevoPedido);
     }
@@ -156,7 +157,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.createPedido = createPedido;
 const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, bodega_destino_id } = req.body;
     try {
         const pedido = yield Pedido_1.default.findByPk(id);
         if (pedido) {
@@ -170,6 +171,7 @@ const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 tracking_number,
                 comprobante_ventas_id,
                 direccion_id,
+                bodega_destino_id
             });
             res.status(200).json(pedido);
         }

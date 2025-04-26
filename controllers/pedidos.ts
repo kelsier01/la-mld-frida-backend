@@ -166,6 +166,7 @@ export const createPedido = async (req: Request, res: Response) => {
     n_despacho_chile,
     comprobante_ventas_id,
     direccion_id,
+    bodega_destino_id
   } = req.body;
   console.log("createPedido", req.body);
   try {
@@ -179,6 +180,7 @@ export const createPedido = async (req: Request, res: Response) => {
       n_despacho_chile,
       comprobante_ventas_id,
       direccion_id,
+      bodega_destino_id
     });
     res.status(201).json(nuevoPedido);
   } catch (error) {
@@ -200,6 +202,7 @@ export const updatePedido = async (req: Request, res: Response) => {
     tracking_number,
     comprobante_ventas_id,
     direccion_id,
+    bodega_destino_id
   } = req.body;
   try {
     const pedido = await Pedido.findByPk(id);
@@ -214,6 +217,7 @@ export const updatePedido = async (req: Request, res: Response) => {
         tracking_number,
         comprobante_ventas_id,
         direccion_id,
+        bodega_destino_id
       });
       res.status(200).json(pedido);
     } else {

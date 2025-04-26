@@ -65,6 +65,10 @@ Pedido.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    bodega_destino_id:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     sequelize: db,
