@@ -27,3 +27,4 @@ db.sync({ alter: false, force: false })
   });
 
 export default db;
+// 
