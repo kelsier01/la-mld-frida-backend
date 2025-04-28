@@ -177,58 +177,80 @@ exports.deleteUsuario = deleteUsuario;
 const createUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { password, roles_id, nombre, correo, n_identificacion, fono } = req.body;
     const username = n_identificacion;
-    // Iniciar una transacción
     const t = yield connection_1.default.transaction();
     try {
-        // Validar si la persona ya existe por n_identificacion, correo o nombre
+        // Buscar si ya existe la persona
         const personaExistente = yield Persona_1.default.findOne({
-            where: {
-                n_identificacion, // Buscar por RUT o identificación
-            },
+            where: { n_identificacion },
             transaction: t,
         });
+        // Si existe la persona
         if (personaExistente) {
-            yield t.rollback();
-            return res.status(400).json({
-                message: "Ya existe una persona con esta identificación",
+            // Verificar si también es usuario
+            const usuarioExistente = yield Usuario_1.default.findOne({
+                where: { username },
+                transaction: t,
+            });
+            // Si ya existe como usuario también, error
+            if (usuarioExistente) {
+                yield t.rollback();
+                return res.status(400).json({
+                    message: "La persona ya está registrada como usuario",
+                });
+            }
+            // Si solo existe la persona: crear usuario y empleado
+            const uuid = (0, uuid_1.v4)().slice(0, 8);
+            const psswd = bcryptjs_1.default.hashSync(password, bcryptjs_1.default.genSaltSync());
+            const nuevoUsuario = yield Usuario_1.default.create({
+                username,
+                password: psswd,
+                uid: uuid,
+                isActive: 1,
+                roles_id,
+            }, { transaction: t });
+            yield Empleado_1.default.create({
+                personas_id: personaExistente.id,
+                usuarios_id: nuevoUsuario.id,
+            }, { transaction: t });
+            yield t.commit();
+            return res.status(201).json({
+                message: "Usuario y Empleado creados para persona existente",
+                usuario: nuevoUsuario,
             });
         }
-        // Encriptar la contraseña
-        const uuid = (0, uuid_1.v4)();
-        const shortUuid = uuid.slice(0, 8); // Limitar el UUID a 8 caracteres
-        const salto = bcryptjs_1.default.genSaltSync();
-        const psswd = bcryptjs_1.default.hashSync(password, salto);
-        // Crear Persona
+        // Si no existe la persona, crear todo desde cero
         const nuevaPersona = yield Persona_1.default.create({
             nombre,
             correo,
             n_identificacion,
             fono,
         }, { transaction: t });
-        // Crear Usuario
+        const uuid = (0, uuid_1.v4)().slice(0, 8);
+        const psswd = bcryptjs_1.default.hashSync(password, bcryptjs_1.default.genSaltSync());
         const nuevoUsuario = yield Usuario_1.default.create({
             username,
             password: psswd,
-            uid: shortUuid,
+            uid: uuid,
             isActive: 1,
             roles_id,
         }, { transaction: t });
-        // Crear Empleado y asociarlo a Persona y Usuario
         yield Empleado_1.default.create({
             personas_id: nuevaPersona.id,
             usuarios_id: nuevoUsuario.id,
         }, { transaction: t });
-        // Confirmar la transacción
         yield t.commit();
         res.status(201).json({
-            message: "Usuario, Persona y Empleado creados correctamente",
+            message: "Persona, Usuario y Empleado creados correctamente",
             usuario: nuevoUsuario,
         });
     }
     catch (error) {
-        yield t.rollback(); // Revertir la transacción en caso de error
+        yield t.rollback();
         console.error("Error en createUsuario:", error);
-        res.status(500).json({ message: "Error al crear el usuario", error });
+        res.status(500).json({
+            message: "Error al crear el usuario",
+            error,
+        });
     }
 });
 exports.createUsuario = createUsuario;
