@@ -4,21 +4,77 @@ import bcryptjs from "bcryptjs";
 import Persona from "../models/Persona";
 import { v4 as uuidv4 } from "uuid"; //LIBRERIA UUID
 import Empleado from "../models/Empleado";
-import rol from "../models/Rol";
+import role from "../models/Rol";
 import db from "../BD/connection"; // Tu conexión Sequelize
+import { Op } from "sequelize";
 
 export const getAllUsuarios = async (req: Request, res: Response) => {
   try {
-    const usuarios = await Usuario.findAll({
+    const {
+      search = "",
+      page = "1",
+      rol,
+      limit = 10,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      rol?: Number;
+      limit?: Number;
+    };
+
+    // Validación de la paginación
+    const pageNumber = Number(page);
+    let rolNumber = rol == 0 ? undefined : Number(rol);
+    let validRol = rol == 0 ? false : true;
+    const offset = (pageNumber - 1) * Number(limit);
+    let limite = Number(limit);
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+    // Construcción de la condición de búsqueda en Persona
+    const personaWhere: any = search
+      ? {
+          [Op.or]: [
+            { nombre: { [Op.like]: `%${search}%` } },
+            { n_identificacion: { [Op.like]: `%${search}%` } },
+          ],
+        }
+      : {};
+
+    // Construcción de la condición de búsqueda en Direccion
+    const rolWhere: any = {
+      ...(rolNumber && { roles_id: rolNumber }),
+    };
+
+    const { rows: usuarios, count: total } = await Usuario.findAndCountAll({
+      where: rolWhere,
       include: [
         {
-          model: rol,
+          model: role,
         },
         {
           model: Empleado,
-          include: [Persona],
+          include: [
+            {
+              model: Persona,
+              where: personaWhere,
+              required: true, // INNER JOIN para que solo traiga clientes con Persona asociada
+            },
+          ],
         },
       ],
+      limit: limite,
+      offset,
+    });
+
+    return res.json({
+      usuarios,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
     });
     res.status(200).json(usuarios);
   } catch (error) {
@@ -32,7 +88,7 @@ export const getUsuarioById = async (req: Request, res: Response) => {
     const usuario = await Usuario.findByPk(id, {
       include: [
         {
-          model: rol,
+          model: role,
         },
         {
           model: Empleado,
@@ -56,7 +112,7 @@ export const getUsarioByUid = async (req: Request, res: Response) => {
     where: { uid },
     include: [
       {
-        model: rol,
+        model: role,
       },
       {
         model: Empleado,

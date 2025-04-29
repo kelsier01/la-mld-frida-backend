@@ -20,18 +20,57 @@ const uuid_1 = require("uuid"); //LIBRERIA UUID
 const Empleado_1 = __importDefault(require("../models/Empleado"));
 const Rol_1 = __importDefault(require("../models/Rol"));
 const connection_1 = __importDefault(require("../BD/connection")); // Tu conexión Sequelize
+const sequelize_1 = require("sequelize");
 const getAllUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usuarios = yield Usuario_1.default.findAll({
+        const { search = "", page = "1", rol, limit = 10, } = req.query;
+        // Validación de la paginación
+        const pageNumber = Number(page);
+        let rolNumber = rol == 0 ? undefined : Number(rol);
+        let validRol = rol == 0 ? false : true;
+        const offset = (pageNumber - 1) * Number(limit);
+        let limite = Number(limit);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        // Construcción de la condición de búsqueda en Persona
+        const personaWhere = search
+            ? {
+                [sequelize_1.Op.or]: [
+                    { nombre: { [sequelize_1.Op.like]: `%${search}%` } },
+                    { n_identificacion: { [sequelize_1.Op.like]: `%${search}%` } },
+                ],
+            }
+            : {};
+        // Construcción de la condición de búsqueda en Direccion
+        const rolWhere = Object.assign({}, (rolNumber && { roles_id: rolNumber }));
+        const { rows: usuarios, count: total } = yield Usuario_1.default.findAndCountAll({
+            where: rolWhere,
             include: [
                 {
                     model: Rol_1.default,
                 },
                 {
                     model: Empleado_1.default,
-                    include: [Persona_1.default],
+                    include: [
+                        {
+                            model: Persona_1.default,
+                            where: personaWhere,
+                            required: true, // INNER JOIN para que solo traiga clientes con Persona asociada
+                        },
+                    ],
                 },
             ],
+            limit: limite,
+            offset,
+        });
+        return res.json({
+            usuarios,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / Number(limit)),
         });
         res.status(200).json(usuarios);
     }
