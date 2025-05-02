@@ -227,76 +227,57 @@ export const deleteUsuario = async (req: Request, res: Response) => {
 export const createUsuario = async (req: Request, res: Response) => {
   const { password, roles_id, nombre, correo, n_identificacion, fono } =
     req.body;
-  const username = n_identificacion;
 
+  // Validación de campos requeridos
+  if (!n_identificacion || !password || !roles_id) {
+    return res.status(400).json({
+      message: "Campos obligatorios: n_identificacion, password, roles_id",
+    });
+  }
+
+  const username = n_identificacion;
   const t = await db.transaction();
 
   try {
-    // Buscar si ya existe la persona
-    const personaExistente: any = await Persona.findOne({
+    // 1. Búsqueda/creación de Persona
+    let persona: any = null;
+    const personaExistente = await Persona.findOne({
       where: { n_identificacion },
       transaction: t,
     });
 
-    // Si existe la persona
     if (personaExistente) {
-      // Verificar si también es usuario
+      persona = personaExistente;
+
+      // 2. Verificar usuario existente
       const usuarioExistente = await Usuario.findOne({
         where: { username },
         transaction: t,
       });
 
-      // Si ya existe como usuario también, error
       if (usuarioExistente) {
         await t.rollback();
-        return res.status(400).json({
-          message: "La persona ya está registrada como usuario",
+        return res.status(409).json({
+          message: "La persona ya tiene un usuario registrado",
         });
       }
-
-      // Si solo existe la persona: crear usuario y empleado
-      const uuid = uuidv4().slice(0, 8);
-      const psswd = bcryptjs.hashSync(password, bcryptjs.genSaltSync());
-
-      const nuevoUsuario: any = await Usuario.create(
+    } else {
+      // Crear nueva persona si no existe
+      persona = await Persona.create(
         {
-          username,
-          password: psswd,
-          uid: uuid,
-          isActive: 1,
-          roles_id,
+          nombre,
+          correo,
+          n_identificacion,
+          fono,
         },
         { transaction: t }
       );
-
-      await Empleado.create(
-        {
-          personas_id: personaExistente.id,
-          usuarios_id: nuevoUsuario.id,
-        },
-        { transaction: t }
-      );
-
-      await t.commit();
-      return res.status(201).json({
-        message: "Usuario y Empleado creados para persona existente",
-        usuario: nuevoUsuario,
-      });
     }
 
-    // Si no existe la persona, crear todo desde cero
-    const nuevaPersona: any = await Persona.create(
-      {
-        nombre,
-        correo,
-        n_identificacion,
-        fono,
-      },
-      { transaction: t }
-    );
-
+    // 3. Creación de Usuario y Empleado (común para ambos casos)
     const uuid = uuidv4().slice(0, 8);
-    const psswd = bcryptjs.hashSync(password, bcryptjs.genSaltSync());
+    const salto = bcryptjs.genSaltSync();
+    const psswd = bcryptjs.hashSync(password, salto);
 
     const nuevoUsuario: any = await Usuario.create(
       {
@@ -311,23 +292,23 @@ export const createUsuario = async (req: Request, res: Response) => {
 
     await Empleado.create(
       {
-        personas_id: nuevaPersona.id,
+        personas_id: persona.id,
         usuarios_id: nuevoUsuario.id,
+        eliminado: false, // Campo requerido según modelo
       },
       { transaction: t }
     );
 
     await t.commit();
-    res.status(201).json({
-      message: "Persona, Usuario y Empleado creados correctamente",
-      usuario: nuevoUsuario,
-    });
+
+    const { password: _, ...usuario } = nuevoUsuario;
+    return res.status(201).json(usuario);
   } catch (error) {
     await t.rollback();
     console.error("Error en createUsuario:", error);
-    res.status(500).json({
-      message: "Error al crear el usuario",
-      error,
+    return res.status(500).json({
+      message: "Error en el servidor al crear el usuario",
+      error: error instanceof Error ? error.message : "Error desconocido",
     });
   }
 };

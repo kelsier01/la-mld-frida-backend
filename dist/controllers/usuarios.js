@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -215,57 +226,48 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.deleteUsuario = deleteUsuario;
 const createUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { password, roles_id, nombre, correo, n_identificacion, fono } = req.body;
+    // Validación de campos requeridos
+    if (!n_identificacion || !password || !roles_id) {
+        return res.status(400).json({
+            message: "Campos obligatorios: n_identificacion, password, roles_id",
+        });
+    }
     const username = n_identificacion;
     const t = yield connection_1.default.transaction();
     try {
-        // Buscar si ya existe la persona
+        // 1. Búsqueda/creación de Persona
+        let persona = null;
         const personaExistente = yield Persona_1.default.findOne({
             where: { n_identificacion },
             transaction: t,
         });
-        // Si existe la persona
         if (personaExistente) {
-            // Verificar si también es usuario
+            persona = personaExistente;
+            // 2. Verificar usuario existente
             const usuarioExistente = yield Usuario_1.default.findOne({
                 where: { username },
                 transaction: t,
             });
-            // Si ya existe como usuario también, error
             if (usuarioExistente) {
                 yield t.rollback();
-                return res.status(400).json({
-                    message: "La persona ya está registrada como usuario",
+                return res.status(409).json({
+                    message: "La persona ya tiene un usuario registrado",
                 });
             }
-            // Si solo existe la persona: crear usuario y empleado
-            const uuid = (0, uuid_1.v4)().slice(0, 8);
-            const psswd = bcryptjs_1.default.hashSync(password, bcryptjs_1.default.genSaltSync());
-            const nuevoUsuario = yield Usuario_1.default.create({
-                username,
-                password: psswd,
-                uid: uuid,
-                isActive: 1,
-                roles_id,
-            }, { transaction: t });
-            yield Empleado_1.default.create({
-                personas_id: personaExistente.id,
-                usuarios_id: nuevoUsuario.id,
-            }, { transaction: t });
-            yield t.commit();
-            return res.status(201).json({
-                message: "Usuario y Empleado creados para persona existente",
-                usuario: nuevoUsuario,
-            });
         }
-        // Si no existe la persona, crear todo desde cero
-        const nuevaPersona = yield Persona_1.default.create({
-            nombre,
-            correo,
-            n_identificacion,
-            fono,
-        }, { transaction: t });
+        else {
+            // Crear nueva persona si no existe
+            persona = yield Persona_1.default.create({
+                nombre,
+                correo,
+                n_identificacion,
+                fono,
+            }, { transaction: t });
+        }
+        // 3. Creación de Usuario y Empleado (común para ambos casos)
         const uuid = (0, uuid_1.v4)().slice(0, 8);
-        const psswd = bcryptjs_1.default.hashSync(password, bcryptjs_1.default.genSaltSync());
+        const salto = bcryptjs_1.default.genSaltSync();
+        const psswd = bcryptjs_1.default.hashSync(password, salto);
         const nuevoUsuario = yield Usuario_1.default.create({
             username,
             password: psswd,
@@ -274,21 +276,20 @@ const createUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             roles_id,
         }, { transaction: t });
         yield Empleado_1.default.create({
-            personas_id: nuevaPersona.id,
+            personas_id: persona.id,
             usuarios_id: nuevoUsuario.id,
+            eliminado: false, // Campo requerido según modelo
         }, { transaction: t });
         yield t.commit();
-        res.status(201).json({
-            message: "Persona, Usuario y Empleado creados correctamente",
-            usuario: nuevoUsuario,
-        });
+        const { password: _ } = nuevoUsuario, usuario = __rest(nuevoUsuario, ["password"]);
+        return res.status(201).json(usuario);
     }
     catch (error) {
         yield t.rollback();
         console.error("Error en createUsuario:", error);
-        res.status(500).json({
-            message: "Error al crear el usuario",
-            error,
+        return res.status(500).json({
+            message: "Error en el servidor al crear el usuario",
+            error: error instanceof Error ? error.message : "Error desconocido",
         });
     }
 });
