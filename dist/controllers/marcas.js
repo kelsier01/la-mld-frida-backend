@@ -28,17 +28,24 @@ const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const offset = (pageNumber - 1) * Number(limit);
         const limite = Number(limit);
         // Construcción de la condición de búsqueda en Persona
-        const marcaWhere = search
-            ? { nombre: { [sequelize_1.Op.like]: `%${search}%` } }
-            : {};
+        const marcaWhere = Object.assign({ eliminado: {
+                [sequelize_1.Op.ne]: 1,
+            } }, (search ? { nombre: { [sequelize_1.Op.like]: `%${search}%` } } : {}));
         // Ejecución de la consulta con Sequelize
         const { rows: marcas, count: total } = yield Marca_1.default.findAndCountAll({
             where: marcaWhere,
             limit: limite,
             offset,
             distinct: true,
-            order: [["nombre", "ASC"]],
+            order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
         });
+        console.log("Query:", Marca_1.default.findAndCountAll({
+            where: marcaWhere,
+            limit: limite,
+            offset,
+            distinct: true,
+            order: [["nombre", "ASC"]],
+        }).toString());
         // const marcas = await Marca.findAll();
         return res.json({
             marcas,
@@ -55,7 +62,22 @@ const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 exports.getAllMarcas = getAllMarcas;
 const getMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const marcas = yield Marca_1.default.findAll();
+        const marcas = yield Marca_1.default.findAll({
+            where: {
+                eliminado: {
+                    [sequelize_1.Op.ne]: 1, // Op.ne significa "not equal" (distinto de)
+                },
+            },
+            order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
+        });
+        console.log("Query:", Marca_1.default.findAll({
+            where: {
+                eliminado: {
+                    [sequelize_1.Op.ne]: 1,
+                },
+            },
+            order: [["nombre", "ASC"]],
+        }).toString());
         res.status(200).json(marcas);
     }
     catch (error) {
@@ -113,7 +135,7 @@ const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const marca = yield Marca_1.default.findByPk(id);
         if (marca) {
-            yield marca.destroy();
+            // await marca.destroy();
             res.status(200).json({ message: "Marca eliminada correctamente" });
         }
         else {

@@ -15,7 +15,12 @@ Marca.init({
     },
     nombre: {
         type: sequelize_1.DataTypes.STRING(45),
-        allowNull: true,
+        allowNull: false,
+    },
+    eliminado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
     },
 }, {
     sequelize: connection_1.default,

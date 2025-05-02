@@ -18,7 +18,12 @@ Marca.init(
     },
     nombre: {
       type: DataTypes.STRING(45),
-      allowNull: true,
+      allowNull: false,
+    },
+    eliminado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
     },
   },
   {
