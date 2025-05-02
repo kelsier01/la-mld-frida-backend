@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPedidosBySaldoCliente = exports.getPedidosByComprobanteVentaId = exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
+exports.actualizarEstadoPedido = exports.getPedidosByFechaEntrega = exports.getPedidosBySaldoCliente = exports.getPedidosByComprobanteVentaId = exports.getPedidosByGuiaDespachoId = exports.deletePedido = exports.updatePedido = exports.createPedido = exports.getPedidoById = exports.getAllPedidos = void 0;
 const Pedido_1 = __importDefault(require("../models/Pedido"));
 const Cliente_1 = __importDefault(require("../models/Cliente"));
 const ComprobanteVenta_1 = __importDefault(require("../models/ComprobanteVenta"));
@@ -27,6 +27,7 @@ const Region_1 = __importDefault(require("../models/Region"));
 const Comuna_1 = __importDefault(require("../models/Comuna"));
 const Pago_1 = __importDefault(require("../models/Pago"));
 const Abono_1 = __importDefault(require("../models/Abono"));
+const LogEstadoPedido_1 = __importDefault(require("../models/LogEstadoPedido"));
 const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { page = "1", search = "", searchCliente = "", fecha_desde, fecha_hasta, estadoId, regionId, limit = "10", } = req.query;
@@ -51,7 +52,7 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
        region = ${region} - 
        validRegion = ${validRegion}`);
         // 2. Construir filtro de Pedido (ID, fechas, estado)
-        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign({}, (search.trim() && {
+        const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign({ eliminado: 0 }, (search.trim() && {
             id: { [sequelize_1.Op.like]: `%${search.trim()}%` },
         })), (fecha_desde &&
             !fecha_hasta && {
@@ -132,7 +133,7 @@ const getPedidoById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getPedidoById = getPedidoById;
 const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, bodega_destino_id } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, documento_usa_id, n_despacho_chile, comprobante_ventas_id, direccion_id, bodega_destino_id, fecha_entrega, eliminado, } = req.body;
     console.log("createPedido", req.body);
     try {
         const nuevoPedido = yield Pedido_1.default.create({
@@ -145,7 +146,9 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             n_despacho_chile,
             comprobante_ventas_id,
             direccion_id,
-            bodega_destino_id
+            bodega_destino_id,
+            fecha_entrega,
+            eliminado
         });
         res.status(201).json(nuevoPedido);
     }
@@ -157,7 +160,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.createPedido = createPedido;
 const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, bodega_destino_id } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, bodega_destino_id, fecha_entrega, eliminado } = req.body;
     try {
         const pedido = yield Pedido_1.default.findByPk(id);
         if (pedido) {
@@ -171,7 +174,9 @@ const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 tracking_number,
                 comprobante_ventas_id,
                 direccion_id,
-                bodega_destino_id
+                bodega_destino_id,
+                fecha_entrega,
+                eliminado
             });
             res.status(200).json(pedido);
         }
@@ -207,6 +212,7 @@ const getPedidosByGuiaDespachoId = (req, res) => __awaiter(void 0, void 0, void 
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 guia_despacho_id: id,
+                eliminado: 0
             },
         });
         if (pedido) {
@@ -227,6 +233,7 @@ const getPedidosByComprobanteVentaId = (req, res) => __awaiter(void 0, void 0, v
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 comprobante_ventas_id: id,
+                eliminado: 0
             },
             include: [
                 { model: Empleado_1.default },
@@ -259,6 +266,7 @@ const getPedidosBySaldoCliente = (req, res) => __awaiter(void 0, void 0, void 0,
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 clientes_id: id,
+                eliminado: 0
             },
             include: [{ model: Pago_1.default, include: [{ model: Abono_1.default }] }],
         });
@@ -274,4 +282,59 @@ const getPedidosBySaldoCliente = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.getPedidosBySaldoCliente = getPedidosBySaldoCliente;
+// Constantes para estados de pedidos
+const ESTADOS_PEDIDO = {
+    RECEPCIONADO_CHILE: 3,
+    LISTO_DESPACHAR: 4
+};
+const getPedidosByFechaEntrega = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Obtener la fecha de hoy
+        const hoy = new Date();
+        // Formatear la fecha para obtener solo YYYY-MM-DD
+        const fechaHoy = hoy.toISOString().split('T')[0];
+        const pedidos = yield Pedido_1.default.findAll({
+            where: {
+                eliminado: 0,
+                fecha_entrega: {
+                    [sequelize_1.Op.between]: [
+                        `${fechaHoy} 00:00:00`,
+                        `${fechaHoy} 23:59:59`
+                    ]
+                }
+            },
+            attributes: ['id', 'fecha_entrega', 'estado_pedidos_id']
+        });
+        return pedidos;
+    }
+    catch (error) {
+        console.error('[getPedidosByFechaEntrega] Error:', error);
+        throw error; // Propagar el error para mejor manejo
+    }
+});
+exports.getPedidosByFechaEntrega = getPedidosByFechaEntrega;
+const actualizarEstadoPedido = (id_pedido) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const pedido = yield Pedido_1.default.findByPk(id_pedido);
+        if (!pedido) {
+            console.error(`[actualizarEstadoPedido] Pedido ${id_pedido} no encontrado`);
+            return false;
+        }
+        yield pedido.update({
+            estado_pedidos_id: ESTADOS_PEDIDO.LISTO_DESPACHAR,
+        });
+        yield LogEstadoPedido_1.default.create({
+            pedidos_id: id_pedido,
+            estado_pedidos_id: ESTADOS_PEDIDO.LISTO_DESPACHAR,
+            empleados_id: 5, // EMPLEADO SISTEMA
+        });
+        console.log(`[actualizarEstadoPedido] Pedido ${id_pedido} actualizado exitosamente`);
+        return true;
+    }
+    catch (error) {
+        console.error(`[actualizarEstadoPedido] Error al actualizar pedido ${id_pedido}:`, error);
+        throw error;
+    }
+});
+exports.actualizarEstadoPedido = actualizarEstadoPedido;
 //# sourceMappingURL=pedidos.js.map

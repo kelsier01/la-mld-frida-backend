@@ -15,6 +15,7 @@ const db = new sequelize_1.Sequelize(BD_NAME, BD_USERNAME, BD_PASSWORD, {
         // Solo habilitar timestamps globalmente
         timestamps: true, // Activar los campos createdAt y updatedAt por defecto
     },
+    timezone: "America/Santiago", // Establecer la zona horaria
 });
 // Sincronizar la base de datos sin modificar estructura
 db.sync({ alter: false, force: false })
@@ -25,4 +26,5 @@ db.sync({ alter: false, force: false })
     console.error("Error al conectar la base de datos:", error);
 });
 exports.default = db;
+// 
 //# sourceMappingURL=connection.js.map

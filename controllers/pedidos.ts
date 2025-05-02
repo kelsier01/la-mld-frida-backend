@@ -11,9 +11,9 @@ import { Op } from "sequelize";
 import Direccion from "../models/Direccion";
 import Region from "../models/Region";
 import Comuna from "../models/Comuna";
-import { log } from "console";
 import Pago from "../models/Pago";
 import Abono from "../models/Abono";
+import LogEstadoPedido from "../models/LogEstadoPedido";
 
 export const getAllPedidos = async (
   req: Request,
@@ -60,6 +60,7 @@ export const getAllPedidos = async (
 
     // 2. Construir filtro de Pedido (ID, fechas, estado)
     const pedidoWhere: any = {
+      eliminado: 0,
       ...(search.trim() && {
         id: { [Op.like]: `%${search.trim()}%` },
       }),
@@ -166,7 +167,9 @@ export const createPedido = async (req: Request, res: Response) => {
     n_despacho_chile,
     comprobante_ventas_id,
     direccion_id,
-    bodega_destino_id
+    bodega_destino_id,
+    fecha_entrega,
+    eliminado,
   } = req.body;
   console.log("createPedido", req.body);
   try {
@@ -180,7 +183,9 @@ export const createPedido = async (req: Request, res: Response) => {
       n_despacho_chile,
       comprobante_ventas_id,
       direccion_id,
-      bodega_destino_id
+      bodega_destino_id,
+      fecha_entrega,
+      eliminado
     });
     res.status(201).json(nuevoPedido);
   } catch (error) {
@@ -202,7 +207,9 @@ export const updatePedido = async (req: Request, res: Response) => {
     tracking_number,
     comprobante_ventas_id,
     direccion_id,
-    bodega_destino_id
+    bodega_destino_id,
+    fecha_entrega,
+    eliminado
   } = req.body;
   try {
     const pedido = await Pedido.findByPk(id);
@@ -217,7 +224,9 @@ export const updatePedido = async (req: Request, res: Response) => {
         tracking_number,
         comprobante_ventas_id,
         direccion_id,
-        bodega_destino_id
+        bodega_destino_id,
+        fecha_entrega,
+        eliminado
       });
       res.status(200).json(pedido);
     } else {
@@ -252,6 +261,7 @@ export const getPedidosByGuiaDespachoId = async (
     const pedido = await Pedido.findAll({
       where: {
         guia_despacho_id: id,
+        eliminado: 0
       },
     });
     if (pedido) {
@@ -273,6 +283,7 @@ export const getPedidosByComprobanteVentaId = async (
     const pedido = await Pedido.findAll({
       where: {
         comprobante_ventas_id: id,
+        eliminado: 0
       },
       include: [
         { model: Empleado },
@@ -303,6 +314,7 @@ export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
     const pedido = await Pedido.findAll({
       where: {
         clientes_id: id,
+        eliminado: 0
       },
       include: [{ model: Pago, include: [{ model: Abono }] }],
     });
@@ -313,5 +325,66 @@ export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).json({ message: "Error al obtener el pedido", error });
+  }
+};
+
+// Constantes para estados de pedidos
+const ESTADOS_PEDIDO = {
+  RECEPCIONADO_CHILE: 3,
+  LISTO_DESPACHAR: 4
+} as const;
+
+export const getPedidosByFechaEntrega = async () => {
+  try {
+    // Obtener la fecha de hoy
+    const hoy = new Date();
+    // Formatear la fecha para obtener solo YYYY-MM-DD
+    const fechaHoy = hoy.toISOString().split('T')[0];
+    
+    const pedidos = await Pedido.findAll({
+      where: {
+        eliminado: 0,
+        fecha_entrega: {
+          [Op.between]: [
+            `${fechaHoy} 00:00:00`,
+            `${fechaHoy} 23:59:59`
+          ]
+        }
+      },
+      attributes: ['id', 'fecha_entrega', 'estado_pedidos_id']
+    });
+
+    return pedidos;
+  } catch (error) {
+    console.error('[getPedidosByFechaEntrega] Error:', error);
+    throw error; // Propagar el error para mejor manejo
+  }
+};
+
+export const actualizarEstadoPedido = async (id_pedido: number): Promise<boolean> => {
+  try {
+    const pedido = await Pedido.findByPk(id_pedido);
+    
+    if (!pedido) {
+      console.error(`[actualizarEstadoPedido] Pedido ${id_pedido} no encontrado`);
+      return false;
+    }
+
+    await pedido.update({
+      estado_pedidos_id: ESTADOS_PEDIDO.LISTO_DESPACHAR,
+    });
+
+    await LogEstadoPedido.create({
+      pedidos_id: id_pedido,
+      estado_pedidos_id: ESTADOS_PEDIDO.LISTO_DESPACHAR,
+      empleados_id: 5, // EMPLEADO SISTEMA
+    });
+
+    console.log(`[actualizarEstadoPedido] Pedido ${id_pedido} actualizado exitosamente`);
+    return true;
+
+  } catch (error) {
+    console.error(`[actualizarEstadoPedido] Error al actualizar pedido ${id_pedido}:`, error);
+    throw error;
   }
 };

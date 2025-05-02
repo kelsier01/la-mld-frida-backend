@@ -69,6 +69,14 @@ Pedido.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    fecha_entrega: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    eliminado: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    }
   },
   {
     sequelize: db,

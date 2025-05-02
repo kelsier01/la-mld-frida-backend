@@ -63,6 +63,7 @@ const getAllProductos = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             limit: limite,
             offset,
             distinct: true,
+            order: [["id", "DESC"]],
         });
         res.status(200).json({
             productos,

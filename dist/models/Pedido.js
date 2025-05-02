@@ -53,6 +53,14 @@ Pedido.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    fecha_entrega: {
+        type: sequelize_1.DataTypes.DATE,
+        allowNull: true,
+    },
+    eliminado: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     sequelize: connection_1.default,
     tableName: "pedidos",

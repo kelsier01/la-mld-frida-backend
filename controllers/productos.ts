@@ -83,6 +83,7 @@ export const getAllProductos = async (
       limit: limite,
       offset,
       distinct: true,
+      order: [["id", "DESC"]],
     });
     res.status(200).json({
       productos,

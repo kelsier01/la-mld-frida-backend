@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const node_cron_1 = __importDefault(require("node-cron"));
 const path_1 = __importDefault(require("path"));
 // Conexiones BD
 const connection_1 = __importDefault(require("../BD/connection"));
@@ -80,11 +81,17 @@ class Server {
             region: "/api/region",
             comuna: "/api/comuna",
         };
+        this.CRON_SCHEDULE = "0 18 * * *"; // Ejecutar todos los días a las 9 AM
+        this.ESTADOS = {
+            RECEPCIONADO_CHILE: 3,
+            LISTO_DESPACHAR: 4
+        };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || "8000";
         this.bdConnection();
         this.middlewares();
         this.routes();
+        this.cronJobs();
     }
     bdConnection() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -136,6 +143,48 @@ class Server {
     listen() {
         this.app.listen(this.port, () => {
             console.log("Servidor Conectado al puerto = " + this.port);
+        });
+    }
+    cronJobs() {
+        node_cron_1.default.schedule(this.CRON_SCHEDULE, () => __awaiter(this, void 0, void 0, function* () {
+            console.log("[CronJob] Iniciando verificación de pedidos...");
+            /* try {
+              const pedidosHoy = await getPedidosByFechaEntrega();
+              
+              if (!pedidosHoy.length) {
+                console.log("[CronJob] No hay pedidos programados para hoy");
+                return;
+              }
+      
+              console.log(`[CronJob] Pedidos encontrados para hoy: ${pedidosHoy.length}`);
+      
+              const pedidosAActualizar = pedidosHoy.filter(
+                pedido => pedido.estado_pedidos_id === this.ESTADOS.RECEPCIONADO_CHILE
+              );
+      
+              if (!pedidosAActualizar.length) {
+                console.log("[CronJob] No hay pedidos que requieran actualización");
+                return;
+              }
+      
+              console.log(`[CronJob] Actualizando ${pedidosAActualizar.length} pedidos...`);
+              
+              const resultados = await Promise.allSettled(
+                pedidosAActualizar.map(pedido => actualizarEstadoPedido(pedido.id))
+              );
+      
+              // Contabilizar resultados
+              const exitosos = resultados.filter(r => r.status === 'fulfilled').length;
+              const fallidos = resultados.filter(r => r.status === 'rejected').length;
+      
+              console.log(`[CronJob] Proceso completado - Actualizados: ${exitosos}, Fallidos: ${fallidos}`);
+      
+            } catch (error) {
+              console.error("[CronJob] Error en la tarea programada:", error);
+            } */
+        }), {
+            scheduled: true,
+            timezone: "America/Santiago"
         });
     }
 }

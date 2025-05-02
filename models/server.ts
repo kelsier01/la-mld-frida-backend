@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cron from "node-cron";
 import path from "path";
 
 // Conexiones BD
@@ -35,6 +36,7 @@ import comunaRoutes from "../rutas/comuna";
 import dotenv from "dotenv";
 import { syncModels } from "./index";
 import cors from "cors";
+import { actualizarEstadoPedido, getPedidosByFechaEntrega } from "../controllers/pedidos";
 
 dotenv.config();
 
@@ -73,12 +75,19 @@ class Server {
     comuna: "/api/comuna",
   };
 
+  private readonly CRON_SCHEDULE = "0 18 * * *"; // Ejecutar todos los días a las 9 AM
+  private readonly ESTADOS = {
+    RECEPCIONADO_CHILE: 3,
+    LISTO_DESPACHAR: 4
+  } as const;
+
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "8000";
     this.bdConnection();
     this.middlewares();
     this.routes();
+    this.cronJobs();
   }
 
   async bdConnection() {
@@ -133,6 +142,51 @@ class Server {
     this.app.listen(this.port, () => {
       console.log("Servidor Conectado al puerto = " + this.port);
     });
+  }
+
+  cronJobs() {
+    cron.schedule(this.CRON_SCHEDULE, async () => {
+      console.log("[CronJob] Iniciando verificación de pedidos...");
+      
+      /* try {
+        const pedidosHoy = await getPedidosByFechaEntrega();
+        
+        if (!pedidosHoy.length) {
+          console.log("[CronJob] No hay pedidos programados para hoy");
+          return;
+        }
+
+        console.log(`[CronJob] Pedidos encontrados para hoy: ${pedidosHoy.length}`);
+
+        const pedidosAActualizar = pedidosHoy.filter(
+          pedido => pedido.estado_pedidos_id === this.ESTADOS.RECEPCIONADO_CHILE
+        );
+
+        if (!pedidosAActualizar.length) {
+          console.log("[CronJob] No hay pedidos que requieran actualización");
+          return;
+        }
+
+        console.log(`[CronJob] Actualizando ${pedidosAActualizar.length} pedidos...`);
+        
+        const resultados = await Promise.allSettled(
+          pedidosAActualizar.map(pedido => actualizarEstadoPedido(pedido.id))
+        );
+
+        // Contabilizar resultados
+        const exitosos = resultados.filter(r => r.status === 'fulfilled').length;
+        const fallidos = resultados.filter(r => r.status === 'rejected').length;
+
+        console.log(`[CronJob] Proceso completado - Actualizados: ${exitosos}, Fallidos: ${fallidos}`);
+
+      } catch (error) {
+        console.error("[CronJob] Error en la tarea programada:", error);
+      } */
+    },{
+      scheduled: true,
+      timezone: "America/Santiago"
+    }
+  );
   }
 }
 
