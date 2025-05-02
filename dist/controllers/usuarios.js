@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,18 +31,57 @@ const uuid_1 = require("uuid"); //LIBRERIA UUID
 const Empleado_1 = __importDefault(require("../models/Empleado"));
 const Rol_1 = __importDefault(require("../models/Rol"));
 const connection_1 = __importDefault(require("../BD/connection")); // Tu conexión Sequelize
+const sequelize_1 = require("sequelize");
 const getAllUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usuarios = yield Usuario_1.default.findAll({
+        const { search = "", page = "1", rol, limit = 10, } = req.query;
+        // Validación de la paginación
+        const pageNumber = Number(page);
+        let rolNumber = rol == 0 ? undefined : Number(rol);
+        let validRol = rol == 0 ? false : true;
+        const offset = (pageNumber - 1) * Number(limit);
+        let limite = Number(limit);
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            return res
+                .status(400)
+                .json({ error: "El parámetro 'page' debe ser un número positivo." });
+        }
+        // Construcción de la condición de búsqueda en Persona
+        const personaWhere = search
+            ? {
+                [sequelize_1.Op.or]: [
+                    { nombre: { [sequelize_1.Op.like]: `%${search}%` } },
+                    { n_identificacion: { [sequelize_1.Op.like]: `%${search}%` } },
+                ],
+            }
+            : {};
+        // Construcción de la condición de búsqueda en Direccion
+        const rolWhere = Object.assign({}, (rolNumber && { roles_id: rolNumber }));
+        const { rows: usuarios, count: total } = yield Usuario_1.default.findAndCountAll({
+            where: rolWhere,
             include: [
                 {
                     model: Rol_1.default,
                 },
                 {
                     model: Empleado_1.default,
-                    include: [Persona_1.default],
+                    include: [
+                        {
+                            model: Persona_1.default,
+                            where: personaWhere,
+                            required: true, // INNER JOIN para que solo traiga clientes con Persona asociada
+                        },
+                    ],
                 },
             ],
+            limit: limite,
+            offset,
+        });
+        return res.json({
+            usuarios,
+            total,
+            page: pageNumber,
+            totalPages: Math.ceil(total / Number(limit)),
         });
         res.status(200).json(usuarios);
     }
@@ -176,59 +226,71 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.deleteUsuario = deleteUsuario;
 const createUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { password, roles_id, nombre, correo, n_identificacion, fono } = req.body;
+    // Validación de campos requeridos
+    if (!n_identificacion || !password || !roles_id) {
+        return res.status(400).json({
+            message: "Campos obligatorios: n_identificacion, password, roles_id",
+        });
+    }
     const username = n_identificacion;
-    // Iniciar una transacción
     const t = yield connection_1.default.transaction();
     try {
-        // Validar si la persona ya existe por n_identificacion, correo o nombre
+        // 1. Búsqueda/creación de Persona
+        let persona = null;
         const personaExistente = yield Persona_1.default.findOne({
-            where: {
-                n_identificacion, // Buscar por RUT o identificación
-            },
+            where: { n_identificacion },
             transaction: t,
         });
         if (personaExistente) {
-            yield t.rollback();
-            return res.status(400).json({
-                message: "Ya existe una persona con esta identificación",
+            persona = personaExistente;
+            // 2. Verificar usuario existente
+            const usuarioExistente = yield Usuario_1.default.findOne({
+                where: { username },
+                transaction: t,
             });
+            if (usuarioExistente) {
+                yield t.rollback();
+                return res.status(409).json({
+                    message: "La persona ya tiene un usuario registrado",
+                });
+            }
         }
-        // Encriptar la contraseña
-        const uuid = (0, uuid_1.v4)();
-        const shortUuid = uuid.slice(0, 8); // Limitar el UUID a 8 caracteres
+        else {
+            // Crear nueva persona si no existe
+            persona = yield Persona_1.default.create({
+                nombre,
+                correo,
+                n_identificacion,
+                fono,
+            }, { transaction: t });
+        }
+        // 3. Creación de Usuario y Empleado (común para ambos casos)
+        const uuid = (0, uuid_1.v4)().slice(0, 8);
         const salto = bcryptjs_1.default.genSaltSync();
         const psswd = bcryptjs_1.default.hashSync(password, salto);
-        // Crear Persona
-        const nuevaPersona = yield Persona_1.default.create({
-            nombre,
-            correo,
-            n_identificacion,
-            fono,
-        }, { transaction: t });
-        // Crear Usuario
         const nuevoUsuario = yield Usuario_1.default.create({
             username,
             password: psswd,
-            uid: shortUuid,
+            uid: uuid,
             isActive: 1,
             roles_id,
         }, { transaction: t });
-        // Crear Empleado y asociarlo a Persona y Usuario
         yield Empleado_1.default.create({
-            personas_id: nuevaPersona.id,
+            personas_id: persona.id,
             usuarios_id: nuevoUsuario.id,
+            eliminado: false, // Campo requerido según modelo
         }, { transaction: t });
-        // Confirmar la transacción
         yield t.commit();
-        res.status(201).json({
-            message: "Usuario, Persona y Empleado creados correctamente",
-            usuario: nuevoUsuario,
-        });
+        const { password: _ } = nuevoUsuario, usuario = __rest(nuevoUsuario, ["password"]);
+        return res.status(201).json(usuario);
     }
     catch (error) {
-        yield t.rollback(); // Revertir la transacción en caso de error
+        yield t.rollback();
         console.error("Error en createUsuario:", error);
-        res.status(500).json({ message: "Error al crear el usuario", error });
+        return res.status(500).json({
+            message: "Error en el servidor al crear el usuario",
+            error: error instanceof Error ? error.message : "Error desconocido",
+        });
     }
 });
 exports.createUsuario = createUsuario;

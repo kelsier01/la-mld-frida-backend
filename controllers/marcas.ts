@@ -28,9 +28,12 @@ export const getAllMarcas = async (
     const offset = (pageNumber - 1) * Number(limit);
     const limite = Number(limit);
     // Construcción de la condición de búsqueda en Persona
-    const marcaWhere: any = search
-      ? { nombre: { [Op.like]: `%${search}%` } }
-      : {};
+    const marcaWhere: any = {
+      eliminado: {
+        [Op.ne]: 1,
+      },
+      ...(search ? { nombre: { [Op.like]: `%${search}%` } } : {}),
+    };
 
     // Ejecución de la consulta con Sequelize
     const { rows: marcas, count: total } = await Marca.findAndCountAll({
@@ -38,8 +41,20 @@ export const getAllMarcas = async (
       limit: limite,
       offset,
       distinct: true,
-      order: [["nombre", "ASC"]],
+      order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
     });
+
+    console.log(
+      "Query:",
+      Marca.findAndCountAll({
+        where: marcaWhere,
+        limit: limite,
+        offset,
+        distinct: true,
+        order: [["nombre", "ASC"]],
+      }).toString()
+    );
+
     // const marcas = await Marca.findAll();
     return res.json({
       marcas,
@@ -55,12 +70,31 @@ export const getAllMarcas = async (
 
 export const getMarcas = async (req: Request, res: Response) => {
   try {
-    const marcas = await Marca.findAll();
+    const marcas = await Marca.findAll({
+      where: {
+        eliminado: {
+          [Op.ne]: 1, // Op.ne significa "not equal" (distinto de)
+        },
+      },
+      order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
+    });
+
+    console.log(
+      "Query:",
+      Marca.findAll({
+        where: {
+          eliminado: {
+            [Op.ne]: 1,
+          },
+        },
+        order: [["nombre", "ASC"]],
+      }).toString()
+    );
     res.status(200).json(marcas);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las marcas", error });
   }
-}
+};
 
 export const getMarcaById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -107,7 +141,7 @@ export const deleteMarca = async (req: Request, res: Response) => {
   try {
     const marca = await Marca.findByPk(id);
     if (marca) {
-      await marca.destroy();
+      // await marca.destroy();
       res.status(200).json({ message: "Marca eliminada correctamente" });
     } else {
       res.status(404).json({ message: "Marca no encontrada" });

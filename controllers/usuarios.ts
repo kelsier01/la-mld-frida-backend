@@ -4,21 +4,77 @@ import bcryptjs from "bcryptjs";
 import Persona from "../models/Persona";
 import { v4 as uuidv4 } from "uuid"; //LIBRERIA UUID
 import Empleado from "../models/Empleado";
-import rol from "../models/Rol";
+import role from "../models/Rol";
 import db from "../BD/connection"; // Tu conexión Sequelize
+import { Op } from "sequelize";
 
 export const getAllUsuarios = async (req: Request, res: Response) => {
   try {
-    const usuarios = await Usuario.findAll({
+    const {
+      search = "",
+      page = "1",
+      rol,
+      limit = 10,
+    } = req.query as {
+      search?: string;
+      page?: Number;
+      rol?: Number;
+      limit?: Number;
+    };
+
+    // Validación de la paginación
+    const pageNumber = Number(page);
+    let rolNumber = rol == 0 ? undefined : Number(rol);
+    let validRol = rol == 0 ? false : true;
+    const offset = (pageNumber - 1) * Number(limit);
+    let limite = Number(limit);
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'page' debe ser un número positivo." });
+    }
+    // Construcción de la condición de búsqueda en Persona
+    const personaWhere: any = search
+      ? {
+          [Op.or]: [
+            { nombre: { [Op.like]: `%${search}%` } },
+            { n_identificacion: { [Op.like]: `%${search}%` } },
+          ],
+        }
+      : {};
+
+    // Construcción de la condición de búsqueda en Direccion
+    const rolWhere: any = {
+      ...(rolNumber && { roles_id: rolNumber }),
+    };
+
+    const { rows: usuarios, count: total } = await Usuario.findAndCountAll({
+      where: rolWhere,
       include: [
         {
-          model: rol,
+          model: role,
         },
         {
           model: Empleado,
-          include: [Persona],
+          include: [
+            {
+              model: Persona,
+              where: personaWhere,
+              required: true, // INNER JOIN para que solo traiga clientes con Persona asociada
+            },
+          ],
         },
       ],
+      limit: limite,
+      offset,
+    });
+
+    return res.json({
+      usuarios,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / Number(limit)),
     });
     res.status(200).json(usuarios);
   } catch (error) {
@@ -32,7 +88,7 @@ export const getUsuarioById = async (req: Request, res: Response) => {
     const usuario = await Usuario.findByPk(id, {
       include: [
         {
-          model: rol,
+          model: role,
         },
         {
           model: Empleado,
@@ -56,7 +112,7 @@ export const getUsarioByUid = async (req: Request, res: Response) => {
     where: { uid },
     include: [
       {
-        model: rol,
+        model: role,
       },
       {
         model: Empleado,
@@ -171,74 +227,88 @@ export const deleteUsuario = async (req: Request, res: Response) => {
 export const createUsuario = async (req: Request, res: Response) => {
   const { password, roles_id, nombre, correo, n_identificacion, fono } =
     req.body;
+
+  // Validación de campos requeridos
+  if (!n_identificacion || !password || !roles_id) {
+    return res.status(400).json({
+      message: "Campos obligatorios: n_identificacion, password, roles_id",
+    });
+  }
+
   const username = n_identificacion;
-  // Iniciar una transacción
   const t = await db.transaction();
 
   try {
-    // Validar si la persona ya existe por n_identificacion, correo o nombre
+    // 1. Búsqueda/creación de Persona
+    let persona: any = null;
     const personaExistente = await Persona.findOne({
-      where: {
-        n_identificacion, // Buscar por RUT o identificación
-      },
+      where: { n_identificacion },
       transaction: t,
     });
 
     if (personaExistente) {
-      await t.rollback();
-      return res.status(400).json({
-        message: "Ya existe una persona con esta identificación",
+      persona = personaExistente;
+
+      // 2. Verificar usuario existente
+      const usuarioExistente = await Usuario.findOne({
+        where: { username },
+        transaction: t,
       });
+
+      if (usuarioExistente) {
+        await t.rollback();
+        return res.status(409).json({
+          message: "La persona ya tiene un usuario registrado",
+        });
+      }
+    } else {
+      // Crear nueva persona si no existe
+      persona = await Persona.create(
+        {
+          nombre,
+          correo,
+          n_identificacion,
+          fono,
+        },
+        { transaction: t }
+      );
     }
 
-    // Encriptar la contraseña
-    const uuid = uuidv4();
-    const shortUuid = uuid.slice(0, 8); // Limitar el UUID a 8 caracteres
+    // 3. Creación de Usuario y Empleado (común para ambos casos)
+    const uuid = uuidv4().slice(0, 8);
     const salto = bcryptjs.genSaltSync();
     const psswd = bcryptjs.hashSync(password, salto);
 
-    // Crear Persona
-    const nuevaPersona: any = await Persona.create(
-      {
-        nombre,
-        correo,
-        n_identificacion,
-        fono,
-      },
-      { transaction: t }
-    );
-
-    // Crear Usuario
     const nuevoUsuario: any = await Usuario.create(
       {
         username,
         password: psswd,
-        uid: shortUuid,
+        uid: uuid,
         isActive: 1,
         roles_id,
       },
       { transaction: t }
     );
 
-    // Crear Empleado y asociarlo a Persona y Usuario
     await Empleado.create(
       {
-        personas_id: nuevaPersona.id,
+        personas_id: persona.id,
         usuarios_id: nuevoUsuario.id,
+        eliminado: false, // Campo requerido según modelo
       },
       { transaction: t }
     );
 
-    // Confirmar la transacción
     await t.commit();
 
-    res.status(201).json({
-      message: "Usuario, Persona y Empleado creados correctamente",
-      usuario: nuevoUsuario,
-    });
+    const { password: _, ...usuario } = nuevoUsuario;
+    return res.status(201).json(usuario);
   } catch (error) {
-    await t.rollback(); // Revertir la transacción en caso de error
+    await t.rollback();
     console.error("Error en createUsuario:", error);
-    res.status(500).json({ message: "Error al crear el usuario", error });
+    return res.status(500).json({
+      message: "Error en el servidor al crear el usuario",
+      error: error instanceof Error ? error.message : "Error desconocido",
+    });
   }
 };
