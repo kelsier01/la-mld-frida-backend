@@ -19,7 +19,7 @@ Marca.init({
     },
     eliminado: {
         type: sequelize_1.DataTypes.BOOLEAN,
-        defaultValue: true,
+        defaultValue: false,
         allowNull: true,
     },
 }, {

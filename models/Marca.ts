@@ -22,7 +22,7 @@ Marca.init(
     },
     eliminado: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
+      defaultValue: false,
       allowNull: true,
     },
   },
