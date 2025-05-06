@@ -28,12 +28,11 @@ const Comuna_1 = __importDefault(require("../models/Comuna"));
 const Pago_1 = __importDefault(require("../models/Pago"));
 const Abono_1 = __importDefault(require("../models/Abono"));
 const LogEstadoPedido_1 = __importDefault(require("../models/LogEstadoPedido"));
+const DetallePedido_1 = __importDefault(require("../models/DetallePedido"));
+const Producto_1 = __importDefault(require("../models/Producto"));
 const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { page = "1", search = "", searchCliente = "", fecha_desde, fecha_hasta, estadoId, regionId, limit = "10", } = req.query;
-        const desde = fecha_desde || "";
-        const hasta = fecha_hasta || "";
-        const estado = estadoId ? Number(estadoId) : undefined;
         const region = regionId ? Number(regionId) : undefined;
         const pageNumber = Math.max(1, parseInt(page, 10));
         const limite = Math.max(1, parseInt(limit, 10));
@@ -44,13 +43,6 @@ const getAllPedidos = (req, res, next) => __awaiter(void 0, void 0, void 0, func
                 .json({ error: "El parámetro 'page' debe ser un número positivo." });
         }
         let validRegion = region == 0 ? false : true;
-        console.log(`search = ${search}
-       - desde = ${desde} - 
-       hasta = ${hasta} - 
-       estado = ${estado} - 
-       cliente = ${searchCliente} - 
-       region = ${region} - 
-       validRegion = ${validRegion}`);
         // 2. Construir filtro de Pedido (ID, fechas, estado)
         const pedidoWhere = Object.assign(Object.assign(Object.assign(Object.assign({ eliminado: 0 }, (search.trim() && {
             id: { [sequelize_1.Op.like]: `%${search.trim()}%` },
@@ -148,7 +140,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             direccion_id,
             bodega_destino_id,
             fecha_entrega,
-            eliminado
+            eliminado,
         });
         res.status(201).json(nuevoPedido);
     }
@@ -160,7 +152,7 @@ const createPedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.createPedido = createPedido;
 const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, bodega_destino_id, fecha_entrega, eliminado } = req.body;
+    const { empleados_id, clientes_id, estado_pedidos_id, deliverys_id, monto_total, guia_despacho_id, tracking_number, comprobante_ventas_id, direccion_id, bodega_destino_id, fecha_entrega, eliminado, } = req.body;
     try {
         const pedido = yield Pedido_1.default.findByPk(id);
         if (pedido) {
@@ -176,7 +168,7 @@ const updatePedido = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 direccion_id,
                 bodega_destino_id,
                 fecha_entrega,
-                eliminado
+                eliminado,
             });
             res.status(200).json(pedido);
         }
@@ -212,7 +204,7 @@ const getPedidosByGuiaDespachoId = (req, res) => __awaiter(void 0, void 0, void 
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 guia_despacho_id: id,
-                eliminado: 0
+                eliminado: 0,
             },
         });
         if (pedido) {
@@ -233,7 +225,7 @@ const getPedidosByComprobanteVentaId = (req, res) => __awaiter(void 0, void 0, v
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 comprobante_ventas_id: id,
-                eliminado: 0
+                eliminado: 0,
             },
             include: [
                 { model: Empleado_1.default },
@@ -266,9 +258,12 @@ const getPedidosBySaldoCliente = (req, res) => __awaiter(void 0, void 0, void 0,
         const pedido = yield Pedido_1.default.findAll({
             where: {
                 clientes_id: id,
-                eliminado: 0
+                eliminado: 0,
             },
-            include: [{ model: Pago_1.default, include: [{ model: Abono_1.default }] }],
+            include: [
+                { model: DetallePedido_1.default, include: [{ model: Producto_1.default }] },
+                { model: Pago_1.default, include: [{ model: Abono_1.default }] },
+            ],
         });
         if (pedido) {
             res.status(200).json(pedido);
@@ -285,30 +280,27 @@ exports.getPedidosBySaldoCliente = getPedidosBySaldoCliente;
 // Constantes para estados de pedidos
 const ESTADOS_PEDIDO = {
     RECEPCIONADO_CHILE: 3,
-    LISTO_DESPACHAR: 4
+    LISTO_DESPACHAR: 4,
 };
 const getPedidosByFechaEntrega = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Obtener la fecha de hoy
         const hoy = new Date();
         // Formatear la fecha para obtener solo YYYY-MM-DD
-        const fechaHoy = hoy.toISOString().split('T')[0];
+        const fechaHoy = hoy.toISOString().split("T")[0];
         const pedidos = yield Pedido_1.default.findAll({
             where: {
                 eliminado: 0,
                 fecha_entrega: {
-                    [sequelize_1.Op.between]: [
-                        `${fechaHoy} 00:00:00`,
-                        `${fechaHoy} 23:59:59`
-                    ]
-                }
+                    [sequelize_1.Op.between]: [`${fechaHoy} 00:00:00`, `${fechaHoy} 23:59:59`],
+                },
             },
-            attributes: ['id', 'fecha_entrega', 'estado_pedidos_id']
+            attributes: ["id", "fecha_entrega", "estado_pedidos_id"],
         });
         return pedidos;
     }
     catch (error) {
-        console.error('[getPedidosByFechaEntrega] Error:', error);
+        console.error("[getPedidosByFechaEntrega] Error:", error);
         throw error; // Propagar el error para mejor manejo
     }
 });

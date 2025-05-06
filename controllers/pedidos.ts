@@ -14,6 +14,8 @@ import Comuna from "../models/Comuna";
 import Pago from "../models/Pago";
 import Abono from "../models/Abono";
 import LogEstadoPedido from "../models/LogEstadoPedido";
+import DetallePedido from "../models/DetallePedido";
+import Producto from "../models/Producto";
 
 export const getAllPedidos = async (
   req: Request,
@@ -32,9 +34,6 @@ export const getAllPedidos = async (
       limit = "10",
     } = req.query as Record<string, string>;
 
-    const desde = fecha_desde || "";
-    const hasta = fecha_hasta || "";
-    const estado = estadoId ? Number(estadoId) : undefined;
     const region = regionId ? Number(regionId) : undefined;
     const pageNumber = Math.max(1, parseInt(page, 10));
     const limite = Math.max(1, parseInt(limit, 10));
@@ -47,16 +46,6 @@ export const getAllPedidos = async (
     }
 
     let validRegion = region == 0 ? false : true;
-
-    console.log(
-      `search = ${search}
-       - desde = ${desde} - 
-       hasta = ${hasta} - 
-       estado = ${estado} - 
-       cliente = ${searchCliente} - 
-       region = ${region} - 
-       validRegion = ${validRegion}`
-    );
 
     // 2. Construir filtro de Pedido (ID, fechas, estado)
     const pedidoWhere: any = {
@@ -185,7 +174,7 @@ export const createPedido = async (req: Request, res: Response) => {
       direccion_id,
       bodega_destino_id,
       fecha_entrega,
-      eliminado
+      eliminado,
     });
     res.status(201).json(nuevoPedido);
   } catch (error) {
@@ -209,7 +198,7 @@ export const updatePedido = async (req: Request, res: Response) => {
     direccion_id,
     bodega_destino_id,
     fecha_entrega,
-    eliminado
+    eliminado,
   } = req.body;
   try {
     const pedido = await Pedido.findByPk(id);
@@ -226,7 +215,7 @@ export const updatePedido = async (req: Request, res: Response) => {
         direccion_id,
         bodega_destino_id,
         fecha_entrega,
-        eliminado
+        eliminado,
       });
       res.status(200).json(pedido);
     } else {
@@ -261,7 +250,7 @@ export const getPedidosByGuiaDespachoId = async (
     const pedido = await Pedido.findAll({
       where: {
         guia_despacho_id: id,
-        eliminado: 0
+        eliminado: 0,
       },
     });
     if (pedido) {
@@ -283,7 +272,7 @@ export const getPedidosByComprobanteVentaId = async (
     const pedido = await Pedido.findAll({
       where: {
         comprobante_ventas_id: id,
-        eliminado: 0
+        eliminado: 0,
       },
       include: [
         { model: Empleado },
@@ -314,9 +303,12 @@ export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
     const pedido = await Pedido.findAll({
       where: {
         clientes_id: id,
-        eliminado: 0
+        eliminado: 0,
       },
-      include: [{ model: Pago, include: [{ model: Abono }] }],
+      include: [
+        { model: DetallePedido, include: [{ model: Producto }] },
+        { model: Pago, include: [{ model: Abono }] },
+      ],
     });
     if (pedido) {
       res.status(200).json(pedido);
@@ -331,7 +323,7 @@ export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
 // Constantes para estados de pedidos
 const ESTADOS_PEDIDO = {
   RECEPCIONADO_CHILE: 3,
-  LISTO_DESPACHAR: 4
+  LISTO_DESPACHAR: 4,
 } as const;
 
 export const getPedidosByFechaEntrega = async () => {
@@ -339,34 +331,35 @@ export const getPedidosByFechaEntrega = async () => {
     // Obtener la fecha de hoy
     const hoy = new Date();
     // Formatear la fecha para obtener solo YYYY-MM-DD
-    const fechaHoy = hoy.toISOString().split('T')[0];
-    
+    const fechaHoy = hoy.toISOString().split("T")[0];
+
     const pedidos = await Pedido.findAll({
       where: {
         eliminado: 0,
         fecha_entrega: {
-          [Op.between]: [
-            `${fechaHoy} 00:00:00`,
-            `${fechaHoy} 23:59:59`
-          ]
-        }
+          [Op.between]: [`${fechaHoy} 00:00:00`, `${fechaHoy} 23:59:59`],
+        },
       },
-      attributes: ['id', 'fecha_entrega', 'estado_pedidos_id']
+      attributes: ["id", "fecha_entrega", "estado_pedidos_id"],
     });
 
     return pedidos;
   } catch (error) {
-    console.error('[getPedidosByFechaEntrega] Error:', error);
+    console.error("[getPedidosByFechaEntrega] Error:", error);
     throw error; // Propagar el error para mejor manejo
   }
 };
 
-export const actualizarEstadoPedido = async (id_pedido: number): Promise<boolean> => {
+export const actualizarEstadoPedido = async (
+  id_pedido: number
+): Promise<boolean> => {
   try {
     const pedido = await Pedido.findByPk(id_pedido);
-    
+
     if (!pedido) {
-      console.error(`[actualizarEstadoPedido] Pedido ${id_pedido} no encontrado`);
+      console.error(
+        `[actualizarEstadoPedido] Pedido ${id_pedido} no encontrado`
+      );
       return false;
     }
 
@@ -380,11 +373,15 @@ export const actualizarEstadoPedido = async (id_pedido: number): Promise<boolean
       empleados_id: 5, // EMPLEADO SISTEMA
     });
 
-    console.log(`[actualizarEstadoPedido] Pedido ${id_pedido} actualizado exitosamente`);
+    console.log(
+      `[actualizarEstadoPedido] Pedido ${id_pedido} actualizado exitosamente`
+    );
     return true;
-
   } catch (error) {
-    console.error(`[actualizarEstadoPedido] Error al actualizar pedido ${id_pedido}:`, error);
+    console.error(
+      `[actualizarEstadoPedido] Error al actualizar pedido ${id_pedido}:`,
+      error
+    );
     throw error;
   }
 };
