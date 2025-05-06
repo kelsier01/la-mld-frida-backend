@@ -136,6 +136,7 @@ const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const marca = yield Marca_1.default.findByPk(id);
         if (marca) {
             // await marca.destroy();
+            yield marca.update({ eliminado: true });
             res.status(200).json({ message: "Marca eliminada correctamente" });
         }
         else {

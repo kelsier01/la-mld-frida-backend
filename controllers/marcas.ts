@@ -142,6 +142,7 @@ export const deleteMarca = async (req: Request, res: Response) => {
     const marca = await Marca.findByPk(id);
     if (marca) {
       // await marca.destroy();
+      await marca.update({ eliminado: true });
       res.status(200).json({ message: "Marca eliminada correctamente" });
     } else {
       res.status(404).json({ message: "Marca no encontrada" });
