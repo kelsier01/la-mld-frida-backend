@@ -72,7 +72,7 @@ export const createProductoImagen = async (req: Request, res: Response) => {
     const tempFilePath = req.file.path;
 
     // Ruta definitiva en la carpeta pública de la API
-    const publicPath = path.join(__dirname, "../public/images", req.file.filename);
+    const publicPath = path.join("dist/public/images", req.file.filename);
 
     // Mueve el archivo a la carpeta pública
     fs.rename(tempFilePath, publicPath, async (err) => {

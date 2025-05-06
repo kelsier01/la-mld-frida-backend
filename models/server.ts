@@ -103,7 +103,7 @@ class Server {
   middlewares() {
     this.app.use(cors());
     this.app.use(express.json()); // Lectura y parseo del body
-    this.app.use("/images", express.static(path.join(__dirname, "../public/images")));
+    this.app.use("/images", express.static(path.join("dist/public/images")));
   }
 
   routes() {

@@ -108,7 +108,7 @@ class Server {
     middlewares() {
         this.app.use((0, cors_1.default)());
         this.app.use(express_1.default.json()); // Lectura y parseo del body
-        this.app.use("/images", express_1.default.static(path_1.default.join(__dirname, "../public/images")));
+        this.app.use("/images", express_1.default.static(path_1.default.join("dist/public/images")));
     }
     routes() {
         // Rutas existentes

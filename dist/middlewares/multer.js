@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 // Configuración de almacenamiento
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path_1.default.join(__dirname, "../../public/images")); // Guarda las imágenes en la carpeta "public/images"
+        cb(null, path_1.default.join("./public/images")); // Guarda las imágenes en la carpeta "public/images"
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);

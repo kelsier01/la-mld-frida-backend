@@ -85,7 +85,7 @@ const createProductoImagen = (req, res) => __awaiter(void 0, void 0, void 0, fun
         // Ruta temporal del archivo subido
         const tempFilePath = req.file.path;
         // Ruta definitiva en la carpeta pública de la API
-        const publicPath = path_1.default.join(__dirname, "../public/images", req.file.filename);
+        const publicPath = path_1.default.join("dist/public/images", req.file.filename);
         // Mueve el archivo a la carpeta pública
         fs_1.default.rename(tempFilePath, publicPath, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
