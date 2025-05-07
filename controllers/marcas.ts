@@ -44,17 +44,6 @@ export const getAllMarcas = async (
       order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
     });
 
-    console.log(
-      "Query:",
-      Marca.findAndCountAll({
-        where: marcaWhere,
-        limit: limite,
-        offset,
-        distinct: true,
-        order: [["nombre", "ASC"]],
-      }).toString()
-    );
-
     // const marcas = await Marca.findAll();
     return res.json({
       marcas,
@@ -73,23 +62,12 @@ export const getMarcas = async (req: Request, res: Response) => {
     const marcas = await Marca.findAll({
       where: {
         eliminado: {
-          [Op.ne]: 1, // Op.ne significa "not equal" (distinto de)
+          [Op.ne]: 1,
         },
       },
-      order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
+      order: [["nombre", "DESC"]], // ASC para orden ascendente, DESC para descendente
     });
 
-    console.log(
-      "Query:",
-      Marca.findAll({
-        where: {
-          eliminado: {
-            [Op.ne]: 1,
-          },
-        },
-        order: [["nombre", "ASC"]],
-      }).toString()
-    );
     res.status(200).json(marcas);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las marcas", error });
@@ -138,6 +116,7 @@ export const updateMarca = async (req: Request, res: Response) => {
 
 export const deleteMarca = async (req: Request, res: Response) => {
   const { id } = req.params;
+  console.log("ID a eliminar:", id);
   try {
     const marca = await Marca.findByPk(id);
     if (marca) {

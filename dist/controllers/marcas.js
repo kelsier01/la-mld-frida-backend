@@ -39,13 +39,6 @@ const getAllMarcas = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             distinct: true,
             order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
         });
-        console.log("Query:", Marca_1.default.findAndCountAll({
-            where: marcaWhere,
-            limit: limite,
-            offset,
-            distinct: true,
-            order: [["nombre", "ASC"]],
-        }).toString());
         // const marcas = await Marca.findAll();
         return res.json({
             marcas,
@@ -65,19 +58,11 @@ const getMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const marcas = yield Marca_1.default.findAll({
             where: {
                 eliminado: {
-                    [sequelize_1.Op.ne]: 1, // Op.ne significa "not equal" (distinto de)
-                },
-            },
-            order: [["nombre", "ASC"]], // ASC para orden ascendente, DESC para descendente
-        });
-        console.log("Query:", Marca_1.default.findAll({
-            where: {
-                eliminado: {
                     [sequelize_1.Op.ne]: 1,
                 },
             },
-            order: [["nombre", "ASC"]],
-        }).toString());
+            order: [["nombre", "DESC"]], // ASC para orden ascendente, DESC para descendente
+        });
         res.status(200).json(marcas);
     }
     catch (error) {
@@ -132,6 +117,7 @@ const updateMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.updateMarca = updateMarca;
 const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
+    console.log("ID a eliminar:", id);
     try {
         const marca = yield Marca_1.default.findByPk(id);
         if (marca) {
