@@ -119,6 +119,8 @@ export const getClienteById = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const createCliente = async (req: Request, res: Response) => {
   const {
     n_identificacion,
@@ -131,69 +133,78 @@ export const createCliente = async (req: Request, res: Response) => {
     comuna_id,
   } = req.body;
 
+  // 1. Validación básica de entrada
+  if (!n_identificacion || !nombre || !correo || !direccion || region_id == null || comuna_id == null) {
+    return res.status(400).json({ message: "Faltan campos obligatorios (n_identificacion, nombre, correo, direccion, region_id, comuna_id)." });
+  }
+
   try {
-    // Buscar si la persona ya existe por n_identificacion
-    let persona: any = await Persona.findOne({ where: { n_identificacion } });
+    // 3. Buscar la Persona por n_identificacion dentro de la transacción
+    let persona: any = await Persona.findOne({
+      where: { n_identificacion },
+    });
+
+    let personaCreada = false;
 
     if (persona) {
-      // Verificar si la persona ya está asociada a un cliente
+      // Si la persona existe, verificar si ya es un cliente
       const clienteExistente = await Cliente.findOne({
         where: { personas_id: persona.id },
       });
 
       if (clienteExistente) {
-        return res
-          .status(400)
-          .json({ message: "La persona ya está registrada como cliente" });
+        // Si ya es cliente, revertir la transacción y enviar error
+        return res.status(400).json({ message: "La persona con esta identificación ya está registrada como cliente." });
       }
-      let region: any = await Region.findByPk(region_id);
-      let comuna: any = await Comuna.findByPk(comuna_id);
-      // Si la persona existe pero no es cliente, crear el cliente con la ID de la persona existente
-      const nuevoCliente: any = await Cliente.create({
-        personas_id: persona.id,
-        cta_instagram,
-        eliminado: 0,
-      });
-
-      // Crear la dirección del cliente
-
-      // Crear la dirección del cliente
-      const nuevaDireccion = await Direccion.create({
-        clientes_id: nuevoCliente.id,
-        direccion,
-        region_id,
-        comuna_id,
-      });
-
-      return res
-        .status(201)
-        .json({ nuevoCliente, nuevaDireccion, persona, region, comuna });
+      // La persona existe pero NO es cliente. Usaremos esta persona para crear el cliente.
     } else {
-      // Si la persona no existe, la creamos
+      // Si la persona no existe, crearla dentro de la transacción
       persona = await Persona.create({
         nombre,
         correo,
         n_identificacion,
         fono,
       });
-      // Crear el cliente con la persona recién creada
-      const nuevoCliente: any = await Cliente.create({
-        personas_id: persona.id,
-        cta_instagram,
-        eliminado: 0,
-      });
-      // Crear la dirección del cliente
-      const nuevaDireccion = await Direccion.create({
-        clientes_id: nuevoCliente.id,
-        direccion,
-        region_id,
-        comuna_id,
-      });
-
-      res.status(201).json({ nuevoCliente, nuevaDireccion, persona });
+      personaCreada = true;
     }
-  } catch (error) {
-    res.status(500).json({ message: "Error al crear el cliente", error });
+
+    // En este punto, 'persona' es una instancia válida, ya sea encontrada o recién creada.
+    // Y sabemos que esta persona aún no tiene un registro de Cliente asociado.
+
+    // 4. Crear el registro de Cliente asociado a la Persona
+    const nuevoCliente: any = await Cliente.create({
+      personas_id: persona.id,
+      cta_instagram,
+      eliminado: false, // Es más claro usar un booleano en lugar de 0/1 si representa un estado binario
+    });
+
+    // 5. Crear la Dirección asociada al nuevo Cliente
+    const nuevaDireccion = await Direccion.create({
+      clientes_id: nuevoCliente.id,
+      direccion,
+      region_id,
+      comuna_id,
+    });
+
+    const region: any = await Region.findByPk(region_id);
+    const comuna: any = await Comuna.findByPk(comuna_id);
+
+    // 8. Enviar la respuesta exitosa
+    return res.status(201).json({
+      nuevoCliente: nuevoCliente,
+      nuevaDireccion: nuevaDireccion,
+      persona: persona,
+      region: region,
+      comuna: comuna,
+    });
+
+  } catch (error: any) {
+    console.error("Error al crear el cliente:", error); // Log del error en el servidor
+
+    return res.status(500).json({
+      message: "Ocurrió un error interno al intentar crear el cliente.",
+      error: error.message, // Envía el mensaje de error para depuración, considera ser menos detallado en producción
+    });
   }
 };
 
