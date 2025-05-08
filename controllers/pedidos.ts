@@ -308,6 +308,7 @@ export const getPedidosBySaldoCliente = async (req: Request, res: Response) => {
       include: [
         { model: DetallePedido, include: [{ model: Producto }] },
         { model: Pago, include: [{ model: Abono }] },
+        { model: EstadoPedido },
       ],
     });
     if (pedido) {
