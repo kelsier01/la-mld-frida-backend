@@ -263,6 +263,7 @@ const getPedidosBySaldoCliente = (req, res) => __awaiter(void 0, void 0, void 0,
             include: [
                 { model: DetallePedido_1.default, include: [{ model: Producto_1.default }] },
                 { model: Pago_1.default, include: [{ model: Abono_1.default }] },
+                { model: EstadoPedido_1.default },
             ],
         });
         if (pedido) {
