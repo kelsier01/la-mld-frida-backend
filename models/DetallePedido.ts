@@ -1,10 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
 
-import Pedido from "./Pedido";
-import Producto from "./Producto";
-import Bodega from "./Bodega";
-
 class DetallePedido extends Model {
   public id!: number;
   public pedidos_id!: number;
@@ -49,11 +45,11 @@ DetallePedido.init(
       allowNull: true,
     },
     precio_compra_usd: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true,
     },
     precio_compra_guia: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true,
     },
     adicional: {

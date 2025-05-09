@@ -26,19 +26,19 @@ GuiaDespacho.init({
         allowNull: true,
     },
     subtotal: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     insurage: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     other: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     total: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
 }, {

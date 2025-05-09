@@ -34,11 +34,11 @@ DetallePedido.init({
         allowNull: true,
     },
     precio_compra_usd: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: true,
     },
     precio_compra_guia: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: true,
     },
     adicional: {

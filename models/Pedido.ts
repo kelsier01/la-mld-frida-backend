@@ -1,11 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
-import Empleado from "./Empleado";
-import Cliente from "./Cliente";
-import EstadoPedido from "./EstadoPedido";
-import Delivery from "./Delivery";
-import DocumentoUsa from "./GuiaDespacho";
-import ComprobanteVenta from "./ComprobanteVenta";
 
 class Pedido extends Model {
   public id!: number;

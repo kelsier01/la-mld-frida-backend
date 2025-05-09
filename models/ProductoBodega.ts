@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
-import Bodega from "./Bodega";
 
 class ProductoBodega extends Model {
   public id!: number;

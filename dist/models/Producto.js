@@ -34,7 +34,7 @@ Producto.init({
         allowNull: true,
     },
     Precio_compra_usd: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: true,
     },
     eliminado: {

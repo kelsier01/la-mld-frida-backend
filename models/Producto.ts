@@ -1,9 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../BD/connection";
-import Categoria from "./Categoria";
-import Marca from "./Marca";
-import ProductoBodega from "./ProductoBodega";
-import ProductoImagen from "./ProductoImagen";
+
 
 class Producto extends Model {
   public id!: number;
@@ -46,7 +43,7 @@ Producto.init(
       allowNull: true,
     },
     Precio_compra_usd: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true,
     },
     eliminado:{
