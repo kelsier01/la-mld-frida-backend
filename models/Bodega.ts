@@ -25,6 +25,11 @@ Bodega.init(
       type: DataTypes.STRING(45),
       allowNull: true,
     },
+    eliminado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: true,
+    },
   },
   {
     sequelize: db,

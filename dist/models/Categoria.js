@@ -17,6 +17,11 @@ Categoria.init({
         type: sequelize_1.DataTypes.STRING(45),
         allowNull: false,
     },
+    eliminado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: true,
+    },
 }, {
     sequelize: connection_1.default,
     tableName: "categorias",

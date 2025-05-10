@@ -5,12 +5,14 @@ import {
   deleteDelivery,
   getAllDeliverys,
   getDeliveryById,
+  getDeliverys,
   updateDelivery,
 } from "../controllers/deliverys";
 
 const route = Router();
 
 route.get("/", [validarjwt], getAllDeliverys);
+route.get("/allDeliverys", [validarjwt], getDeliverys);
 route.get("/:id", [validarjwt], getDeliveryById);
 route.post("/", [validarjwt], createDelivery);
 route.put("/:id", [validarjwt], updateDelivery);
