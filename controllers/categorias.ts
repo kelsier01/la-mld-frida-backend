@@ -28,9 +28,14 @@ export const getAllCategorias = async (
     const offset = (pageNumber - 1) * Number(limit);
     const limite = Number(limit);
     // Construcción de la condición de búsqueda en Persona
-    const categoriaWhere: any = search
-      ? { nombre: { [Op.like]: `%${search}%` } }
-      : {};
+
+    const categoriaWhere: any = {
+      eliminado: {
+        [Op.ne]: 1,
+      },
+      ...(search ? { nombre: { [Op.like]: `%${search}%` } } : {}),
+    };
+
     // Ejecución de la consulta con Sequelize
     const { rows: categorias, count: total } = await Categoria.findAndCountAll({
       where: categoriaWhere,
@@ -53,12 +58,19 @@ export const getAllCategorias = async (
 
 export const getCategorias = async (req: Request, res: Response) => {
   try {
-    const categorias = await Categoria.findAll();
+    const categorias = await Categoria.findAll({
+      where: {
+        eliminado: {
+          [Op.ne]: 1,
+        },
+      },
+      order: [["nombre", "DESC"]], // ASC para orden ascendente, DESC para descendente
+    });
     res.status(200).json(categorias);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las categorías", error });
   }
-}
+};
 
 export const getCategoriaById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -76,7 +88,6 @@ export const getCategoriaById = async (req: Request, res: Response) => {
 
 export const createCategoria = async (req: Request, res: Response) => {
   const { nombre } = req.body;
-  console.log("Entró al metodo createCategoria = ", nombre);
   try {
     const nuevaCategoria = await Categoria.create({ nombre });
     res.status(201).json(nuevaCategoria);
@@ -108,7 +119,8 @@ export const deleteCategoria = async (req: Request, res: Response) => {
   try {
     const categoria = await Categoria.findByPk(id);
     if (categoria) {
-      await categoria.destroy();
+      // await categoria.destroy();
+      categoria.update({ eliminado: true });
       res.status(200).json({ message: "Categoría eliminada correctamente" });
     } else {
       res.status(404).json({ message: "Categoría no encontrada" });

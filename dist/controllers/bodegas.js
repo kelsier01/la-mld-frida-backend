@@ -14,9 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBodega = exports.updateBodega = exports.createBodega = exports.getBodegaById = exports.getAllBodegas = void 0;
 const Bodega_1 = __importDefault(require("../models/Bodega"));
+const sequelize_1 = require("sequelize");
 const getAllBodegas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const bodegas = yield Bodega_1.default.findAll();
+        const bodegas = yield Bodega_1.default.findAll({
+            where: {
+                eliminado: {
+                    [sequelize_1.Op.ne]: 1,
+                },
+            },
+            order: [["nombre", "DESC"]], // ASC para orden ascendente, DESC para descendente
+        });
         return res.status(200).json(bodegas);
     }
     catch (error) {
@@ -74,7 +82,8 @@ const deleteBodega = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const bodega = yield Bodega_1.default.findByPk(id);
         if (bodega) {
-            yield bodega.destroy();
+            // await bodega.destroy();
+            yield bodega.update({ eliminado: true });
             res.status(200).json({ message: "Bodega eliminada correctamente" });
         }
         else {

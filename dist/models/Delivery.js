@@ -17,6 +17,10 @@ Delivery.init({
         type: sequelize_1.DataTypes.STRING(45),
         allowNull: false,
     },
+    eliminado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 }, {
     sequelize: connection_1.default,
     tableName: "deliverys",

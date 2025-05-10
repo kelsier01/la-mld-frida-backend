@@ -20,6 +20,11 @@ Categoria.init(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
+    eliminado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: true,
+    },
   },
   {
     sequelize: db,

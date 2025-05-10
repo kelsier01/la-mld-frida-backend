@@ -28,9 +28,9 @@ const getAllCategorias = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const offset = (pageNumber - 1) * Number(limit);
         const limite = Number(limit);
         // Construcción de la condición de búsqueda en Persona
-        const categoriaWhere = search
-            ? { nombre: { [sequelize_1.Op.like]: `%${search}%` } }
-            : {};
+        const categoriaWhere = Object.assign({ eliminado: {
+                [sequelize_1.Op.ne]: 1,
+            } }, (search ? { nombre: { [sequelize_1.Op.like]: `%${search}%` } } : {}));
         // Ejecución de la consulta con Sequelize
         const { rows: categorias, count: total } = yield Categoria_1.default.findAndCountAll({
             where: categoriaWhere,
@@ -54,7 +54,14 @@ const getAllCategorias = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 exports.getAllCategorias = getAllCategorias;
 const getCategorias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const categorias = yield Categoria_1.default.findAll();
+        const categorias = yield Categoria_1.default.findAll({
+            where: {
+                eliminado: {
+                    [sequelize_1.Op.ne]: 1,
+                },
+            },
+            order: [["nombre", "DESC"]], // ASC para orden ascendente, DESC para descendente
+        });
         res.status(200).json(categorias);
     }
     catch (error) {
@@ -80,7 +87,6 @@ const getCategoriaById = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getCategoriaById = getCategoriaById;
 const createCategoria = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { nombre } = req.body;
-    console.log("Entró al metodo createCategoria = ", nombre);
     try {
         const nuevaCategoria = yield Categoria_1.default.create({ nombre });
         res.status(201).json(nuevaCategoria);
@@ -115,7 +121,8 @@ const deleteCategoria = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const categoria = yield Categoria_1.default.findByPk(id);
         if (categoria) {
-            yield categoria.destroy();
+            // await categoria.destroy();
+            categoria.update({ eliminado: true });
             res.status(200).json({ message: "Categoría eliminada correctamente" });
         }
         else {
